@@ -1,5 +1,7 @@
 # InventoryManager
 
+"we gonna use java" ~ rennie
+
 Swift Tutorials:
 
 https://www.raywenderlich.com/731-macos-development-for-beginners-part-1
