@@ -1,6 +1,17 @@
 # InventoryManager
 
-"we gonna use java" ~ rennie
+Java will be used.
+
+Ideas for Columns
+• Product Name (once clicked, will show more information)
+• Status (Delivering, Full)
+• Current Quantity
+• Minimum (lowest number she is willing to have)
+• 
+
+Function Ideas
+• Add/Delete products
+
 
 Swift Tutorials:
 
