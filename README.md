@@ -7,7 +7,6 @@ Ideas for Columns
 • Status (Delivering, Full)
 • Current Quantity
 • Minimum (lowest number she is willing to have)
-• 
 
 Function Ideas
 • Add/Delete products
