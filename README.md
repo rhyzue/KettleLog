@@ -1,8 +1,8 @@
-# Kettlelog
+# KettleLog
 
 Java will be used and JavaFX for GUI
 
-Ideas for Columns
+Table
 • Product Name (once clicked, will show more information)
 • Status (Delivering, Full)
 • Current Quantity
@@ -10,4 +10,7 @@ Ideas for Columns
 
 Function Ideas
 • Add/Delete products
+• Sort by <Date added; Name; Status; Quantity; Minimum>
+
+
 
