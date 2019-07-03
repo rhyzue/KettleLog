@@ -1,4 +1,4 @@
-# InventoryManager
+# Kettlelog
 
 Java will be used.
 
