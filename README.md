@@ -3,10 +3,10 @@
 Java will be used and JavaFX for GUI
 
 <b>Table</b>
-• Product Name (once clicked, will show more information <Optional description, date added)
-• Status (Delivering, Full)
-• Current Quantity
-• Minimum (lowest number she is willing to have)
+<br>• Product Name (once clicked, will show more information <Optional description, date added)
+<br>• Status (Delivering, Full)
+<br>• Current Quantity
+<br>• Minimum (lowest number she is willing to have)
 
 <b>Function Ideas</b>
 <br>• Add/Delete products
@@ -14,13 +14,13 @@ Java will be used and JavaFX for GUI
 
 GUI Hierarchy
 1. BorderPane
-->Top: Manubar
+<br>->Top: Manubar
 2. AnchorPane
-->Logo
+<br>->Logo
 3. HBox
-->Filter
-->Search
-->Add/Delete
+<br>->Filter
+<br>->Search
+<br>->Add/Delete
 4. GridPane
-->Table
+<br>->Table
 
