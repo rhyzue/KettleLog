@@ -2,7 +2,7 @@
 
 Java will be used and JavaFX for GUI
 
-Table
+<b>Table</b>
 • Product Name (once clicked, will show more information <Optional description, date added)
 • Status (Delivering, Full)
 • Current Quantity
