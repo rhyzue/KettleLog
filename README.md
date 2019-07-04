@@ -12,5 +12,15 @@ Function Ideas
 • Add/Delete products
 • Sort by <Date added; Name; Status; Quantity; Minimum>
 
-
+GUI Hierarchy
+1. BorderPane
+->Top: Manubar
+2. AnchorPane
+->Logo
+3. HBox
+->Filter
+->Search
+->Add/Delete
+4. GridPane
+->Table
 
