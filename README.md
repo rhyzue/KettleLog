@@ -8,9 +8,9 @@ Java will be used and JavaFX for GUI
 • Current Quantity
 • Minimum (lowest number she is willing to have)
 
-Function Ideas
-• Add/Delete products
-• Sort by <Date added; Name; Status; Quantity; Minimum>
+<b>Function Ideas</b>
+<br>• Add/Delete products
+<br>• Sort by <Date added; Name; Status; Quantity; Minimum>
 
 GUI Hierarchy
 1. BorderPane
