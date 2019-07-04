@@ -3,7 +3,7 @@
 Java will be used and JavaFX for GUI
 
 <b>Table</b>
-<br>• Product Name (once clicked, will show more information <Optional description, date added)
+<br>• Product Name (once clicked, will show more information: Optional description, date added)
 <br>• Status (Delivering, Full)
 <br>• Current Quantity
 <br>• Minimum (lowest number she is willing to have)
