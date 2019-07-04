@@ -15,6 +15,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import Columns.*;
 
 public class kettlelog extends Application {
     public static void main(String[] args) {
@@ -73,19 +74,19 @@ public class kettlelog extends Application {
 
         TableView table = new TableView();
 
-        TableColumn<String, Person> column1 = new TableColumn<>("First Name");
-        column1.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        TableColumn<String, Columns> column1 = new TableColumn<>("Name");
+        column1.setCellValueFactory(new PropertyValueFactory<>("name"));
 
 
-        TableColumn<String, Person> column2 = new TableColumn<>("Last Name");
-        column2.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        TableColumn<String, Columns> column2 = new TableColumn<>("Status");
+        column2.setCellValueFactory(new PropertyValueFactory<>("status"));
 
 
         table.getColumns().add(column1);
         table.getColumns().add(column2);
 
-        table.getItems().add(new Person("John", "Doe"));
-        table.getItems().add(new Person("Jane", "Deer"));
+        table.getItems().add(new Columns("Gloves", "Good", "17", "5"));
+        table.getItems().add(new Columns("Drills", "Low", "2", "10"));
 
         VBox vbox = new VBox(table);
 
@@ -109,33 +110,4 @@ public class kettlelog extends Application {
 
     }
 
-    public class Person {
-
-        private String firstName = null;
-        private String lastName = null;
-
-        public Person() {
-        }
-
-        public Person(String firstName, String lastName) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-        }
-
-        public String getFirstName() {
-            return firstName;
-        }
-
-        public void setFirstName(String firstName) {
-            this.firstName = firstName;
-        }
-
-        public String getLastName() {
-            return lastName;
-        }
-
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
-    }
 }
