@@ -1,14 +1,14 @@
-
-import javafx.application.Application;
+import Columns.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.application.Application;
 import javafx.scene.control.cell.PropertyValueFactory;
-import Columns.*;
+
 
 public class kettlelog extends Application {
     public static void main(String[] args) {
@@ -21,11 +21,11 @@ public class kettlelog extends Application {
         //================================================================================
         // INITIALIZATION
         //================================================================================
+
         double spacefromtable = 15.0;
         setup.setResizable(false);
         setup.setTitle("KettleLog");
         
-
         //================================================================================
         // MENU BAR
         //================================================================================
@@ -35,7 +35,7 @@ public class kettlelog extends Application {
         Menu file = new Menu("File");
         Menu edit = new Menu("Edit");
         Menu view = new Menu("View");
-        Menu help = new Menu("Help");
+        Menu info = new Menu("Info");
         //FILE SUBMENU
         MenuItem newtable = new Menu("New");
         MenuItem opentable = new Menu("Open");
@@ -47,17 +47,18 @@ public class kettlelog extends Application {
         //VIEW SUBMENU
         MenuItem fs = new Menu("Fullscreen");
         MenuItem mi = new Menu("Minimal Interface");
-        //HELP SUBMENU
+        //INFO SUBMENU
         MenuItem about = new Menu("About");
+        MenuItem tutorial = new Menu("Tutorial");
         MenuItem credits = new Menu("Credits");
 
         //ADDING MENUITEMS TO THEIR RESPECTIVE MENUS
         file.getItems().addAll(newtable, opentable, printtable, exit);
         edit.getItems().addAll(add, remove);
         view.getItems().addAll(fs, mi);
-        help.getItems().addAll(about, credits);
+        info.getItems().addAll(about, tutorial, credits);
 
-        kettlemenu.getMenus().addAll(file, edit, view, help);
+        kettlemenu.getMenus().addAll(file, edit, view, info);
 
         //================================================================================
         // TABLE

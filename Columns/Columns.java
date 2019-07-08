@@ -33,12 +33,12 @@ public class Columns {
             this.status = status;
         }
 
-        public String getquantity() {
+        public String getQuantity() {
             return quantity;
         }
 
         public void setQuantity(String quantity) {
-            this.quantity= quantity;
+            this.quantity = quantity;
         }
 
         public String getMinimum() {
