@@ -27,19 +27,18 @@ public class kettlelog extends Application {
     public void start(Stage setup) {
         setup.setTitle("KettleLog");
         //WELCOME BUTTON 
-        Button btn = new Button();
-        btn.setText("ADD");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
+        Button addBtn = new Button();
+        addBtn.setText("ADD");
+        addBtn.setOnAction(new EventHandler<ActionEvent>() {
  
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("KettleLog!");
             }
         });
-        
-        //WELCOME BUTTON COORDINATES
-        btn.setLayoutX(800);
-        btn.setLayoutY(100);
+
+        Button removeBtn = new Button();
+        removeBtn.setText("REMOVE");
 
         //CREATING THE MENU BAR
         MenuBar kettlemenu = new MenuBar();
@@ -71,9 +70,10 @@ public class kettlelog extends Application {
 
         kettlemenu.getMenus().addAll(file, edit, view, help);
 
-
+        //CREATE TABLE
         TableView table = new TableView();
 
+        //ADD ITEMS TO TABLE
         TableColumn<String, Columns> column1 = new TableColumn<>("Name");
         column1.setCellValueFactory(new PropertyValueFactory<>("name"));
 
@@ -88,20 +88,28 @@ public class kettlelog extends Application {
         table.getItems().add(new Columns("Gloves", "Good", "17", "5"));
         table.getItems().add(new Columns("Drills", "Low", "2", "10"));
 
-        VBox vbox = new VBox(table);
+        VBox tableBox = new VBox(table);
 
-        //ANCHORPANE 
-        AnchorPane center = new AnchorPane();
-        center.setStyle("-fx-background-color: green;");
-        center.getChildren().add(btn);
-        center.getChildren().add(vbox);
+        AnchorPane topBar = new AnchorPane();
+        topBar.setStyle("-fx-background-color: blue;");
+        topBar.setRightAnchor(addBtn, 110.0);
+        topBar.setRightAnchor(removeBtn, 10.0);
+        topBar.getChildren().addAll(addBtn, removeBtn);
+
+        //MAIN PANEL
+        //TOP = TITLE LABEL, FILTER, SEARCH, ADD/REMOVE BUTTONS
+        //CENTER = TABLE
+        BorderPane main = new BorderPane();
+        main.setStyle("-fx-background-color: green;");
+        main.setTop(topBar);
+        main.setCenter(tableBox);
 
         //CREATE AND ADD ITEMS TO BASE
         BorderPane base = new BorderPane();
         base.setTop(kettlemenu);
-        base.setCenter(center);
+        base.setCenter(main);
 
-        center.setBottomAnchor(vbox, 10.0);
+        //center.setBottomAnchor(vbox, 10.0);
 
         setup.setScene(new Scene(base, 1024, 768));
         setup.show();
