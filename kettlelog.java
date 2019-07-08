@@ -2,19 +2,12 @@
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.geometry.Insets;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
 import Columns.*;
 
 public class kettlelog extends Application {
@@ -25,22 +18,18 @@ public class kettlelog extends Application {
     @Override
     //SETUP
     public void start(Stage setup) {
+        //================================================================================
+        // INITIALIZATION
+        //================================================================================
+        double spacefromtable = 15.0;
+        setup.setResizable(false);
         setup.setTitle("KettleLog");
-        //WELCOME BUTTON 
-        Button addBtn = new Button();
-        addBtn.setText("ADD");
-        addBtn.setOnAction(new EventHandler<ActionEvent>() {
- 
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("KettleLog!");
-            }
-        });
+        
 
-        Button removeBtn = new Button();
-        removeBtn.setText("REMOVE");
+        //================================================================================
+        // MENU BAR
+        //================================================================================
 
-        //CREATING THE MENU BAR
         MenuBar kettlemenu = new MenuBar();
         //CREATING MENU TABS
         Menu file = new Menu("File");
@@ -70,51 +59,105 @@ public class kettlelog extends Application {
 
         kettlemenu.getMenus().addAll(file, edit, view, help);
 
-        //CREATE TABLE
-        TableView table = new TableView();
+        //================================================================================
+        // TABLE
+        //================================================================================
+
+        TableView<Columns> table = new TableView<Columns>();
 
         //ADD ITEMS TO TABLE
-        TableColumn<String, Columns> column1 = new TableColumn<>("Name");
+        TableColumn<Columns, String> column1 = new TableColumn<>("Name");
         column1.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-
-        TableColumn<String, Columns> column2 = new TableColumn<>("Status");
+        TableColumn<Columns, String> column2 = new TableColumn<>("Status");
         column2.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        TableColumn<Columns, String> column3 = new TableColumn<>("Quantity");
+        column3.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+
+        TableColumn<Columns, String> column4 = new TableColumn<>("Minimum");
+        column4.setCellValueFactory(new PropertyValueFactory<>("minimum"));
 
 
         table.getColumns().add(column1);
         table.getColumns().add(column2);
+        table.getColumns().add(column3);
+        table.getColumns().add(column4);
 
         table.getItems().add(new Columns("Gloves", "Good", "17", "5"));
         table.getItems().add(new Columns("Drills", "Low", "2", "10"));
 
         VBox tableBox = new VBox(table);
 
-        AnchorPane topBar = new AnchorPane();
-        topBar.setStyle("-fx-background-color: blue;");
-        topBar.setRightAnchor(addBtn, 110.0);
-        topBar.setRightAnchor(removeBtn, 10.0);
-        topBar.getChildren().addAll(addBtn, removeBtn);
-
         //MAIN PANEL
-        //TOP = TITLE LABEL, FILTER, SEARCH, ADD/REMOVE BUTTONS
-        //CENTER = TABLE
+        //CENTER (TABLE)
         BorderPane main = new BorderPane();
-        main.setStyle("-fx-background-color: green;");
-        main.setTop(topBar);
+        main.setStyle("-fx-background-color: #6495ed;");
+        tableBox.setPadding(new Insets(0, 50, 25, 50));
         main.setCenter(tableBox);
+
+        //================================================================================
+        // TOP BAR (includes add/remove, filter, search)
+        //================================================================================
+
+        AnchorPane topBar = new AnchorPane();
+
+        //ADD BUTTON
+        Button addBtn = new Button();
+        addBtn.setText("ADD");
+        addBtn.setOnAction(new EventHandler<ActionEvent>() {
+ 
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("KettleLog!");
+            }
+        });
+
+        //REMOVE BUTTON
+        Button removeBtn = new Button();
+        removeBtn.setText("REMOVE");
+
+        //POSITIONS OF ADD AND REMOVE
+        AnchorPane.setRightAnchor(addBtn, 135.0);
+        AnchorPane.setBottomAnchor(addBtn, spacefromtable);
+        AnchorPane.setRightAnchor(removeBtn, 55.0);
+        AnchorPane.setBottomAnchor(removeBtn, spacefromtable);
+       
+        //SEARCH BAR
+        TextField searchbar = new TextField();
+        searchbar.setPrefWidth(400.0);
+        AnchorPane.setLeftAnchor(searchbar, 305.0);
+        AnchorPane.setBottomAnchor(searchbar, spacefromtable);
+        searchbar.setPromptText("Search");
+
+        //FILTER COMBOBOX
+        ComboBox<String> filter= new ComboBox<String>();
+        filter.setPromptText("Filter By");
+        filter.setPrefWidth(150.0);
+        filter.getItems().add("Starred");
+        filter.getItems().add("Checkboxed");
+        filter.getItems().add("Most Recent");
+        AnchorPane.setLeftAnchor(filter, 52.0);
+        AnchorPane.setBottomAnchor(filter, spacefromtable);
+
+        //TOPBAR GENERAL INFORMATION 
+        topBar.setStyle("-fx-background-color: #6495ed;");
+        topBar.setPrefSize(100, 150);
+        topBar.getChildren().addAll(addBtn, removeBtn, searchbar, filter);
+        main.setTop(topBar);
+
+        //================================================================================
+        // FINALIZATION
+        //================================================================================
 
         //CREATE AND ADD ITEMS TO BASE
         BorderPane base = new BorderPane();
         base.setTop(kettlemenu);
         base.setCenter(main);
 
-        //center.setBottomAnchor(vbox, 10.0);
-
+        //SHOW SCENE
         setup.setScene(new Scene(base, 1024, 768));
         setup.show();
-
-
 
     }
 
