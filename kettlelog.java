@@ -1,4 +1,5 @@
 import Columns.*;
+import KettleActionListener.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
@@ -130,13 +131,9 @@ public class kettlelog extends Application {
         //ADD BUTTON
         Button addBtn = new Button();
         addBtn.setText("ADD");
-        addBtn.setOnAction(new EventHandler<ActionEvent>() {
- 
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("KettleLog!");
-            }
-        });
+
+        KettleActionListener addBtnListener = new KettleActionListener(addBtn);
+        addBtn.addActionListener(addBtnListener);
 
         //REMOVE BUTTON
         Button removeBtn = new Button();
