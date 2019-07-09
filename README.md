@@ -1,6 +1,6 @@
 # KettleLog
 
-Java will be used and JavaFX for GUI
+Welcome to KettleLog, an easy-to-use inventory manager written in JavaFX. KettleLog is designed to help people pinpoint exactly when they need to order an item so that it arrives on-time and just before the previous stock runs out. 
 
 <b>Table</b>
 <br>• Product Name (once clicked, will show more information: Optional description, date added)
