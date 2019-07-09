@@ -1,5 +1,4 @@
 import Columns.*;
-import KettleActionListener.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
@@ -26,7 +25,7 @@ public class kettlelog extends Application {
         // INITIALIZATION
         //================================================================================
 
-        double spacefromtable = 15.0;
+        double spacefromtable = 12.0;
         setup.setResizable(false);
         setup.setTitle("KettleLog");
         
@@ -72,6 +71,8 @@ public class kettlelog extends Application {
         //================================================================================
 
         TableView<Columns> table = new TableView<Columns>();
+        table.setFixedCellSize(40.0);
+        table.setPrefSize(300, 508.0);
 
         //ADD ITEMS TO TABLE
         TableColumn<Columns, String> column1 = new TableColumn<>("Name");
@@ -131,9 +132,13 @@ public class kettlelog extends Application {
         //ADD BUTTON
         Button addBtn = new Button();
         addBtn.setText("ADD");
-
-        KettleActionListener addBtnListener = new KettleActionListener(addBtn);
-        addBtn.addActionListener(addBtnListener);
+        addBtn.setOnAction(new EventHandler<ActionEvent>() {
+ 
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("KettleLog!");
+            }
+        });
 
         //REMOVE BUTTON
         Button removeBtn = new Button();
@@ -179,7 +184,7 @@ public class kettlelog extends Application {
 
         BorderPane main = new BorderPane();
         main.setStyle("-fx-background-color: #6495ed;");
-        BorderPane.setMargin(tableBox, new Insets(0, 50, 200, 50));
+        BorderPane.setMargin(tableBox, new Insets(10, 50, 200, 50));
         main.setBottom(tableBox);
         main.setTop(topBar);
 
@@ -188,7 +193,7 @@ public class kettlelog extends Application {
         base.setCenter(main);
 
         //SHOW SCENE
-        setup.setScene(new Scene(base, 1024, 768));
+        setup.setScene(new Scene(base, 1024, 745));
         setup.show();
 
     }
