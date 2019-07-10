@@ -26,7 +26,7 @@ public class kettlelog extends Application {
         // INITIALIZATION
         //================================================================================
 
-        double spacefromtable = 15.0;
+        double spacefromtable = 12.0;
         setup.setResizable(false);
         setup.setTitle("KettleLog");
         
@@ -72,6 +72,8 @@ public class kettlelog extends Application {
         //================================================================================
 
         TableView<Columns> table = new TableView<Columns>();
+        table.setFixedCellSize(40.0);
+        table.setPrefSize(300, 508.0);
 
         //ADD ITEMS TO TABLE
         TableColumn<Columns, String> column1 = new TableColumn<>("Name");
@@ -163,14 +165,19 @@ public class kettlelog extends Application {
         AnchorPane.setBottomAnchor(filter, spacefromtable);
 
         //KETTLELOG LOGO
-        //Image kettleimage = new Image("kettle.png");
-        //ImageView logo = new ImageView();
-        //logo.setImage(kettleimage);
+        Image kettleimage = new Image("Logo.png");
+        ImageView logo = new ImageView();
+        logo.setFitHeight(100);
+        logo.setFitWidth(200);
+        logo.setImage(kettleimage);
+
+        AnchorPane.setLeftAnchor(logo, 50.0);
+        AnchorPane.setTopAnchor(logo, 10.0);
 
         //TOPBAR GENERAL INFORMATION 
         topBar.setStyle("-fx-background-color: #6495ed;");
         topBar.setPrefSize(100, 150);
-        topBar.getChildren().addAll(addBtn, removeBtn, searchbar, filter);
+        topBar.getChildren().addAll(logo, addBtn, removeBtn, searchbar, filter);
         
 
         //================================================================================
@@ -179,7 +186,7 @@ public class kettlelog extends Application {
 
         BorderPane main = new BorderPane();
         main.setStyle("-fx-background-color: #6495ed;");
-        BorderPane.setMargin(tableBox, new Insets(0, 50, 200, 50));
+        BorderPane.setMargin(tableBox, new Insets(10, 50, 200, 50));
         main.setBottom(tableBox);
         main.setTop(topBar);
 
@@ -188,7 +195,7 @@ public class kettlelog extends Application {
         base.setCenter(main);
 
         //SHOW SCENE
-        setup.setScene(new Scene(base, 1024, 768));
+        setup.setScene(new Scene(base, 1024, 745));
         setup.show();
 
     }
