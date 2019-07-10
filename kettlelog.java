@@ -168,14 +168,19 @@ public class kettlelog extends Application {
         AnchorPane.setBottomAnchor(filter, spacefromtable);
 
         //KETTLELOG LOGO
-        //Image kettleimage = new Image("kettle.png");
-        //ImageView logo = new ImageView();
-        //logo.setImage(kettleimage);
+        Image kettleimage = new Image("Logo.png");
+        ImageView logo = new ImageView();
+        logo.setFitHeight(100);
+        logo.setFitWidth(200);
+        logo.setImage(kettleimage);
+
+        AnchorPane.setLeftAnchor(logo, 50.0);
+        AnchorPane.setTopAnchor(logo, 10.0);
 
         //TOPBAR GENERAL INFORMATION 
         topBar.setStyle("-fx-background-color: #6495ed;");
         topBar.setPrefSize(100, 150);
-        topBar.getChildren().addAll(addBtn, removeBtn, searchbar, filter);
+        topBar.getChildren().addAll(logo, addBtn, removeBtn, searchbar, filter);
         
 
         //================================================================================
