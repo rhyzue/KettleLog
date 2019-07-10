@@ -26,7 +26,7 @@ public class kettlelog extends Application {
         // INITIALIZATION
         //================================================================================
 
-        double spacefromtable = 12.0;
+        double spacefromtable = 5.0;
         setup.setResizable(false);
         setup.setTitle("KettleLog");
         
@@ -133,20 +133,16 @@ public class kettlelog extends Application {
         //ADD BUTTON
         Button addBtn = new Button();
         addBtn.setText("ADD");
-        addBtn.setOnAction(new EventHandler<ActionEvent>() {
- 
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("KettleLog!");
-            }
-        });
-
-        KettleEventHandler handler = new KettleEventHandler();
-        addBtn.setOnAction(handler);
+        addBtn.setId("addBtn");
 
         //REMOVE BUTTON
         Button removeBtn = new Button();
         removeBtn.setText("REMOVE");
+        removeBtn.setId("removeBtn");
+
+        KettleEventHandler handler = new KettleEventHandler();
+        addBtn.setOnAction(handler);
+        removeBtn.setOnAction(handler);
 
         //POSITIONS OF ADD AND REMOVE
         AnchorPane.setRightAnchor(addBtn, 135.0);
