@@ -1,16 +1,15 @@
 package KettleEventHandler;
-
-import Popups.*;
+import javafx.scene.Scene;
 import javafx.event.ActionEvent;
-import javafx.event.ActionEvent; 
 import javafx.event.EventHandler; 
 import javafx.scene.Node;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
+import javafx.scene.layout.*;
+
 
 
 public class KettleEventHandler implements EventHandler<ActionEvent>{
-
 	//Add item to the table
     public void handle(ActionEvent e) {
     	String itemClicked = ((Control)e.getSource()).getId();
@@ -30,8 +29,15 @@ public class KettleEventHandler implements EventHandler<ActionEvent>{
     //================================================================================
     public void addBtnAction(){
     	System.out.println("Item Added");
-        //Popups addwindow = new Popups();
-        //addwindow.main(null);
+
+        //creating new popup 
+        Stage addw = new Stage();
+        addw.setResizable(false);
+        addw.setTitle("Add a New Issue");
+        BorderPane abase = new BorderPane();
+        addw.setScene(new Scene(abase, 800, 560));
+        addw.show();
+
     }
 
     //================================================================================
@@ -42,8 +48,5 @@ public class KettleEventHandler implements EventHandler<ActionEvent>{
 
     }
         
-        
-        
-
 }
 

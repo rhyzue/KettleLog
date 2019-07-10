@@ -1,3 +1,5 @@
+
+import KettleEventHandler.Popups.*;
 import Columns.*;
 import KettleEventHandler.*;
 import javafx.scene.Scene;
@@ -12,7 +14,6 @@ import javafx.scene.image.ImageView;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.PropertyValueFactory;
-
 
 public class kettlelog extends Application {
     public static void main(String[] args) {
@@ -173,7 +174,7 @@ public class kettlelog extends Application {
         AnchorPane.setBottomAnchor(filter, spacefromtable);
 
         //KETTLELOG LOGO
-        Image kettleimage = new Image("Logo.png");
+        Image kettleimage = new Image("./Misc/Logo.png");
         ImageView logo = new ImageView();
         logo.setFitHeight(100);
         logo.setFitWidth(200);
