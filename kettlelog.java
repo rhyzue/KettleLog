@@ -76,28 +76,33 @@ public class kettlelog extends Application {
         table.setPrefSize(300, 508.0);
 
         //ADD ITEMS TO TABLE
-        TableColumn<Columns, String> column1 = new TableColumn<>("Name");
-            column1.setCellValueFactory(new PropertyValueFactory<>("name"));
-            column1.prefWidthProperty().bind(table.widthProperty().multiply(0.25));
-            column1.setResizable(false);
+        TableColumn<Columns, String> iname = new TableColumn<>("Name");
+            iname.setCellValueFactory(new PropertyValueFactory<>("name"));
+            iname.prefWidthProperty().bind(table.widthProperty().multiply(0.20));
+            iname.setResizable(false);
 
-        TableColumn<Columns, String> column2 = new TableColumn<>("Status");
-            column2.setCellValueFactory(new PropertyValueFactory<>("status"));
-            column2.prefWidthProperty().bind(table.widthProperty().multiply(0.25));
-            column2.setResizable(false);
+        TableColumn<Columns, String> istatus = new TableColumn<>("Status");
+            istatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+            istatus.prefWidthProperty().bind(table.widthProperty().multiply(0.20));
+            istatus.setResizable(false);
 
-        TableColumn<Columns, String> column3 = new TableColumn<>("Quantity");
-            column3.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-            column3.prefWidthProperty().bind(table.widthProperty().multiply(0.25));
-            column3.setResizable(false);
+        TableColumn<Columns, String> iquantity = new TableColumn<>("Quantity");
+            iquantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+            iquantity.prefWidthProperty().bind(table.widthProperty().multiply(0.20));
+            iquantity.setResizable(false);
 
-        TableColumn<Columns, String> column4 = new TableColumn<>("Minimum");
-            column4.setCellValueFactory(new PropertyValueFactory<>("minimum"));
-            column4.prefWidthProperty().bind(table.widthProperty().multiply(0.2477));
-            column4.setResizable(false);
+        TableColumn<Columns, String> imin = new TableColumn<>("Minimum");
+            imin.setCellValueFactory(new PropertyValueFactory<>("minimum"));
+            imin.prefWidthProperty().bind(table.widthProperty().multiply(0.20));
+            imin.setResizable(false);
+
+        TableColumn<Columns, String> options = new TableColumn<>("");
+            options.setCellValueFactory(new PropertyValueFactory<>("icons"));
+            options.prefWidthProperty().bind(table.widthProperty().multiply(0.1977));
+            options.setResizable(false);
 
         //Does not allow the columns of the table to be swapped around.
-        final TableColumn[] columns = {column1, column2, column3, column4};
+        final TableColumn[] columns = {iname, istatus, iquantity, imin, options};
 
         table.getColumns().addListener(new ListChangeListener() {
             public boolean suspended;
@@ -114,11 +119,11 @@ public class kettlelog extends Application {
         });
 
         //Adding the columns to the table.
-        table.getColumns().add(column1);
-        table.getColumns().add(column2);
-        table.getColumns().add(column3);
-        table.getColumns().add(column4);
-
+        table.getColumns().add(options);
+        table.getColumns().add(iname);
+        table.getColumns().add(istatus);
+        table.getColumns().add(iquantity);
+        table.getColumns().add(imin);
         table.getItems().add(new Columns("Gloves", "Good", "17", "5"));
         table.getItems().add(new Columns("Drills", "Low", "2", "10"));
 
@@ -138,7 +143,7 @@ public class kettlelog extends Application {
         //REMOVE BUTTON
         Button removeBtn = new Button();
         removeBtn.setText("REMOVE");
-        removeBtn.setId("removeBtn");
+        removeBtn.setId("removeBtn"); 
 
         KettleEventHandler handler = new KettleEventHandler();
         addBtn.setOnAction(handler);
@@ -198,6 +203,7 @@ public class kettlelog extends Application {
         base.setCenter(main);
 
         //SHOW SCENE
+        //13 inch laptops are 1280 by 800. 
         setup.setScene(new Scene(base, 1024, 745));
         setup.show();
 
