@@ -1,8 +1,5 @@
 import Columns.*;
-<<<<<<< HEAD
-=======
 import KettleEventHandler.*;
->>>>>>> RensBranch
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
@@ -136,7 +133,6 @@ public class kettlelog extends Application {
         //ADD BUTTON
         Button addBtn = new Button();
         addBtn.setText("ADD");
-<<<<<<< HEAD
         addBtn.setOnAction(new EventHandler<ActionEvent>() {
  
             @Override
@@ -144,11 +140,9 @@ public class kettlelog extends Application {
                 System.out.println("KettleLog!");
             }
         });
-=======
 
         KettleEventHandler handler = new KettleEventHandler();
         addBtn.setOnAction(handler);
->>>>>>> RensBranch
 
         //REMOVE BUTTON
         Button removeBtn = new Button();
