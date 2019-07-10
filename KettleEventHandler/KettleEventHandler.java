@@ -1,12 +1,12 @@
 package KettleEventHandler;
 
 import javafx.event.ActionEvent;
-import java.beans.EventHandler;
+import javafx.event.ActionEvent; 
+import javafx.event.EventHandler; 
 
-public class KettleEventHandler implements EventHandler<ActionEvent> {
+public class KettleEventHandler{
 
-    @Override
-    public void handle(ActionEvent event) {
+    public void handle(ActionEvent e) {
         System.out.println("Click");
     }
 
