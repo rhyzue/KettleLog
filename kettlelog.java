@@ -1,25 +1,23 @@
 import Columns.*;
+import javafx.scene.text.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Screen;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.text.*;
-import javafx.scene.paint.Color;
 import javafx.geometry.Insets;
-import javafx.geometry.Rectangle2D;
-import javafx.beans.value.ChangeListener;
-import javafx.event.ActionEvent;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
+import javafx.event.ActionEvent;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.PropertyValueFactory;
-
 
 public class kettlelog extends Application {
     public static void main(String[] args) {
@@ -33,7 +31,12 @@ public class kettlelog extends Application {
         // INITIALIZATION
         //================================================================================
 
-        double spacefromtable = 5.0;
+        final Region opaqueLayer = new Region();
+        opaqueLayer.setStyle("-fx-background-color: #001a34;");
+        opaqueLayer.setOpacity(0.7);
+        opaqueLayer.setVisible(false);
+
+        double spacefromtable = 7.5;
         double w_to_h = 1.4;
         double w = 1024;
         double h = 1024 / w_to_h;
@@ -171,12 +174,16 @@ public class kettlelog extends Application {
                     // NEW POPUP WINDOW FOR ADDING ITEM
                     //========================================================================
 
-                    //Top part of the window which includes a title and a logo.
+                    //Variable initialization
+                    Stage addwindow = new Stage();
                     double addwidth = 600;
-                    double addw_to_h = 0.88235;
+                    double addw_to_h = 0.85;
                     double addheight = addwidth / addw_to_h;
+                    opaqueLayer.setVisible(true);
+
+                    //TOP PART of the window which includes a title and a logo.
                     AnchorPane addtop = new AnchorPane();
-                    addtop.setStyle("-fx-background-color: #1fc9e5;");
+                    addtop.setStyle("-fx-background-color: #800040;");
                     addtop.setPrefSize(60, 80);     
 
                         //ADD NEW ITEM LABEL
@@ -186,15 +193,10 @@ public class kettlelog extends Application {
                         addtext.setFill(Color.WHITE);
                         AnchorPane.setLeftAnchor(addtext, 42.0);
                         AnchorPane.setBottomAnchor(addtext, 10.0);
-                    
-                    addtop.getChildren().addAll(addtext);
 
-                    Stage addwindow = new Stage();
-                    addwindow.setResizable(false);
-                    addwindow.setTitle("Add New Item");
-
+                    //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
                     AnchorPane addbottom = new AnchorPane();
-                    addbottom.setStyle("-fx-background-color: #1fc9e5;");
+                    addbottom.setStyle("-fx-background-color: #800040;");
                     addbottom.setPrefSize(30, 40);   
                         Button cancelbtn = new Button();
                         cancelbtn.setText("Cancel");
@@ -202,26 +204,33 @@ public class kettlelog extends Application {
                         AnchorPane.setRightAnchor(cancelbtn, 7.0);
                         AnchorPane.setBottomAnchor(cancelbtn, 7.0);
 
+                    //Attach components to their respective panes.
+                    addtop.getChildren().addAll(addtext);
                     addbottom.getChildren().addAll(cancelbtn);
 
+                    //CANCEL BUTTON FUNCTIONALITY
                     cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
 
                         @Override
                         public void handle(ActionEvent event) {
                             addwindow.hide();
+                            opaqueLayer.setVisible(false);
                         }
                     }); 
 
+                    //BASE BORDER (CENTER WILL BE THE TEXT FIELDS)
                     BorderPane abase = new BorderPane();
                     abase.setTop(addtop);
                     abase.setBottom(addbottom);
                     addwindow.setScene(new Scene(abase, addwidth, addheight));
 
+                    //Ensures that addwindow is centered relatively to its parent stage (setup).
                     ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
                         addwindow.setX(setup.getX() + setup.getWidth() / 2 - addwidth / 2);
                     };
                     ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
-                            addwindow.setY(setup.getY() + setup.getHeight() / 2 - addheight / 2);   
+                            addwindow.setY((setup.getY() + setup.getHeight() / 2 - addheight / 2) + 10);   
+
                     };
 
                     addwindow.widthProperty().addListener(widthListener);
@@ -232,8 +241,12 @@ public class kettlelog extends Application {
                         addwindow.heightProperty().removeListener(heightListener);
                     });
 
+                    //STAGE INFORMATION 
+                    addwindow.initStyle(StageStyle.UNDECORATED);
                     addwindow.initOwner(setup);
                     addwindow.initModality(Modality.WINDOW_MODAL);
+                    addwindow.setResizable(false);
+                    addwindow.setTitle("Add New Item");
                     addwindow.show();
                 }      
             }
@@ -275,7 +288,7 @@ public class kettlelog extends Application {
         AnchorPane.setTopAnchor(logo, 10.0);
 
         //TOPBAR GENERAL INFORMATION 
-        topBar.setStyle("-fx-background-color: #6495ed;");
+        topBar.setStyle("-fx-background-color: #004080;");
         topBar.setPrefSize(100, 150);
         topBar.getChildren().addAll(logo, addBtn, removeBtn, searchbar, filter);
         
@@ -284,19 +297,22 @@ public class kettlelog extends Application {
         //================================================================================
 
         BorderPane main = new BorderPane();
-        main.setStyle("-fx-background-color: #6495ed;");
-        BorderPane.setMargin(tableBox, new Insets(10, 50, 200, 50));
-        main.setBottom(tableBox);
+        main.setStyle("-fx-background-color: #004080;");
+        BorderPane.setMargin(tableBox, new Insets(10, 50, 0, 50));
+        main.setCenter(tableBox);
         main.setTop(topBar);
 
         BorderPane base = new BorderPane();
         base.setTop(kettlemenu);
         base.setCenter(main);
 
+        StackPane root = new StackPane();
+        root.getChildren().addAll(base, opaqueLayer);
+
         //SHOW SCENE
         //13 inch laptops are 1280 by 800. 
 
-        setup.setScene(new Scene(base, w, h));
+        setup.setScene(new Scene(root, w, h));
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         setup.setX((screenBounds.getWidth() - w) / 2);
         setup.setY((screenBounds.getHeight() - h) / 2);
