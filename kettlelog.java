@@ -9,6 +9,7 @@ import javafx.scene.text.*;
 import javafx.scene.paint.Color;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
@@ -216,15 +217,20 @@ public class kettlelog extends Application {
                     abase.setBottom(addbottom);
                     addwindow.setScene(new Scene(abase, addwidth, addheight));
 
-                    /* double maincenterx = setup.getX() + setup.getWidth() / 2;
-                    double maincentery = setup.getY() + setup.getHeight() / 2;
+                    ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
+                        addwindow.setX(setup.getX() + setup.getWidth() / 2 - addwidth / 2);
+                    };
+                    ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
+                            addwindow.setY(setup.getY() + setup.getHeight() / 2 - addheight / 2);   
+                    };
 
-                    addwindow.setOnShowing(ev -> addwindow.hide());
+                    addwindow.widthProperty().addListener(widthListener);
+                    addwindow.heightProperty().addListener(heightListener);
 
-                    addwindow.setOnShown(ev -> {
-                        addwindow.setX(maincenterx - addwindow.getWidth() / 2);
-                        addwindow.setY(maincentery - addwindow.getHeight() / 2);
-                    }); */
+                    addwindow.setOnShown(shown -> {
+                        addwindow.widthProperty().removeListener(widthListener);
+                        addwindow.heightProperty().removeListener(heightListener);
+                    });
 
                     addwindow.initOwner(setup);
                     addwindow.initModality(Modality.WINDOW_MODAL);
@@ -245,7 +251,7 @@ public class kettlelog extends Application {
         TextField searchbar = new TextField();
             searchbar.setPrefWidth(w / 2.56);
             searchbar.setPromptText("Search");
-        AnchorPane.setLeftAnchor(searchbar, 305.0);
+        AnchorPane.setLeftAnchor(searchbar, 305.0); 
         AnchorPane.setBottomAnchor(searchbar, spacefromtable);
         
         //FILTER COMBOBOX
