@@ -1,19 +1,22 @@
-
-import KettleEventHandler.Popups.*;
 import Columns.*;
-import KettleEventHandler.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.text.*;
+import javafx.scene.paint.Color;
 import javafx.geometry.Insets;
 import javafx.event.ActionEvent;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 import javafx.scene.image.Image;
 import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.PropertyValueFactory;
+
 
 public class kettlelog extends Application {
     public static void main(String[] args) {
@@ -119,7 +122,7 @@ public class kettlelog extends Application {
             }
         });
 
-        //Adding the columns to the table.
+        //ADD COLUMNS TO TABLE
         table.getColumns().add(options);
         table.getColumns().add(iname);
         table.getColumns().add(istatus);
@@ -146,10 +149,56 @@ public class kettlelog extends Application {
         removeBtn.setText("REMOVE");
         removeBtn.setId("removeBtn"); 
 
-        KettleEventHandler handler = new KettleEventHandler();
-        addBtn.setOnAction(handler);
-        removeBtn.setOnAction(handler);
 
+        //================================================================================
+        // ADD AND REMOVE BUTTON FUNCTIONALITY
+        //================================================================================
+
+        EventHandler<ActionEvent> eventHandler = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+
+                String itemClicked = ((Control)e.getSource()).getId();
+            
+                if(itemClicked=="addBtn"){
+                    
+                    //========================================================================
+                    // NEW POPUP WINDOW FOR ADDING ITEM
+                    //========================================================================
+
+                    //Top part of the window which includes a title and a logo.
+                    AnchorPane addtop = new AnchorPane();
+                    addtop.setStyle("-fx-background-color: #1f66e5;");
+                    addtop.setPrefSize(60, 80);     
+
+                        //ADD NEW ITEM LABEL
+                        Text addtext = new Text();
+                        addtext.setText("frank");
+                        addtext.setFont(new Font(18));
+                        addtext.setFill(Color.WHITE);
+                        AnchorPane.setLeftAnchor(addtext, 42.0);
+                        AnchorPane.setBottomAnchor(addtext, 10.0);
+
+                    addtop.getChildren().addAll(addtext);
+
+                    Stage addwindow = new Stage();
+                    addwindow.setResizable(false);
+                    addwindow.setTitle("Add a New Item to Your Table Frank");
+
+                    BorderPane abase = new BorderPane();
+                    abase.setTop(addtop);
+                    addwindow.setScene(new Scene(abase, 800, 400));
+
+                    addwindow.initOwner(setup);
+                    addwindow.initModality(Modality.WINDOW_MODAL);
+
+                    addwindow.show();
+                }      
+            }
+        };
+
+        addBtn.setOnAction(eventHandler);
+        
         //POSITIONS OF ADD AND REMOVE
         AnchorPane.setRightAnchor(addBtn, 135.0);
         AnchorPane.setBottomAnchor(addBtn, spacefromtable);
@@ -209,5 +258,6 @@ public class kettlelog extends Application {
         setup.show();
 
     }
-
 }
+
+
