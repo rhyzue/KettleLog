@@ -1,12 +1,14 @@
 import Columns.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.Screen;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.scene.paint.Color;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.event.ActionEvent;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
@@ -31,6 +33,9 @@ public class kettlelog extends Application {
         //================================================================================
 
         double spacefromtable = 5.0;
+        double w_to_h = 1.4;
+        double w = 1024;
+        double h = 1024 / w_to_h;
         setup.setResizable(false);
         setup.setTitle("KettleLog");
         
@@ -149,7 +154,6 @@ public class kettlelog extends Application {
         removeBtn.setText("REMOVE");
         removeBtn.setId("removeBtn"); 
 
-
         //================================================================================
         // ADD AND REMOVE BUTTON FUNCTIONALITY
         //================================================================================
@@ -167,31 +171,63 @@ public class kettlelog extends Application {
                     //========================================================================
 
                     //Top part of the window which includes a title and a logo.
+                    double addwidth = 600;
+                    double addw_to_h = 0.88235;
+                    double addheight = addwidth / addw_to_h;
                     AnchorPane addtop = new AnchorPane();
-                    addtop.setStyle("-fx-background-color: #1f66e5;");
+                    addtop.setStyle("-fx-background-color: #1fc9e5;");
                     addtop.setPrefSize(60, 80);     
 
                         //ADD NEW ITEM LABEL
                         Text addtext = new Text();
-                        addtext.setText("frank");
+                        addtext.setText("Add New Item");
                         addtext.setFont(new Font(18));
                         addtext.setFill(Color.WHITE);
                         AnchorPane.setLeftAnchor(addtext, 42.0);
                         AnchorPane.setBottomAnchor(addtext, 10.0);
-
+                    
                     addtop.getChildren().addAll(addtext);
 
                     Stage addwindow = new Stage();
                     addwindow.setResizable(false);
-                    addwindow.setTitle("Add a New Item to Your Table Frank");
+                    addwindow.setTitle("Add New Item");
+
+                    AnchorPane addbottom = new AnchorPane();
+                    addbottom.setStyle("-fx-background-color: #1fc9e5;");
+                    addbottom.setPrefSize(30, 40);   
+                        Button cancelbtn = new Button();
+                        cancelbtn.setText("Cancel");
+                        cancelbtn.setId("cancel");
+                        AnchorPane.setRightAnchor(cancelbtn, 7.0);
+                        AnchorPane.setBottomAnchor(cancelbtn, 7.0);
+
+                    addbottom.getChildren().addAll(cancelbtn);
+
+                    cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
+
+                        @Override
+                        public void handle(ActionEvent event) {
+                            addwindow.hide();
+                        }
+                    }); 
 
                     BorderPane abase = new BorderPane();
                     abase.setTop(addtop);
-                    addwindow.setScene(new Scene(abase, 800, 400));
+                    abase.setBottom(addbottom);
+                    addwindow.setScene(new Scene(abase, addwidth, addheight));
+
+                    /* double maincenterx = setup.getX() + setup.getWidth() / 2;
+                    double maincentery = setup.getY() + setup.getHeight() / 2;
+
+                    addwindow.setOnShowing(ev -> addwindow.hide());
+
+                    addwindow.setOnShown(ev -> {
+                        addwindow.setX(maincenterx - addwindow.getWidth() / 2);
+                        addwindow.setY(maincentery - addwindow.getHeight() / 2);
+                    }); */
 
                     addwindow.initOwner(setup);
                     addwindow.initModality(Modality.WINDOW_MODAL);
-
                     addwindow.show();
                 }      
             }
@@ -207,7 +243,7 @@ public class kettlelog extends Application {
        
         //SEARCH BAR
         TextField searchbar = new TextField();
-            searchbar.setPrefWidth(400.0);
+            searchbar.setPrefWidth(w / 2.56);
             searchbar.setPromptText("Search");
         AnchorPane.setLeftAnchor(searchbar, 305.0);
         AnchorPane.setBottomAnchor(searchbar, spacefromtable);
@@ -237,7 +273,6 @@ public class kettlelog extends Application {
         topBar.setPrefSize(100, 150);
         topBar.getChildren().addAll(logo, addBtn, removeBtn, searchbar, filter);
         
-
         //================================================================================
         // FINALIZATION
         //================================================================================
@@ -254,10 +289,12 @@ public class kettlelog extends Application {
 
         //SHOW SCENE
         //13 inch laptops are 1280 by 800. 
-        setup.setScene(new Scene(base, 1024, 745));
+
+        setup.setScene(new Scene(base, w, h));
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        setup.setX((screenBounds.getWidth() - w) / 2);
+        setup.setY((screenBounds.getHeight() - h) / 2);
         setup.show();
 
     }
 }
-
-
