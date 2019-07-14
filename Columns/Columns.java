@@ -48,4 +48,5 @@ public class Columns {
         public void setMinimum(String minimum) {
             this.minimum = minimum;
         }
+
 }

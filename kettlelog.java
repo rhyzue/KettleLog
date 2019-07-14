@@ -18,6 +18,7 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.*;
 
 public class kettlelog extends Application {
     public static void main(String[] args) {
@@ -79,6 +80,16 @@ public class kettlelog extends Application {
         info.getItems().addAll(about, tutorial, credits);
 
         kettlemenu.getMenus().addAll(file, edit, view, info);
+        Button btn = new Button("1");
+        Button btn2 = new Button("2");
+        Button btn3 = new Button("3");
+        Button btn4 = new Button("4");
+
+        Button[] btns = new Button[]{btn, btn2, btn3, btn4};
+
+
+        HBox hbox = new HBox(4);
+        hbox.getChildren().addAll(btn, btn2, btn3, btn4);       
 
         //================================================================================
         // TABLE
@@ -87,6 +98,24 @@ public class kettlelog extends Application {
         TableView<Columns> table = new TableView<Columns>();
         table.setFixedCellSize(40.0);
         table.setPrefSize(300, 508.0);
+
+        Callback<TableColumn<Columns, String>, TableCell<Columns, String>> cellFactory = new Callback<TableColumn<Columns, String>, TableCell<Columns, String>>() {
+            @Override
+            public TableCell call(final TableColumn<Columns, String> param) {
+                final TableCell<Columns, String> cell = new TableCell<Columns, String>() {
+                    int b = 0;
+
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setGraphic(hbox);
+                        setText(null);
+                        
+                    }
+                };
+                return cell;
+            }
+        };
 
         //All Column items
         String[] titles = {"", "Name","Status","Quantity","Minimum"};
@@ -99,8 +128,9 @@ public class kettlelog extends Application {
             column.prefWidthProperty().bind(table.widthProperty().multiply(0.1977));
             column.setResizable(false);
             columns[i] = column;
-            table.getColumns().<Columns, String>add(columns[i]);
+            columns[0].setCellFactory(cellFactory);
         }
+        table.getColumns().<Columns, String>addAll(columns);
 
         
         table.getColumns().addListener(new ListChangeListener<TableColumn>() {
@@ -116,13 +146,7 @@ public class kettlelog extends Application {
                 }
             }
         });
-/*
-        //ADD COLUMNS TO TABLE
-        table.getColumns().add(options);
-        table.getColumns().add(iname);
-        table.getColumns().add(istatus);
-        table.getColumns().add(iquantity);
-        table.getColumns().add(imin);*/
+
         table.getItems().add(new Columns("Gloves", "Good", "17", "5"));
         table.getItems().add(new Columns("Drills", "Low", "2", "10"));
 
