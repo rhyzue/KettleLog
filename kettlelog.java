@@ -88,36 +88,22 @@ public class kettlelog extends Application {
         table.setFixedCellSize(40.0);
         table.setPrefSize(300, 508.0);
 
-        //ADD ITEMS TO TABLE
-        TableColumn<Columns, String> iname = new TableColumn<>("Name");
-            iname.setCellValueFactory(new PropertyValueFactory<>("name"));
-            iname.prefWidthProperty().bind(table.widthProperty().multiply(0.20));
-            iname.setResizable(false);
+        //All Column items
+        String[] titles = {"", "Name","Status","Quantity","Minimum"};
+        @SuppressWarnings("unchecked")
+        TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
+        for(int i=0; i<titles.length; i++)
+        {
+            TableColumn<Columns, String> column = new TableColumn<Columns, String>(titles[i]);
+            column.setCellValueFactory(new PropertyValueFactory<>(titles[i].toLowerCase()));
+            column.prefWidthProperty().bind(table.widthProperty().multiply(0.1977));
+            column.setResizable(false);
+            columns[i] = column;
+            table.getColumns().<Columns, String>add(columns[i]);
+        }
 
-        TableColumn<Columns, String> istatus = new TableColumn<>("Status");
-            istatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-            istatus.prefWidthProperty().bind(table.widthProperty().multiply(0.20));
-            istatus.setResizable(false);
-
-        TableColumn<Columns, String> iquantity = new TableColumn<>("Quantity");
-            iquantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-            iquantity.prefWidthProperty().bind(table.widthProperty().multiply(0.20));
-            iquantity.setResizable(false);
-
-        TableColumn<Columns, String> imin = new TableColumn<>("Minimum");
-            imin.setCellValueFactory(new PropertyValueFactory<>("minimum"));
-            imin.prefWidthProperty().bind(table.widthProperty().multiply(0.20));
-            imin.setResizable(false);
-
-        TableColumn<Columns, String> options = new TableColumn<>("");
-            options.setCellValueFactory(new PropertyValueFactory<>("icons"));
-            options.prefWidthProperty().bind(table.widthProperty().multiply(0.1977));
-            options.setResizable(false);
-
-        //Does not allow the columns of the table to be swapped around.
-        final TableColumn[] columns = {iname, istatus, iquantity, imin, options};
-
-        table.getColumns().addListener(new ListChangeListener() {
+        
+        table.getColumns().addListener(new ListChangeListener<TableColumn>() {
             public boolean suspended;
 
             @Override
@@ -125,18 +111,18 @@ public class kettlelog extends Application {
                 change.next();
                 if (change.wasReplaced() && !suspended) {
                     this.suspended = true;
-                    table.getColumns().setAll(columns);
+                    //table.getColumns().setAll(iname, istatus, iquantity, imin, options);
                     this.suspended = false;
                 }
             }
         });
-
+/*
         //ADD COLUMNS TO TABLE
         table.getColumns().add(options);
         table.getColumns().add(iname);
         table.getColumns().add(istatus);
         table.getColumns().add(iquantity);
-        table.getColumns().add(imin);
+        table.getColumns().add(imin);*/
         table.getItems().add(new Columns("Gloves", "Good", "17", "5"));
         table.getItems().add(new Columns("Drills", "Low", "2", "10"));
 
