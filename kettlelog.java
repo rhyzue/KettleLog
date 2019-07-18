@@ -1,9 +1,11 @@
 import Columns.*;
+import javafx.util.*;
 import javafx.scene.text.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Screen;
 import javafx.scene.layout.*;
+import javafx.geometry.Bounds;
 import javafx.scene.control.*;
 import javafx.geometry.Insets;
 import javafx.stage.Modality;
@@ -18,15 +20,26 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.*;
 
 public class Kettlelog extends Application {
-    //GLOBAL VARIABLES
+    //================================================================================
+    // GLOBAL VARIABLES
+    //================================================================================
     Stage setup = new Stage();
+    BorderPane base = new BorderPane();
+
+    double w_to_h = 1.4;
+    double w = 1024;
+    double h = 1024 / w_to_h;
+    double spacefromtable = 7.5;
+
+    double screenX = 0.0;
+    double screenY = 0.0;
+
+    @SuppressWarnings("unchecked")
     Region opaqueLayer = new Region();
     TableView<Columns> table = new TableView<Columns>();
     String[] titles = {"", "Name","Status","Quantity","Minimum"};
-    @SuppressWarnings("unchecked")
     TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
 
     public static void main(String[] args) {
@@ -39,15 +52,10 @@ public class Kettlelog extends Application {
         //================================================================================
         // INITIALIZATION
         //================================================================================
-
         opaqueLayer.setStyle("-fx-background-color: #001a34;");
         opaqueLayer.setOpacity(0.7);
         opaqueLayer.setVisible(false);
 
-        double spacefromtable = 7.5;
-        double w_to_h = 1.4;
-        double w = 1024;
-        double h = 1024 / w_to_h;
         setup.setResizable(false);
         setup.setTitle("KettleLog");
         
@@ -85,6 +93,7 @@ public class Kettlelog extends Application {
         edit.getItems().addAll(add, remove);
         view.getItems().addAll(fs, mi);
         info.getItems().addAll(about, tutorial, credits);
+        kettlemenu.getMenus().addAll(file, edit, view, info);
  
 
         //================================================================================
@@ -187,7 +196,6 @@ public class Kettlelog extends Application {
         main.setCenter(tableBox);
         main.setTop(topBar);
 
-        BorderPane base = new BorderPane();
         base.setTop(kettlemenu);
         base.setCenter(main);
 
@@ -199,25 +207,33 @@ public class Kettlelog extends Application {
 
         setup.setScene(new Scene(root, w, h));
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        setup.setX((screenBounds.getWidth() - w) / 2);
-        setup.setY((screenBounds.getHeight() - h) / 2);
+
+        screenX = (screenBounds.getWidth() - w) / 2;
+        screenY = (screenBounds.getHeight() - h) / 2;
+
+        setup.setX(screenX); 
+        setup.setY(screenY);
         setup.show();
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    //--------METHODS HERE--------------------------------------------------------------------
-    ///////////////////////////////////////////////////////////////////////////////////////////
-
+    //================================================================================
+    // METHODS
+    //================================================================================
 
     //NEW WINDOW FOR ADD ITEMS
     public void addItemPopup(){
+
+        Bounds sb = base.localToScreen(base.getBoundsInLocal());
+
         //Variable initialization
         Stage addwindow = new Stage();
+        opaqueLayer.setVisible(true);
         double addwidth = 600;
         double addw_to_h = 0.85;
         double addheight = addwidth / addw_to_h;
-        opaqueLayer.setVisible(true);
+        screenX = (sb.getMinX() + w / 2 - addwidth / 2); 
+        screenY = (sb.getMinY() + h / 2 - addheight / 2);
 
         //TOP PART of the window which includes a title and a logo.
         AnchorPane addtop = new AnchorPane();
@@ -245,7 +261,8 @@ public class Kettlelog extends Application {
         //Attach components to their respective panes.
         addtop.getChildren().addAll(addtext);
         addbottom.getChildren().addAll(cancelbtn);
-        
+
+        //CANCEL BUTTON FUNCTIONALITY
         cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
             public void handle(ActionEvent event) {
@@ -262,10 +279,10 @@ public class Kettlelog extends Application {
 
         //Ensures that addwindow is centered relatively to its parent stage (setup).
         ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
-            addwindow.setX(setup.getX() + setup.getWidth() / 2 - addwidth / 2);
+            addwindow.setX(screenX);
         };
         ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
-            addwindow.setY((setup.getY() + setup.getHeight() / 2 - addheight / 2) + 10);   
+            addwindow.setY(screenY);
         };
 
         addwindow.widthProperty().addListener(widthListener);
@@ -286,9 +303,9 @@ public class Kettlelog extends Application {
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    //--------CLASSES HERE--------------------------------------------------------------------
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    //================================================================================
+    // CLASSES
+    //================================================================================
 
     public class CellGenerator implements Callback<TableColumn<Columns, String>, TableCell<Columns, String>>{
         @Override
@@ -299,6 +316,7 @@ public class Kettlelog extends Application {
                     Button checkBtn = new Button("c");
                     Button triangleBtn = new Button("t");
                     Button penBtn = new Button("p"); 
+                    Button delBtn = new Button("d");
                     Handler eventHandler = new Handler();
 
                     @Override
@@ -317,9 +335,11 @@ public class Kettlelog extends Application {
                         penBtn.setId("penBtn");
                         penBtn.setOnAction(eventHandler);
 
+                        delBtn.setId("delBtn");
+                        delBtn.setOnAction(eventHandler);
 
                         HBox iconBox = new HBox(10);
-                        iconBox.getChildren().addAll(starBtn, checkBtn, triangleBtn, penBtn);
+                        iconBox.getChildren().addAll(starBtn, checkBtn, triangleBtn, penBtn, delBtn);
                         setGraphic(iconBox);
                         setText(null);
                         
@@ -364,6 +384,9 @@ public class Kettlelog extends Application {
                     break;
                 case "penBtn":
                     System.out.println("Pen");
+                    break;
+                case "delBtn":
+                    System.out.println("Delete");
                     break;
                 default:
                     System.out.println("Otherstuff");
