@@ -22,4 +22,3 @@ Welcome to KettleLog, an easy-to-use inventory manager written in Java, using Ja
 <br>• Triangle (when expanded, reveals more information and any personal notes the user made about that item)
 <br>• Pencil (allows the user to edit information about the item)
 <br>• Trash (Remove item)
-
