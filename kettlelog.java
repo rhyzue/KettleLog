@@ -221,13 +221,22 @@ public class Kettlelog extends Application {
     // METHODS
     //================================================================================
 
-    //NEW WINDOW FOR ADD ITEMS
-    public void addItemPopup(){
+    public void addItemPopup(int popuptype){
+        //0 --> ADD WINDOW
+        //1 --> EDIT WINDOW
+        //COLOURS
+        String tbcolour = "#006733;";
+        String midcolour = "#d5f0e2;";
+        String topbottom = String.format("-fx-background-color: %s", tbcolour);
+        String middle = String.format("-fx-background-color: %s", midcolour);
 
         Bounds sb = base.localToScreen(base.getBoundsInLocal());
 
         //Variable initialization
         Stage addwindow = new Stage();
+        AnchorPane addbottom = new AnchorPane();
+        Button cancelbtn = new Button();
+
         opaqueLayer.setVisible(true);
         double addwidth = 600;
         double addw_to_h = 0.85;
@@ -237,26 +246,21 @@ public class Kettlelog extends Application {
 
         //TOP PART of the window which includes a title and a logo.
         AnchorPane addtop = new AnchorPane();
-        addtop.setStyle("-fx-background-color: #800040;");
-        addtop.setPrefSize(60, 80);     
+        addtop.setStyle(topbottom);
+        addtop.setPrefSize(60, 80); //CHANGE TO VARIABLES LATER
 
-        //ADD NEW ITEM LABEL
+        //ADD TITLE
         Text addtext = new Text();
-        addtext.setText("Add New Item");
+        if (popuptype == 0) {
+            addtext.setText("Add New Item");
+        } else {
+            addtext.setText("Edit Item");
+        }
+
         addtext.setFont(new Font(18));
         addtext.setFill(Color.WHITE);
         AnchorPane.setLeftAnchor(addtext, 42.0);
         AnchorPane.setBottomAnchor(addtext, 10.0);
-
-        //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
-        AnchorPane addbottom = new AnchorPane();
-        addbottom.setStyle("-fx-background-color: #800040;");
-        addbottom.setPrefSize(30, 40);   
-        Button cancelbtn = new Button();
-        cancelbtn.setText("Cancel");
-        cancelbtn.setId("cancelBtn");
-        AnchorPane.setRightAnchor(cancelbtn, 7.0);
-        AnchorPane.setBottomAnchor(cancelbtn, 7.0);
 
         //Attach components to their respective panes.
         addtop.getChildren().addAll(addtext);
@@ -273,9 +277,94 @@ public class Kettlelog extends Application {
 
         //BASE BORDER (CENTER WILL BE THE TEXT FIELDS)
         BorderPane abase = new BorderPane();
+        VBox wcenter = new VBox();
         abase.setTop(addtop);
         abase.setBottom(addbottom);
+
+        //ITEM NAME ~ REQUIRED FIELD
+        AnchorPane ianchor = new AnchorPane();
+        ianchor.setPrefSize(addwidth, 80);
+
+        Text itemname = new Text("Item Name:");
+        Font f = new Font(15);
+            itemname.setFont(f);
+            itemname.setFill(Color.BLACK);
+        AnchorPane.setRightAnchor(itemname, 460.0);
+        AnchorPane.setBottomAnchor(itemname, 25.0);
+
+        TextField itemtext = new TextField();
+            itemtext.setPrefWidth(200);
+        AnchorPane.setLeftAnchor(itemtext, 150.0); 
+        AnchorPane.setBottomAnchor(itemtext, 20.0);
+ 
+        ianchor.setStyle(middle);
+        ianchor.getChildren().addAll(itemname, itemtext);
+        HBox iBox = new HBox(ianchor);
+
+
+        //QUANTITY ~ REQUIRED FIELD
+        AnchorPane qanchor = new AnchorPane();
+        qanchor.setPrefSize(addwidth, 80);
+
+        Text quantity = new Text("Quantity:");
+            quantity.setFont(f);
+            quantity.setFill(Color.BLACK);
+        AnchorPane.setRightAnchor(quantity, 460.0);
+        AnchorPane.setBottomAnchor(quantity, 45.0);
+
+        TextField qtext = new TextField();
+            qtext.setPrefWidth(50);
+        AnchorPane.setLeftAnchor(qtext, 150.0); 
+        AnchorPane.setBottomAnchor(qtext, 40.0);
+
+        Text qdesc = new Text("How much of this item do you currently have on hand?");
+            qdesc.setFont(new Font(12));
+            qdesc.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(qdesc, 150.0);
+        AnchorPane.setBottomAnchor(qdesc, 15.0);
+ 
+        qanchor.setStyle(middle);
+        qanchor.getChildren().addAll(quantity, qtext, qdesc);
+        HBox qBox = new HBox(qanchor);
+
+
+        //MINIMUM ~ REQUIRED FIELD
+        AnchorPane manchor = new AnchorPane();
+        manchor.setPrefSize(addwidth, 80);
+
+        Text minimum = new Text("Minimum:");
+            minimum.setFont(f);
+            minimum.setFill(Color.BLACK);
+        AnchorPane.setRightAnchor(minimum, 460.0);
+        AnchorPane.setBottomAnchor(minimum, 45.0);
+
+        TextField mtext = new TextField();
+            mtext.setPrefWidth(50);
+        AnchorPane.setLeftAnchor(mtext, 150.0); 
+        AnchorPane.setBottomAnchor(mtext, 40.0);
+
+        Text mdesc = new Text("What is the minimum number of this item you want in your office?");
+            mdesc.setFont(new Font(12));
+            mdesc.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(mdesc, 150.0);
+        AnchorPane.setBottomAnchor(mdesc, 15.0);
+ 
+        manchor.setStyle(middle);
+        manchor.getChildren().addAll(minimum, mtext, mdesc);
+        HBox mBox = new HBox(manchor);
+
+        wcenter.getChildren().addAll(iBox, qBox, mBox);
+        abase.setCenter(wcenter);
         addwindow.setScene(new Scene(abase, addwidth, addheight));
+
+
+        //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
+        addbottom.setStyle(topbottom);
+        addbottom.setPrefSize(30, 40);   
+        cancelbtn.setText("Cancel");
+        cancelbtn.setId("cancelBtn");
+        AnchorPane.setRightAnchor(cancelbtn, 7.0);
+        AnchorPane.setBottomAnchor(cancelbtn, 7.0);
 
         //Ensures that addwindow is centered relatively to its parent stage (setup).
         ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
@@ -371,7 +460,7 @@ public class Kettlelog extends Application {
 
             switch(itemClicked){
                 case "addBtn":
-                    addItemPopup(); 
+                    addItemPopup(0); 
                     break;
                 case "starBtn":
                     System.out.println("Star");
@@ -384,6 +473,7 @@ public class Kettlelog extends Application {
                     break;
                 case "penBtn":
                     System.out.println("Pen");
+                    addItemPopup(1);
                     break;
                 case "delBtn":
                     System.out.println("Delete");
