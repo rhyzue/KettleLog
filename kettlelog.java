@@ -281,6 +281,11 @@ public class Kettlelog extends Application {
         abase.setTop(addtop);
         abase.setBottom(addbottom);
 
+
+        //================================================================================
+        // WINDOW CONTENTS (LABELS & TEXT BOXES)
+        //================================================================================
+
         //ITEM NAME ~ REQUIRED FIELD
         AnchorPane ianchor = new AnchorPane();
         ianchor.setPrefSize(addwidth, 80);
@@ -353,7 +358,34 @@ public class Kettlelog extends Application {
         manchor.getChildren().addAll(minimum, mtext, mdesc);
         HBox mBox = new HBox(manchor);
 
-        wcenter.getChildren().addAll(iBox, qBox, mBox);
+        //SHIPPING ~ REQUIRED FIELD
+        AnchorPane sanchor = new AnchorPane();
+        sanchor.setPrefSize(addwidth, 80);
+
+        Text shipping = new Text("Shipping Time:");
+            shipping.setFont(f);
+            shipping.setFill(Color.BLACK);
+        AnchorPane.setRightAnchor(shipping, 460.0);
+        AnchorPane.setBottomAnchor(shipping, 45.0);
+
+        TextField stext = new TextField();
+            stext.setPrefWidth(50);
+        AnchorPane.setLeftAnchor(stext, 150.0); 
+        AnchorPane.setBottomAnchor(stext, 40.0);
+
+        Text sdesc = new Text("An estimate of how long the item would take to ship to your location.");
+            sdesc.setFont(new Font(12));
+            sdesc.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(sdesc, 150.0);
+        AnchorPane.setBottomAnchor(sdesc, 15.0);
+ 
+        sanchor.setStyle(middle);
+        sanchor.getChildren().addAll(shipping, stext, sdesc);
+        HBox sBox = new HBox(sanchor);
+
+
+        //ADDING THE HBOXES TO A VBOX
+        wcenter.getChildren().addAll(iBox, qBox, mBox, sBox);
         abase.setCenter(wcenter);
         addwindow.setScene(new Scene(abase, addwidth, addheight));
 
