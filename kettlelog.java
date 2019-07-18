@@ -20,7 +20,12 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.*;
 
-public class kettlelog extends Application {
+public class Kettlelog extends Application {
+    //GLOBAL VARIABLES
+    Stage setup = new Stage();
+    Region opaqueLayer = new Region();
+
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -32,7 +37,6 @@ public class kettlelog extends Application {
         // INITIALIZATION
         //================================================================================
 
-        final Region opaqueLayer = new Region();
         opaqueLayer.setStyle("-fx-background-color: #001a34;");
         opaqueLayer.setOpacity(0.7);
         opaqueLayer.setVisible(false);
@@ -88,35 +92,7 @@ public class kettlelog extends Application {
         table.setFixedCellSize(40.0);
         table.setPrefSize(300, 508.0);
 
-        Callback<TableColumn<Columns, String>, TableCell<Columns, String>> cellFactory = new Callback<TableColumn<Columns, String>, TableCell<Columns, String>>() {
-            @Override
-            public TableCell call(final TableColumn<Columns, String> param) {
-                final TableCell<Columns, String> cell = new TableCell<Columns, String>() {
-                    int b = 0;
-                    Button starBtn = new Button("1");
-                    Button checkBtn = new Button("2");
-                    Button triangleBtn = new Button("3");
-                    Button penBtn = new Button("4"); 
-
-                    @Override
-                    public void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-
-                        //starBtn.setId("starBtn");
-                        //starBtn.setOnAction(eventHandler);
-
-
-
-                        HBox iconBox = new HBox(10);
-                        iconBox.getChildren().addAll(starBtn, checkBtn, triangleBtn, penBtn);
-                        setGraphic(iconBox);
-                        setText(null);
-                        
-                    }
-                };
-                return cell;
-            }
-        };
+        CellGenerator cellFactory = new CellGenerator();
 
         //All Column items
         String[] titles = {"", "Name","Status","Quantity","Minimum"};
@@ -172,96 +148,8 @@ public class kettlelog extends Application {
         //================================================================================
         // ADD AND REMOVE BUTTON FUNCTIONALITY
         //================================================================================
-
-        EventHandler<ActionEvent> eventHandler = new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-
-                String itemClicked = ((Control)e.getSource()).getId();
-            
-                if(itemClicked=="addBtn"){
-                    
-                    //========================================================================
-                    // NEW POPUP WINDOW FOR ADDING ITEM
-                    //========================================================================
-
-                    //Variable initialization
-                    Stage addwindow = new Stage();
-                    double addwidth = 600;
-                    double addw_to_h = 0.85;
-                    double addheight = addwidth / addw_to_h;
-                    opaqueLayer.setVisible(true);
-
-                    //TOP PART of the window which includes a title and a logo.
-                    AnchorPane addtop = new AnchorPane();
-                    addtop.setStyle("-fx-background-color: #800040;");
-                    addtop.setPrefSize(60, 80);     
-
-                        //ADD NEW ITEM LABEL
-                        Text addtext = new Text();
-                        addtext.setText("Add New Item");
-                        addtext.setFont(new Font(18));
-                        addtext.setFill(Color.WHITE);
-                        AnchorPane.setLeftAnchor(addtext, 42.0);
-                        AnchorPane.setBottomAnchor(addtext, 10.0);
-
-                    //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
-                    AnchorPane addbottom = new AnchorPane();
-                    addbottom.setStyle("-fx-background-color: #800040;");
-                    addbottom.setPrefSize(30, 40);   
-                        Button cancelbtn = new Button();
-                        cancelbtn.setText("Cancel");
-                        cancelbtn.setId("cancel");
-                        AnchorPane.setRightAnchor(cancelbtn, 7.0);
-                        AnchorPane.setBottomAnchor(cancelbtn, 7.0);
-
-                    //Attach components to their respective panes.
-                    addtop.getChildren().addAll(addtext);
-                    addbottom.getChildren().addAll(cancelbtn);
-
-                    //CANCEL BUTTON FUNCTIONALITY
-                    cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
-
-                        @Override
-                        public void handle(ActionEvent event) {
-                            addwindow.hide();
-                            opaqueLayer.setVisible(false);
-                        }
-                    }); 
-
-                    //BASE BORDER (CENTER WILL BE THE TEXT FIELDS)
-                    BorderPane abase = new BorderPane();
-                    abase.setTop(addtop);
-                    abase.setBottom(addbottom);
-                    addwindow.setScene(new Scene(abase, addwidth, addheight));
-
-                    //Ensures that addwindow is centered relatively to its parent stage (setup).
-                    ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
-                        addwindow.setX(setup.getX() + setup.getWidth() / 2 - addwidth / 2);
-                    };
-                    ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
-                            addwindow.setY((setup.getY() + setup.getHeight() / 2 - addheight / 2) + 10);   
-
-                    };
-
-                    addwindow.widthProperty().addListener(widthListener);
-                    addwindow.heightProperty().addListener(heightListener);
-
-                    addwindow.setOnShown(shown -> {
-                        addwindow.widthProperty().removeListener(widthListener);
-                        addwindow.heightProperty().removeListener(heightListener);
-                    });
-
-                    //STAGE INFORMATION 
-                    addwindow.initStyle(StageStyle.UNDECORATED);
-                    addwindow.initOwner(setup);
-                    addwindow.initModality(Modality.WINDOW_MODAL);
-                    addwindow.setResizable(false);
-                    addwindow.setTitle("Add New Item");
-                    addwindow.show();
-                }      
-            }
-        };
+        Handler eventHandler = new Handler();
+        
 
         addBtn.setOnAction(eventHandler);
         
@@ -330,4 +218,162 @@ public class kettlelog extends Application {
         setup.show();
 
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    //--------METHODS HERE--------------------------------------------------------------------
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+    //NEW WINDOW FOR ADD ITEMS
+    public void addItemPopup(){
+        //Variable initialization
+        Stage addwindow = new Stage();
+        double addwidth = 600;
+        double addw_to_h = 0.85;
+        double addheight = addwidth / addw_to_h;
+        opaqueLayer.setVisible(true);
+
+        //TOP PART of the window which includes a title and a logo.
+        AnchorPane addtop = new AnchorPane();
+        addtop.setStyle("-fx-background-color: #800040;");
+        addtop.setPrefSize(60, 80);     
+
+            //ADD NEW ITEM LABEL
+            Text addtext = new Text();
+            addtext.setText("Add New Item");
+            addtext.setFont(new Font(18));
+            addtext.setFill(Color.WHITE);
+            AnchorPane.setLeftAnchor(addtext, 42.0);
+            AnchorPane.setBottomAnchor(addtext, 10.0);
+
+        //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
+        AnchorPane addbottom = new AnchorPane();
+        addbottom.setStyle("-fx-background-color: #800040;");
+        addbottom.setPrefSize(30, 40);   
+            Button cancelbtn = new Button();
+            cancelbtn.setText("Cancel");
+            cancelbtn.setId("cancel");
+            AnchorPane.setRightAnchor(cancelbtn, 7.0);
+            AnchorPane.setBottomAnchor(cancelbtn, 7.0);
+
+        //Attach components to their respective panes.
+        addtop.getChildren().addAll(addtext);
+        addbottom.getChildren().addAll(cancelbtn);
+        
+        //CANCEL BUTTON FUNCTIONALITY
+        cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                addwindow.hide();
+                opaqueLayer.setVisible(false);
+            }
+        }); 
+
+        //BASE BORDER (CENTER WILL BE THE TEXT FIELDS)
+        BorderPane abase = new BorderPane();
+        abase.setTop(addtop);
+        abase.setBottom(addbottom);
+        addwindow.setScene(new Scene(abase, addwidth, addheight));
+
+        //Ensures that addwindow is centered relatively to its parent stage (setup).
+        ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
+            addwindow.setX(setup.getX() + setup.getWidth() / 2 - addwidth / 2);
+        };
+        ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
+                addwindow.setY((setup.getY() + setup.getHeight() / 2 - addheight / 2) + 10);   
+
+        };
+
+        addwindow.widthProperty().addListener(widthListener);
+        addwindow.heightProperty().addListener(heightListener);
+
+        addwindow.setOnShown(shown -> {
+            addwindow.widthProperty().removeListener(widthListener);
+            addwindow.heightProperty().removeListener(heightListener);
+        });
+
+        //STAGE INFORMATION 
+        addwindow.initStyle(StageStyle.UNDECORATED);
+        addwindow.initOwner(setup);
+        addwindow.initModality(Modality.WINDOW_MODAL);
+        addwindow.setResizable(false);
+        addwindow.setTitle("Add New Item");
+        addwindow.show();
+
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    //--------CLASSES HERE--------------------------------------------------------------------
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    public class CellGenerator implements Callback<TableColumn<Columns, String>, TableCell<Columns, String>>{
+        @Override
+        public TableCell call(final TableColumn<Columns, String> param) {
+                final TableCell<Columns, String> cell = new TableCell<Columns, String>() {
+                    int b = 0;
+                    Button starBtn = new Button("s");
+                    Button checkBtn = new Button("c");
+                    Button triangleBtn = new Button("t");
+                    Button penBtn = new Button("p"); 
+                    Handler eventHandler = new Handler();
+
+                    @Override
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        starBtn.setId("starBtn");
+                        starBtn.setOnAction(eventHandler);
+
+                        checkBtn.setId("checkBtn");
+                        checkBtn.setOnAction(eventHandler);
+
+                        triangleBtn.setId("triangleBtn");
+                        triangleBtn.setOnAction(eventHandler);
+
+                        penBtn.setId("penBtn");
+                        penBtn.setOnAction(eventHandler);
+
+
+                        HBox iconBox = new HBox(10);
+                        iconBox.getChildren().addAll(starBtn, checkBtn, triangleBtn, penBtn);
+                        setGraphic(iconBox);
+                        setText(null);
+                        
+                    }
+                };
+            return cell;
+        }
+    }
+
+    public class Handler implements EventHandler<ActionEvent>{
+        @Override
+        public void handle(ActionEvent e) {
+
+            String itemClicked = ((Control)e.getSource()).getId();
+
+            switch(itemClicked){
+                case "addBtn":
+                    addItemPopup(); 
+                    break;
+                case "starBtn":
+                    System.out.println("Star");
+                    break;
+                case "checkBtn":
+                    System.out.println("Check");
+                    break;
+                case "triangleBtn":
+                    System.out.println("Triangle");
+                    break;
+                case "penBtn":
+                    System.out.println("Pen");
+                    break;
+                default:
+                    System.out.println("Otherstuff");
+            }
+        }
+    }
+
+    
 }
