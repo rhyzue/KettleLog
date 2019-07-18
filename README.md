@@ -21,3 +21,4 @@ Welcome to KettleLog, an easy-to-use inventory manager written in JavaFX. Kettle
 <br>• Checkbox (for filtering and deleting multiple items)
 <br>• Triangle (when expanded, reveals more information and any personal notes the user made about that item)
 <br>• Pencil (allows the user to edit information about the item)
+<br>• Trash (Remove item)
