@@ -1,6 +1,6 @@
 # KettleLog
 
-Welcome to KettleLog, an easy-to-use inventory manager written in JavaFX. KettleLog is designed to help people pinpoint exactly when they need to order an item so that it arrives on-time and just before the previous stock runs out. 
+Welcome to KettleLog, an easy-to-use inventory manager written in Java, using JavaFX. KettleLog is designed to help people pinpoint exactly when they need to order an item so that it arrives on-time and just before the previous stock runs out. 
 
 <b>Table</b>
 <br>• The table includes 5 columns. 
@@ -22,3 +22,4 @@ Welcome to KettleLog, an easy-to-use inventory manager written in JavaFX. Kettle
 <br>• Triangle (when expanded, reveals more information and any personal notes the user made about that item)
 <br>• Pencil (allows the user to edit information about the item)
 <br>• Trash (Remove item)
+
