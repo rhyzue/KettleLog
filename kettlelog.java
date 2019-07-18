@@ -78,18 +78,7 @@ public class kettlelog extends Application {
         edit.getItems().addAll(add, remove);
         view.getItems().addAll(fs, mi);
         info.getItems().addAll(about, tutorial, credits);
-
-        kettlemenu.getMenus().addAll(file, edit, view, info);
-        Button btn = new Button("1");
-        Button btn2 = new Button("2");
-        Button btn3 = new Button("3");
-        Button btn4 = new Button("4");
-
-        Button[] btns = new Button[]{btn, btn2, btn3, btn4};
-
-
-        HBox hbox = new HBox(4);
-        hbox.getChildren().addAll(btn, btn2, btn3, btn4);       
+ 
 
         //================================================================================
         // TABLE
@@ -104,11 +93,23 @@ public class kettlelog extends Application {
             public TableCell call(final TableColumn<Columns, String> param) {
                 final TableCell<Columns, String> cell = new TableCell<Columns, String>() {
                     int b = 0;
+                    Button starBtn = new Button("1");
+                    Button checkBtn = new Button("2");
+                    Button triangleBtn = new Button("3");
+                    Button penBtn = new Button("4"); 
 
                     @Override
                     public void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
-                        setGraphic(hbox);
+
+                        //starBtn.setId("starBtn");
+                        //starBtn.setOnAction(eventHandler);
+
+
+
+                        HBox iconBox = new HBox(10);
+                        iconBox.getChildren().addAll(starBtn, checkBtn, triangleBtn, penBtn);
+                        setGraphic(iconBox);
                         setText(null);
                         
                     }
