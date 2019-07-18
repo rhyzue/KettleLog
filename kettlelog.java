@@ -23,8 +23,12 @@ import javafx.util.*;
 public class Kettlelog extends Application {
     //GLOBAL VARIABLES
     Stage setup = new Stage();
+    Stage addwindow = new Stage();
     Region opaqueLayer = new Region();
-
+    TableView<Columns> table = new TableView<Columns>();
+    String[] titles = {"", "Name","Status","Quantity","Minimum"};
+    @SuppressWarnings("unchecked")
+    TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
 
     public static void main(String[] args) {
         launch(args);
@@ -88,16 +92,13 @@ public class Kettlelog extends Application {
         // TABLE
         //================================================================================
 
-        TableView<Columns> table = new TableView<Columns>();
         table.setFixedCellSize(40.0);
         table.setPrefSize(300, 508.0);
 
         CellGenerator cellFactory = new CellGenerator();
 
         //All Column items
-        String[] titles = {"", "Name","Status","Quantity","Minimum"};
-        @SuppressWarnings("unchecked")
-        TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
+        
         for(int i=0; i<titles.length; i++)
         {
             TableColumn<Columns, String> column = new TableColumn<Columns, String>(titles[i]);
@@ -109,20 +110,10 @@ public class Kettlelog extends Application {
         }
         table.getColumns().<Columns, String>addAll(columns);
 
+        ColumnHandler columnChange = new ColumnHandler();
+        table.getColumns().addListener(columnChange);
+            
         
-        table.getColumns().addListener(new ListChangeListener<TableColumn>() {
-            public boolean suspended;
-
-            @Override
-            public void onChanged(Change change) {
-                change.next();
-                if (change.wasReplaced() && !suspended) {
-                    this.suspended = true;
-                    //table.getColumns().setAll(iname, istatus, iquantity, imin, options);
-                    this.suspended = false;
-                }
-            }
-        });
 
         table.getItems().add(new Columns("Gloves", "Good", "17", "5"));
         table.getItems().add(new Columns("Drills", "Low", "2", "10"));
@@ -227,7 +218,6 @@ public class Kettlelog extends Application {
     //NEW WINDOW FOR ADD ITEMS
     public void addItemPopup(){
         //Variable initialization
-        Stage addwindow = new Stage();
         double addwidth = 600;
         double addw_to_h = 0.85;
         double addheight = addwidth / addw_to_h;
@@ -238,37 +228,31 @@ public class Kettlelog extends Application {
         addtop.setStyle("-fx-background-color: #800040;");
         addtop.setPrefSize(60, 80);     
 
-            //ADD NEW ITEM LABEL
-            Text addtext = new Text();
-            addtext.setText("Add New Item");
-            addtext.setFont(new Font(18));
-            addtext.setFill(Color.WHITE);
-            AnchorPane.setLeftAnchor(addtext, 42.0);
-            AnchorPane.setBottomAnchor(addtext, 10.0);
+        //ADD NEW ITEM LABEL
+        Text addtext = new Text();
+        addtext.setText("Add New Item");
+        addtext.setFont(new Font(18));
+        addtext.setFill(Color.WHITE);
+        AnchorPane.setLeftAnchor(addtext, 42.0);
+        AnchorPane.setBottomAnchor(addtext, 10.0);
 
         //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
         AnchorPane addbottom = new AnchorPane();
         addbottom.setStyle("-fx-background-color: #800040;");
         addbottom.setPrefSize(30, 40);   
-            Button cancelbtn = new Button();
-            cancelbtn.setText("Cancel");
-            cancelbtn.setId("cancel");
-            AnchorPane.setRightAnchor(cancelbtn, 7.0);
-            AnchorPane.setBottomAnchor(cancelbtn, 7.0);
+        Button cancelbtn = new Button();
+        cancelbtn.setText("Cancel");
+        cancelbtn.setId("cancelBtn");
+        AnchorPane.setRightAnchor(cancelbtn, 7.0);
+        AnchorPane.setBottomAnchor(cancelbtn, 7.0);
 
         //Attach components to their respective panes.
         addtop.getChildren().addAll(addtext);
         addbottom.getChildren().addAll(cancelbtn);
         
+        Handler eventHandler = new Handler();
         //CANCEL BUTTON FUNCTIONALITY
-        cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                addwindow.hide();
-                opaqueLayer.setVisible(false);
-            }
-        }); 
+        cancelbtn.setOnAction(eventHandler);
 
         //BASE BORDER (CENTER WILL BE THE TEXT FIELDS)
         BorderPane abase = new BorderPane();
@@ -302,7 +286,6 @@ public class Kettlelog extends Application {
         addwindow.show();
 
     }
-
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     //--------CLASSES HERE--------------------------------------------------------------------
@@ -347,6 +330,20 @@ public class Kettlelog extends Application {
         }
     }
 
+    public class ColumnHandler implements ListChangeListener<TableColumn>{
+        public boolean suspended;
+
+            @Override
+            public void onChanged(Change change) {
+                change.next();
+                if (change.wasReplaced() && !suspended) {
+                    this.suspended = true;
+                    table.getColumns().setAll(columns);
+                    this.suspended = false;
+                }
+            }
+    }
+
     public class Handler implements EventHandler<ActionEvent>{
         @Override
         public void handle(ActionEvent e) {
@@ -357,6 +354,11 @@ public class Kettlelog extends Application {
                 case "addBtn":
                     addItemPopup(); 
                     break;
+                case "cancelBtn":
+                    addwindow.hide();
+                    opaqueLayer.setVisible(false);
+                    break;
+
                 case "starBtn":
                     System.out.println("Star");
                     break;
@@ -375,5 +377,5 @@ public class Kettlelog extends Application {
         }
     }
 
-    
+
 }
