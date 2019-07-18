@@ -23,7 +23,6 @@ import javafx.util.*;
 public class Kettlelog extends Application {
     //GLOBAL VARIABLES
     Stage setup = new Stage();
-    Stage addwindow = new Stage();
     Region opaqueLayer = new Region();
     TableView<Columns> table = new TableView<Columns>();
     String[] titles = {"", "Name","Status","Quantity","Minimum"};
@@ -97,7 +96,7 @@ public class Kettlelog extends Application {
 
         CellGenerator cellFactory = new CellGenerator();
 
-        //All Column items
+        //COLUMN TITLES
         
         for(int i=0; i<titles.length; i++)
         {
@@ -113,8 +112,6 @@ public class Kettlelog extends Application {
         ColumnHandler columnChange = new ColumnHandler();
         table.getColumns().addListener(columnChange);
             
-        
-
         table.getItems().add(new Columns("Gloves", "Good", "17", "5"));
         table.getItems().add(new Columns("Drills", "Low", "2", "10"));
 
@@ -140,8 +137,6 @@ public class Kettlelog extends Application {
         // ADD AND REMOVE BUTTON FUNCTIONALITY
         //================================================================================
         Handler eventHandler = new Handler();
-        
-
         addBtn.setOnAction(eventHandler);
         
         //POSITIONS OF ADD AND REMOVE
@@ -218,6 +213,7 @@ public class Kettlelog extends Application {
     //NEW WINDOW FOR ADD ITEMS
     public void addItemPopup(){
         //Variable initialization
+        Stage addwindow = new Stage();
         double addwidth = 600;
         double addw_to_h = 0.85;
         double addheight = addwidth / addw_to_h;
@@ -250,9 +246,13 @@ public class Kettlelog extends Application {
         addtop.getChildren().addAll(addtext);
         addbottom.getChildren().addAll(cancelbtn);
         
-        Handler eventHandler = new Handler();
-        //CANCEL BUTTON FUNCTIONALITY
-        cancelbtn.setOnAction(eventHandler);
+        cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+            public void handle(ActionEvent event) {
+                addwindow.hide();
+                opaqueLayer.setVisible(false);
+            }
+        }); 
 
         //BASE BORDER (CENTER WILL BE THE TEXT FIELDS)
         BorderPane abase = new BorderPane();
@@ -265,8 +265,7 @@ public class Kettlelog extends Application {
             addwindow.setX(setup.getX() + setup.getWidth() / 2 - addwidth / 2);
         };
         ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
-                addwindow.setY((setup.getY() + setup.getHeight() / 2 - addheight / 2) + 10);   
-
+            addwindow.setY((setup.getY() + setup.getHeight() / 2 - addheight / 2) + 10);   
         };
 
         addwindow.widthProperty().addListener(widthListener);
@@ -354,11 +353,6 @@ public class Kettlelog extends Application {
                 case "addBtn":
                     addItemPopup(); 
                     break;
-                case "cancelBtn":
-                    addwindow.hide();
-                    opaqueLayer.setVisible(false);
-                    break;
-
                 case "starBtn":
                     System.out.println("Star");
                     break;
