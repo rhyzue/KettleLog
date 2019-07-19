@@ -202,8 +202,7 @@ public class Kettlelog extends Application {
         StackPane root = new StackPane();
         root.getChildren().addAll(base, opaqueLayer);
 
-        //SHOW SCENE
-        //13 inch laptops are 1280 by 800. 
+        //SHOW SCENE (13 inch laptops are 1280 by 800)
 
         setup.setScene(new Scene(root, w, h));
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
