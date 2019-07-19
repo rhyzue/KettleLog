@@ -234,7 +234,10 @@ public class Kettlelog extends Application {
         //Variable initialization
         Stage addwindow = new Stage();
         AnchorPane addbottom = new AnchorPane();
+        HBox bottomBox = new HBox(10);
         Button cancelbtn = new Button();
+        Button addbtn = new Button();
+        bottomBox.getChildren().addAll(addbtn, cancelbtn);
 
         opaqueLayer.setVisible(true);
         double addwidth = 600;
@@ -246,7 +249,7 @@ public class Kettlelog extends Application {
         //TOP PART of the window which includes a title and a logo.
         AnchorPane addtop = new AnchorPane();
         addtop.setStyle(topbottom);
-        addtop.setPrefSize(60, 80); //CHANGE TO VARIABLES LATER
+        addtop.setPrefSize(60, 80); 
 
         //ADD TITLE
         Text addtext = new Text();
@@ -260,13 +263,32 @@ public class Kettlelog extends Application {
         addtext.setFill(Color.WHITE);
         AnchorPane.setLeftAnchor(addtext, 42.0);
         AnchorPane.setBottomAnchor(addtext, 10.0);
-
-        //Attach components to their respective panes.
         addtop.getChildren().addAll(addtext);
-        addbottom.getChildren().addAll(cancelbtn);
 
-        //CANCEL BUTTON FUNCTIONALITY
+        //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
+        addbottom.setStyle(topbottom);
+        addbottom.setPrefSize(30, 40); 
+        addbtn.setText("Create");
+        addbtn.setId("createditem");  
+        addbtn.setStyle("-fx-background-color: #093d23;");
+        addbtn.setTextFill(Color.WHITE);
+        cancelbtn.setText("Cancel");
+        cancelbtn.setId("cancelBtn");
+        cancelbtn.setStyle("-fx-background-color: #d5f0e2;");
+        AnchorPane.setRightAnchor(bottomBox, 6.25);
+        AnchorPane.setTopAnchor(bottomBox, 6.25);
+        addbottom.getChildren().addAll(bottomBox);
+
+        //BOTTOM BUTTON FUNCTIONALITY
         cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+            public void handle(ActionEvent event) {
+                addwindow.hide();
+                opaqueLayer.setVisible(false);
+            }
+        }); 
+
+        addbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
             public void handle(ActionEvent event) {
                 addwindow.hide();
@@ -424,14 +446,6 @@ public class Kettlelog extends Application {
         wcenter.getChildren().addAll(iBox, qBox, mBox, sBox, dBox);
         abase.setCenter(wcenter);
         addwindow.setScene(new Scene(abase, addwidth, addheight));
-
-        //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
-        addbottom.setStyle(topbottom);
-        addbottom.setPrefSize(30, 40);   
-        cancelbtn.setText("Cancel");
-        cancelbtn.setId("cancelBtn");
-        AnchorPane.setRightAnchor(cancelbtn, 7.0);
-        AnchorPane.setBottomAnchor(cancelbtn, 7.0);
 
         //Ensures that addwindow is centered relatively to its parent stage (setup).
         ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
