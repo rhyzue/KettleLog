@@ -295,12 +295,12 @@ public class Kettlelog extends Application {
             itemname.setFont(f);
             itemname.setFill(Color.BLACK);
         AnchorPane.setRightAnchor(itemname, 460.0);
-        AnchorPane.setBottomAnchor(itemname, 25.0);
+        AnchorPane.setBottomAnchor(itemname, 15.0);
 
         TextField itemtext = new TextField();
             itemtext.setPrefWidth(200);
         AnchorPane.setLeftAnchor(itemtext, 150.0); 
-        AnchorPane.setBottomAnchor(itemtext, 20.0);
+        AnchorPane.setBottomAnchor(itemtext, 10.0);
  
         ianchor.setStyle(middle);
         ianchor.getChildren().addAll(itemname, itemtext);
@@ -309,7 +309,7 @@ public class Kettlelog extends Application {
 
         //QUANTITY ~ REQUIRED FIELD
         AnchorPane qanchor = new AnchorPane();
-        qanchor.setPrefSize(addwidth, 80);
+        qanchor.setPrefSize(addwidth, 90);
 
         Text quantity = new Text("Quantity:");
             quantity.setFont(f);
@@ -326,16 +326,22 @@ public class Kettlelog extends Application {
             qdesc.setFont(new Font(12));
             qdesc.setFill(Color.GREY);
         AnchorPane.setLeftAnchor(qdesc, 150.0);
-        AnchorPane.setBottomAnchor(qdesc, 15.0);
+        AnchorPane.setBottomAnchor(qdesc, 20.0);
+
+        Text qdesc2 = new Text("Entry should be in singular units (eg. 3 boxes of 50 gloves = 150).");
+            qdesc2.setFont(new Font(12));
+            qdesc2.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(qdesc2, 150.0);
+        AnchorPane.setBottomAnchor(qdesc2, 5.0);
  
         qanchor.setStyle(middle);
-        qanchor.getChildren().addAll(quantity, qtext, qdesc);
+        qanchor.getChildren().addAll(quantity, qtext, qdesc, qdesc2);
         HBox qBox = new HBox(qanchor);
 
 
         //MINIMUM ~ REQUIRED FIELD
         AnchorPane manchor = new AnchorPane();
-        manchor.setPrefSize(addwidth, 80);
+        manchor.setPrefSize(addwidth, 90);
 
         Text minimum = new Text("Minimum:");
             minimum.setFont(f);
@@ -352,17 +358,23 @@ public class Kettlelog extends Application {
             mdesc.setFont(new Font(12));
             mdesc.setFill(Color.GREY);
         AnchorPane.setLeftAnchor(mdesc, 150.0);
-        AnchorPane.setBottomAnchor(mdesc, 15.0);
+        AnchorPane.setBottomAnchor(mdesc, 20.0);
+
+        Text mdesc2 = new Text("Entry should be in singular units (eg. 3 boxes of 50 gloves = 150).");
+            mdesc2.setFont(new Font(12));
+            mdesc2.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(mdesc2, 150.0);
+        AnchorPane.setBottomAnchor(mdesc2, 5.0);
  
         manchor.setStyle(middle);
-        manchor.getChildren().addAll(minimum, mtext, mdesc);
+        manchor.getChildren().addAll(minimum, mtext, mdesc, mdesc2);
         HBox mBox = new HBox(manchor);
 
         //SHIPPING ~ REQUIRED FIELD
         AnchorPane sanchor = new AnchorPane();
-        sanchor.setPrefSize(addwidth, 80);
+        sanchor.setPrefSize(addwidth, 90);
 
-        Text shipping = new Text("Shipping Time:");
+        Text shipping = new Text("Delivery Time:");
             shipping.setFont(f);
             shipping.setFill(Color.BLACK);
         AnchorPane.setRightAnchor(shipping, 460.0);
@@ -373,19 +385,44 @@ public class Kettlelog extends Application {
         AnchorPane.setLeftAnchor(stext, 150.0); 
         AnchorPane.setBottomAnchor(stext, 40.0);
 
-        Text sdesc = new Text("An estimate of how long the item would take to ship to your location.");
+        Text sdesc = new Text("An estimate of how long the item would take to deliver to your location.");
             sdesc.setFont(new Font(12));
             sdesc.setFill(Color.GREY);
         AnchorPane.setLeftAnchor(sdesc, 150.0);
-        AnchorPane.setBottomAnchor(sdesc, 15.0);
+        AnchorPane.setBottomAnchor(sdesc, 20.0);
+
+        Text sdesc2 = new Text("Entry should be in the number of days (if bought in person, enter 0).");
+            sdesc2.setFont(new Font(12));
+            sdesc2.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(sdesc2, 150.0);
+        AnchorPane.setBottomAnchor(sdesc2, 5.0);
  
         sanchor.setStyle(middle);
-        sanchor.getChildren().addAll(shipping, stext, sdesc);
+        sanchor.getChildren().addAll(shipping, stext, sdesc, sdesc2);
         HBox sBox = new HBox(sanchor);
 
+        //DESCRIPTION BIG H-BOX
+        AnchorPane danchor = new AnchorPane();
+        danchor.setPrefSize(addwidth, 240);
+
+        Text describe = new Text("Description:");
+            describe.setFont(f);
+            describe.setFill(Color.BLACK);
+        AnchorPane.setRightAnchor(describe, 460.0);
+        AnchorPane.setTopAnchor(describe, 20.0);
+
+        TextField dtext = new TextField();
+            dtext.setPrefWidth(400);
+            dtext.setPrefHeight(175);
+        AnchorPane.setLeftAnchor(dtext, 150.0); 
+        AnchorPane.setTopAnchor(dtext, 20.0);
+
+        danchor.setStyle(middle);
+        danchor.getChildren().addAll(describe, dtext);
+        HBox dBox = new HBox(danchor);
 
         //ADDING THE HBOXES TO A VBOX
-        wcenter.getChildren().addAll(iBox, qBox, mBox, sBox);
+        wcenter.getChildren().addAll(iBox, qBox, mBox, sBox, dBox);
         abase.setCenter(wcenter);
         addwindow.setScene(new Scene(abase, addwidth, addheight));
 
