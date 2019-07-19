@@ -426,7 +426,6 @@ public class Kettlelog extends Application {
         abase.setCenter(wcenter);
         addwindow.setScene(new Scene(abase, addwidth, addheight));
 
-
         //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
         addbottom.setStyle(topbottom);
         addbottom.setPrefSize(30, 40);   
