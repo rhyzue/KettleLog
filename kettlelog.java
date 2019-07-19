@@ -30,7 +30,7 @@ public class Kettlelog extends Application {
 
     double w_to_h = 1.4;
     double w = 1024;
-    double h = 1024 / w_to_h;
+    double h = w / w_to_h;
     double spacefromtable = 7.5;
 
     double screenX = 0.0;
