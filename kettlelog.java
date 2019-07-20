@@ -30,7 +30,7 @@ public class Kettlelog extends Application {
 
     double w_to_h = 1.4;
     double w = 1024;
-    double h = 1024 / w_to_h;
+    double h = w / w_to_h;
     double spacefromtable = 7.5;
 
     double screenX = 0.0;
@@ -221,13 +221,25 @@ public class Kettlelog extends Application {
     // METHODS
     //================================================================================
 
-    //NEW WINDOW FOR ADD ITEMS
-    public void addItemPopup(){
+    public void addItemPopup(int popuptype){
+        //0 --> ADD WINDOW
+        //1 --> EDIT WINDOW
+        //COLOURS
+        String tbcolour = "#006733;";
+        String midcolour = "#d5f0e2;";
+        String topbottom = String.format("-fx-background-color: %s", tbcolour);
+        String middle = String.format("-fx-background-color: %s", midcolour);
 
         Bounds sb = base.localToScreen(base.getBoundsInLocal());
 
         //Variable initialization
         Stage addwindow = new Stage();
+        AnchorPane addbottom = new AnchorPane();
+        HBox bottomBox = new HBox(10);
+        Button cancelbtn = new Button();
+        Button addbtn = new Button();
+        bottomBox.getChildren().addAll(addbtn, cancelbtn);
+
         opaqueLayer.setVisible(true);
         double addwidth = 600;
         double addw_to_h = 0.85;
@@ -237,33 +249,47 @@ public class Kettlelog extends Application {
 
         //TOP PART of the window which includes a title and a logo.
         AnchorPane addtop = new AnchorPane();
-        addtop.setStyle("-fx-background-color: #800040;");
-        addtop.setPrefSize(60, 80);     
+        addtop.setStyle(topbottom);
+        addtop.setPrefSize(60, 80); 
 
-        //ADD NEW ITEM LABEL
+        //ADD TITLE
         Text addtext = new Text();
-        addtext.setText("Add New Item");
+        if (popuptype == 0) {
+            addtext.setText("Add New Item");
+        } else {
+            addtext.setText("Edit Item");
+        }
+
         addtext.setFont(new Font(18));
         addtext.setFill(Color.WHITE);
         AnchorPane.setLeftAnchor(addtext, 42.0);
         AnchorPane.setBottomAnchor(addtext, 10.0);
+        addtop.getChildren().addAll(addtext);
 
         //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
-        AnchorPane addbottom = new AnchorPane();
-        addbottom.setStyle("-fx-background-color: #800040;");
-        addbottom.setPrefSize(30, 40);   
-        Button cancelbtn = new Button();
+        addbottom.setStyle(topbottom);
+        addbottom.setPrefSize(30, 40); 
+        addbtn.setText("Create");
+        addbtn.setId("createditem");  
+        addbtn.setStyle("-fx-background-color: #093d23;");
+        addbtn.setTextFill(Color.WHITE);
         cancelbtn.setText("Cancel");
         cancelbtn.setId("cancelBtn");
-        AnchorPane.setRightAnchor(cancelbtn, 7.0);
-        AnchorPane.setBottomAnchor(cancelbtn, 7.0);
+        cancelbtn.setStyle("-fx-background-color: #d5f0e2;");
+        AnchorPane.setRightAnchor(bottomBox, 6.25);
+        AnchorPane.setTopAnchor(bottomBox, 6.25);
+        addbottom.getChildren().addAll(bottomBox);
 
-        //Attach components to their respective panes.
-        addtop.getChildren().addAll(addtext);
-        addbottom.getChildren().addAll(cancelbtn);
-
-        //CANCEL BUTTON FUNCTIONALITY
+        //BOTTOM BUTTON FUNCTIONALITY
         cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+            public void handle(ActionEvent event) {
+                addwindow.hide();
+                opaqueLayer.setVisible(false);
+            }
+        }); 
+
+        addbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
             public void handle(ActionEvent event) {
                 addwindow.hide();
@@ -273,8 +299,153 @@ public class Kettlelog extends Application {
 
         //BASE BORDER (CENTER WILL BE THE TEXT FIELDS)
         BorderPane abase = new BorderPane();
+        VBox wcenter = new VBox();
         abase.setTop(addtop);
         abase.setBottom(addbottom);
+
+
+        //================================================================================
+        // WINDOW CONTENTS (LABELS & TEXT BOXES)
+        //================================================================================
+
+        //ITEM NAME ~ REQUIRED FIELD
+        AnchorPane ianchor = new AnchorPane();
+        ianchor.setPrefSize(addwidth, 80);
+
+        Text itemname = new Text("Item Name:");
+        Font f = new Font(15);
+            itemname.setFont(f);
+            itemname.setFill(Color.BLACK);
+        AnchorPane.setRightAnchor(itemname, 460.0);
+        AnchorPane.setBottomAnchor(itemname, 15.0);
+
+        TextField itemtext = new TextField();
+            itemtext.setPrefWidth(200);
+        AnchorPane.setLeftAnchor(itemtext, 150.0); 
+        AnchorPane.setBottomAnchor(itemtext, 10.0);
+ 
+        ianchor.setStyle(middle);
+        ianchor.getChildren().addAll(itemname, itemtext);
+        HBox iBox = new HBox(ianchor);
+
+
+        //QUANTITY ~ REQUIRED FIELD
+        AnchorPane qanchor = new AnchorPane();
+        qanchor.setPrefSize(addwidth, 90);
+
+        Text quantity = new Text("Quantity:");
+            quantity.setFont(f);
+            quantity.setFill(Color.BLACK);
+        AnchorPane.setRightAnchor(quantity, 460.0);
+        AnchorPane.setBottomAnchor(quantity, 45.0);
+
+        TextField qtext = new TextField();
+            qtext.setPrefWidth(50);
+        AnchorPane.setLeftAnchor(qtext, 150.0); 
+        AnchorPane.setBottomAnchor(qtext, 40.0);
+
+        Text qdesc = new Text("How much of this item do you currently have on hand?");
+            qdesc.setFont(new Font(12));
+            qdesc.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(qdesc, 150.0);
+        AnchorPane.setBottomAnchor(qdesc, 20.0);
+
+        Text qdesc2 = new Text("Entry should be in singular units (eg. 3 boxes of 50 gloves = 150).");
+            qdesc2.setFont(new Font(12));
+            qdesc2.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(qdesc2, 150.0);
+        AnchorPane.setBottomAnchor(qdesc2, 5.0);
+ 
+        qanchor.setStyle(middle);
+        qanchor.getChildren().addAll(quantity, qtext, qdesc, qdesc2);
+        HBox qBox = new HBox(qanchor);
+
+
+        //MINIMUM ~ REQUIRED FIELD
+        AnchorPane manchor = new AnchorPane();
+        manchor.setPrefSize(addwidth, 90);
+
+        Text minimum = new Text("Minimum:");
+            minimum.setFont(f);
+            minimum.setFill(Color.BLACK);
+        AnchorPane.setRightAnchor(minimum, 460.0);
+        AnchorPane.setBottomAnchor(minimum, 45.0);
+
+        TextField mtext = new TextField();
+            mtext.setPrefWidth(50);
+        AnchorPane.setLeftAnchor(mtext, 150.0); 
+        AnchorPane.setBottomAnchor(mtext, 40.0);
+
+        Text mdesc = new Text("What is the minimum number of this item you want in your office?");
+            mdesc.setFont(new Font(12));
+            mdesc.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(mdesc, 150.0);
+        AnchorPane.setBottomAnchor(mdesc, 20.0);
+
+        Text mdesc2 = new Text("Entry should be in singular units (eg. 3 boxes of 50 gloves = 150).");
+            mdesc2.setFont(new Font(12));
+            mdesc2.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(mdesc2, 150.0);
+        AnchorPane.setBottomAnchor(mdesc2, 5.0);
+ 
+        manchor.setStyle(middle);
+        manchor.getChildren().addAll(minimum, mtext, mdesc, mdesc2);
+        HBox mBox = new HBox(manchor);
+
+        //SHIPPING ~ REQUIRED FIELD
+        AnchorPane sanchor = new AnchorPane();
+        sanchor.setPrefSize(addwidth, 90);
+
+        Text shipping = new Text("Delivery Time:");
+            shipping.setFont(f);
+            shipping.setFill(Color.BLACK);
+        AnchorPane.setRightAnchor(shipping, 460.0);
+        AnchorPane.setBottomAnchor(shipping, 45.0);
+
+        TextField stext = new TextField();
+            stext.setPrefWidth(50);
+        AnchorPane.setLeftAnchor(stext, 150.0); 
+        AnchorPane.setBottomAnchor(stext, 40.0);
+
+        Text sdesc = new Text("An estimate of how long the item would take to deliver to your location.");
+            sdesc.setFont(new Font(12));
+            sdesc.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(sdesc, 150.0);
+        AnchorPane.setBottomAnchor(sdesc, 20.0);
+
+        Text sdesc2 = new Text("Entry should be in the number of days (if bought in person, enter 0).");
+            sdesc2.setFont(new Font(12));
+            sdesc2.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(sdesc2, 150.0);
+        AnchorPane.setBottomAnchor(sdesc2, 5.0);
+ 
+        sanchor.setStyle(middle);
+        sanchor.getChildren().addAll(shipping, stext, sdesc, sdesc2);
+        HBox sBox = new HBox(sanchor);
+
+        //DESCRIPTION BIG H-BOX
+        AnchorPane danchor = new AnchorPane();
+        danchor.setPrefSize(addwidth, 240);
+
+        Text describe = new Text("Description:");
+            describe.setFont(f);
+            describe.setFill(Color.BLACK);
+        AnchorPane.setRightAnchor(describe, 460.0);
+        AnchorPane.setTopAnchor(describe, 20.0);
+
+        TextField dtext = new TextField();
+            dtext.setPrefWidth(400);
+            dtext.setPrefHeight(175);
+        AnchorPane.setLeftAnchor(dtext, 150.0); 
+        AnchorPane.setTopAnchor(dtext, 20.0);
+
+        danchor.setStyle(middle);
+        danchor.getChildren().addAll(describe, dtext);
+        HBox dBox = new HBox(danchor);
+
+        //ADDING THE HBOXES TO A VBOX
+        wcenter.getChildren().addAll(iBox, qBox, mBox, sBox, dBox);
+        abase.setCenter(wcenter);
         addwindow.setScene(new Scene(abase, addwidth, addheight));
 
         //Ensures that addwindow is centered relatively to its parent stage (setup).
@@ -371,7 +542,7 @@ public class Kettlelog extends Application {
 
             switch(itemClicked){
                 case "addBtn":
-                    addItemPopup(); 
+                    addItemPopup(0); 
                     break;
                 case "starBtn":
                     System.out.println("Star");
@@ -384,6 +555,7 @@ public class Kettlelog extends Application {
                     break;
                 case "penBtn":
                     System.out.println("Pen");
+                    addItemPopup(1);
                     break;
                 case "delBtn":
                     System.out.println("Delete");
