@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.TextArea;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
@@ -339,7 +340,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(quantity, 45.0);
 
         TextField qtext = new TextField();
-            qtext.setPrefWidth(50);
+            qtext.setPrefWidth(75);
         AnchorPane.setLeftAnchor(qtext, 150.0); 
         AnchorPane.setBottomAnchor(qtext, 40.0);
 
@@ -371,7 +372,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(minimum, 45.0);
 
         TextField mtext = new TextField();
-            mtext.setPrefWidth(50);
+            mtext.setPrefWidth(75);
         AnchorPane.setLeftAnchor(mtext, 150.0); 
         AnchorPane.setBottomAnchor(mtext, 40.0);
 
@@ -402,7 +403,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(shipping, 45.0);
 
         TextField stext = new TextField();
-            stext.setPrefWidth(50);
+            stext.setPrefWidth(75);
         AnchorPane.setLeftAnchor(stext, 150.0); 
         AnchorPane.setBottomAnchor(stext, 40.0);
 
@@ -432,9 +433,12 @@ public class Kettlelog extends Application {
         AnchorPane.setRightAnchor(describe, 460.0);
         AnchorPane.setTopAnchor(describe, 20.0);
 
-        TextField dtext = new TextField();
+        TextArea dtext = new TextArea();
+            dtext.positionCaret(4);
             dtext.setPrefWidth(400);
             dtext.setPrefHeight(175);
+            dtext.setWrapText(true);
+
         AnchorPane.setLeftAnchor(dtext, 150.0); 
         AnchorPane.setTopAnchor(dtext, 20.0);
 
