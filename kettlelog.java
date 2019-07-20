@@ -308,6 +308,9 @@ public class Kettlelog extends Application {
         // WINDOW CONTENTS (LABELS & TEXT BOXES)
         //================================================================================
 
+        //VARIABLE INTIALIZATION
+        double numbertextwidth = 100.0;
+
         //ITEM NAME ~ REQUIRED FIELD
         AnchorPane ianchor = new AnchorPane();
         ianchor.setPrefSize(addwidth, 80);
@@ -340,7 +343,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(quantity, 45.0);
 
         TextField qtext = new TextField();
-            qtext.setPrefWidth(75);
+            qtext.setPrefWidth(numbertextwidth);
         AnchorPane.setLeftAnchor(qtext, 150.0); 
         AnchorPane.setBottomAnchor(qtext, 40.0);
 
@@ -372,7 +375,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(minimum, 45.0);
 
         TextField mtext = new TextField();
-            mtext.setPrefWidth(75);
+            mtext.setPrefWidth(numbertextwidth);
         AnchorPane.setLeftAnchor(mtext, 150.0); 
         AnchorPane.setBottomAnchor(mtext, 40.0);
 
@@ -403,7 +406,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(shipping, 45.0);
 
         TextField stext = new TextField();
-            stext.setPrefWidth(75);
+            stext.setPrefWidth(numbertextwidth);
         AnchorPane.setLeftAnchor(stext, 150.0); 
         AnchorPane.setBottomAnchor(stext, 40.0);
 
