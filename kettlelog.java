@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.control.TextArea;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -120,10 +121,17 @@ public class Kettlelog extends Application {
         table.getColumns().<Columns, String>addAll(columns);
 
         ColumnHandler columnChange = new ColumnHandler();
-        table.getColumns().addListener(columnChange);
-            
-        table.getItems().add(new Columns("Gloves", "Good", "17", "5"));
-        table.getItems().add(new Columns("Drills", "Low", "2", "10"));
+        table.getColumns().addListener(columnChange); 
+
+        table.getItems().add(new Columns("Gloves", "Good", "17", "5", "This is a test description.", "142314123123"));
+        table.getItems().add(new Columns("Drills", "Low", "2", "10", "This is a test description.", "12314123123"));
+
+        table.setOnMouseClicked((MouseEvent event) -> {
+            if (event.getClickCount() >= 1) {
+                System.out.println("Hello");
+                onSelection();
+            }
+        });
 
         VBox tableBox = new VBox(table);
 
@@ -522,6 +530,7 @@ public class Kettlelog extends Application {
                 String curQuan = qtext.getText();
                 String minQuan = mtext.getText();
                 String delTime = stext.getText();
+                String itemDesc = dtext.getText();
 
                 //CHECKS IF THERE ARE ANY REQUIRED FIELDS THAT ARE LEFT EMPTY
                 if ((iName.trim().length() <= 0) || curQuan.isEmpty() || minQuan.isEmpty() || delTime.isEmpty()) {
@@ -553,7 +562,11 @@ public class Kettlelog extends Application {
                         itemStatus = "Very Good";
                     }
 
-                    table.getItems().add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan));
+                    //Every item should have a unique ID. 
+
+                    String id = new java.text.SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+
+                    table.getItems().add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan, itemDesc, id));
                     opaqueLayer.setVisible(false);
                     addwindow.hide();
                 }
@@ -568,6 +581,11 @@ public class Kettlelog extends Application {
         addwindow.setTitle("Add New Item");
         addwindow.show();
 
+    }
+
+    public void onSelection() {
+        Columns selectedItem = table.getSelectionModel().getSelectedItem();
+        System.out.println(selectedItem.getID());
     }
 
     //================================================================================
