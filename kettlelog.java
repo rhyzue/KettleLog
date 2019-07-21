@@ -280,23 +280,6 @@ public class Kettlelog extends Application {
         AnchorPane.setTopAnchor(bottomBox, 6.25);
         addbottom.getChildren().addAll(bottomBox);
 
-        //BOTTOM BUTTON FUNCTIONALITY
-        cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-            public void handle(ActionEvent event) {
-                addwindow.hide();
-                opaqueLayer.setVisible(false);
-            }
-        }); 
-
-        addbtn.setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-            public void handle(ActionEvent event) {
-                addwindow.hide();
-                opaqueLayer.setVisible(false);
-            }
-        }); 
-
         //BASE BORDER (CENTER WILL BE THE TEXT FIELDS)
         BorderPane abase = new BorderPane();
         VBox wcenter = new VBox();
@@ -347,6 +330,17 @@ public class Kettlelog extends Application {
         AnchorPane.setLeftAnchor(qtext, 150.0); 
         AnchorPane.setBottomAnchor(qtext, 40.0);
 
+        // QUANTITY TEXT FIELD MUST BE NUMERIC
+        qtext.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(javafx.beans.value.ObservableValue<? extends String> observable, String oldValue, 
+                String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    qtext.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+
         Text qdesc = new Text("How much of this item do you currently have on hand?");
             qdesc.setFont(new Font(12));
             qdesc.setFill(Color.GREY);
@@ -363,7 +357,6 @@ public class Kettlelog extends Application {
         qanchor.getChildren().addAll(quantity, qtext, qdesc, qdesc2);
         HBox qBox = new HBox(qanchor);
 
-
         //MINIMUM ~ REQUIRED FIELD
         AnchorPane manchor = new AnchorPane();
         manchor.setPrefSize(addwidth, 90);
@@ -378,6 +371,17 @@ public class Kettlelog extends Application {
             mtext.setPrefWidth(numbertextwidth);
         AnchorPane.setLeftAnchor(mtext, 150.0); 
         AnchorPane.setBottomAnchor(mtext, 40.0);
+
+        // MINIMUM TEXT FIELD MUST BE NUMERIC
+        mtext.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(javafx.beans.value.ObservableValue<? extends String> observable, String oldValue, 
+                String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    mtext.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
 
         Text mdesc = new Text("What is the minimum number of this item you want in your office?");
             mdesc.setFont(new Font(12));
@@ -469,6 +473,46 @@ public class Kettlelog extends Application {
             addwindow.widthProperty().removeListener(widthListener);
             addwindow.heightProperty().removeListener(heightListener);
         });
+
+        //BOTTOM BUTTONS FUNCTIONALITY
+        cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+            public void handle(ActionEvent event) {
+                addwindow.hide();
+                opaqueLayer.setVisible(false);
+            }
+        }); 
+
+        addbtn.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+            public void handle(ActionEvent event) {
+                String itemStatus = "";
+                String curQuan = qtext.getText();
+                String minQuan = mtext.getText();
+                int intQuan = Integer.parseInt(curQuan);
+                int intMin = Integer.parseInt(minQuan);
+                int total = intQuan + intMin;
+                double health = (((double) intQuan / total)) * 100;
+
+                if (intQuan == 0) {
+                    itemStatus = "Empty";
+                } else if (health < 25) {
+                    itemStatus = "Very Poor";
+                } else if (health < 40) {
+                    itemStatus = "Poor";
+                } else if (health < 50) {
+                    itemStatus = "Moderate";
+                } else if (health < 75) {
+                    itemStatus = "Good";
+                } else {
+                    itemStatus = "Very Good";
+                }
+
+                table.getItems().add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan));
+                opaqueLayer.setVisible(false);
+                addwindow.hide();
+            }
+        }); 
 
         //STAGE INFORMATION 
         addwindow.initStyle(StageStyle.UNDECORATED);
