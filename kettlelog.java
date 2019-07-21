@@ -305,15 +305,20 @@ public class Kettlelog extends Application {
         AnchorPane.setRightAnchor(itemname, 460.0);
         AnchorPane.setBottomAnchor(itemname, 15.0);
 
+        Text a = new Text("*");
+            a.setFont(new Font (15));
+            a.setFill(Color.RED);
+        AnchorPane.setRightAnchor(a, 545.0);
+        AnchorPane.setBottomAnchor(a, 16.0);
+
         TextField itemtext = new TextField();
             itemtext.setPrefWidth(200);
         AnchorPane.setLeftAnchor(itemtext, 150.0); 
         AnchorPane.setBottomAnchor(itemtext, 10.0);
  
         ianchor.setStyle(middle);
-        ianchor.getChildren().addAll(itemname, itemtext);
+        ianchor.getChildren().addAll(itemname, itemtext, a);
         HBox iBox = new HBox(ianchor);
-
 
         //QUANTITY ~ REQUIRED FIELD
         AnchorPane qanchor = new AnchorPane();
@@ -324,6 +329,12 @@ public class Kettlelog extends Application {
             quantity.setFill(Color.BLACK);
         AnchorPane.setRightAnchor(quantity, 460.0);
         AnchorPane.setBottomAnchor(quantity, 45.0);
+
+        Text a2 = new Text("*");
+            a2.setFont(new Font (15));
+            a2.setFill(Color.RED);
+        AnchorPane.setRightAnchor(a2, 527.8);
+        AnchorPane.setBottomAnchor(a2, 46.0);
 
         TextField qtext = new TextField();
             qtext.setPrefWidth(numbertextwidth);
@@ -354,7 +365,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(qdesc2, 5.0);
  
         qanchor.setStyle(middle);
-        qanchor.getChildren().addAll(quantity, qtext, qdesc, qdesc2);
+        qanchor.getChildren().addAll(quantity, qtext, qdesc, qdesc2, a2);
         HBox qBox = new HBox(qanchor);
 
         //MINIMUM ~ REQUIRED FIELD
@@ -366,6 +377,12 @@ public class Kettlelog extends Application {
             minimum.setFill(Color.BLACK);
         AnchorPane.setRightAnchor(minimum, 460.0);
         AnchorPane.setBottomAnchor(minimum, 45.0);
+
+        Text a3 = new Text("*");
+            a3.setFont(new Font (15));
+            a3.setFill(Color.RED);
+        AnchorPane.setRightAnchor(a3, 532.0);
+        AnchorPane.setBottomAnchor(a3, 46.0);
 
         TextField mtext = new TextField();
             mtext.setPrefWidth(numbertextwidth);
@@ -396,7 +413,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(mdesc2, 5.0);
  
         manchor.setStyle(middle);
-        manchor.getChildren().addAll(minimum, mtext, mdesc, mdesc2);
+        manchor.getChildren().addAll(minimum, mtext, mdesc, mdesc2, a3);
         HBox mBox = new HBox(manchor);
 
         //SHIPPING ~ REQUIRED FIELD
@@ -408,6 +425,12 @@ public class Kettlelog extends Application {
             shipping.setFill(Color.BLACK);
         AnchorPane.setRightAnchor(shipping, 460.0);
         AnchorPane.setBottomAnchor(shipping, 45.0);
+
+        Text a4 = new Text("*");
+            a4.setFont(new Font (15));
+            a4.setFill(Color.RED);
+        AnchorPane.setRightAnchor(a4, 565.0);
+        AnchorPane.setBottomAnchor(a4, 46.0);
 
         TextField stext = new TextField();
             stext.setPrefWidth(numbertextwidth);
@@ -427,7 +450,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(sdesc2, 5.0);
  
         sanchor.setStyle(middle);
-        sanchor.getChildren().addAll(shipping, stext, sdesc, sdesc2);
+        sanchor.getChildren().addAll(shipping, stext, sdesc, sdesc2, a4);
         HBox sBox = new HBox(sanchor);
 
         //DESCRIPTION BIG H-BOX
@@ -449,8 +472,15 @@ public class Kettlelog extends Application {
         AnchorPane.setLeftAnchor(dtext, 150.0); 
         AnchorPane.setTopAnchor(dtext, 20.0);
 
+        Text missing = new Text("* One or more required fields have not been filled out.");
+            missing.setFont(new Font(12));
+            missing.setFill(Color.FIREBRICK);
+        AnchorPane.setRightAnchor(missing, 50.0);
+        AnchorPane.setBottomAnchor(missing, 15.0);
+        missing.setVisible(false);
+
         danchor.setStyle(middle);
-        danchor.getChildren().addAll(describe, dtext);
+        danchor.getChildren().addAll(describe, dtext, missing);
         HBox dBox = new HBox(danchor);
 
         //ADDING THE HBOXES TO A VBOX
@@ -486,31 +516,47 @@ public class Kettlelog extends Application {
         addbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
             public void handle(ActionEvent event) {
+                boolean incomplete = false;
                 String itemStatus = "";
+                String iName = itemtext.getText();
                 String curQuan = qtext.getText();
                 String minQuan = mtext.getText();
-                int intQuan = Integer.parseInt(curQuan);
-                int intMin = Integer.parseInt(minQuan);
-                int total = intQuan + intMin;
-                double health = (((double) intQuan / total)) * 100;
+                String delTime = stext.getText();
 
-                if (intQuan == 0) {
-                    itemStatus = "Empty";
-                } else if (health < 25) {
-                    itemStatus = "Very Poor";
-                } else if (health < 40) {
-                    itemStatus = "Poor";
-                } else if (health < 50) {
-                    itemStatus = "Moderate";
-                } else if (health < 75) {
-                    itemStatus = "Good";
-                } else {
-                    itemStatus = "Very Good";
+                //CHECKS IF THERE ARE ANY REQUIRED FIELDS THAT ARE LEFT EMPTY
+                if ((iName.trim().length() <= 0) || curQuan.isEmpty() || minQuan.isEmpty() || delTime.isEmpty()) {
+                    incomplete = true;
                 }
 
-                table.getItems().add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan));
-                opaqueLayer.setVisible(false);
-                addwindow.hide();
+                if (incomplete) {
+                    missing.setVisible(true);
+                } 
+                else {
+                    missing.setVisible(false);
+                    int intQuan = Integer.parseInt(curQuan);
+                    int intMin = Integer.parseInt(minQuan);
+                    int total = intQuan + intMin;
+                    double health = (((double) intQuan / total)) * 100;
+
+                    //DETERMINING THE STATUS OF THE ITEM 
+                    if (intQuan == 0) {
+                        itemStatus = "Empty";
+                    } else if (health < 25) {
+                        itemStatus = "Very Poor";
+                    } else if (health < 40) {
+                        itemStatus = "Poor";
+                    } else if (health < 50) {
+                        itemStatus = "Moderate";
+                    } else if (health < 75) {
+                        itemStatus = "Good";
+                    } else {
+                        itemStatus = "Very Good";
+                    }
+
+                    table.getItems().add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan));
+                    opaqueLayer.setVisible(false);
+                    addwindow.hide();
+                }
             }
         }); 
 
