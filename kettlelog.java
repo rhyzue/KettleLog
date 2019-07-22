@@ -37,7 +37,8 @@ public class Kettlelog extends Application {
 
     int numRows = 0;
     int numRowsAdded = 0;
-    int starred = 0;
+    int starred = 1;
+    int expanded = 0;
 
     double screenX = 0.0;
     double screenY = 0.0;
@@ -126,9 +127,6 @@ public class Kettlelog extends Application {
 
         ColumnHandler columnChange = new ColumnHandler();
         table.getColumns().addListener(columnChange); 
-
-        table.getItems().add(new Columns("Gloves", "Good", "17", "5", "This is a test description.", "142314123123"));
-        table.getItems().add(new Columns("Drills", "Low", "2", "10", "This is a test description.", "12314123123"));
 
         table.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() >= 1) {
@@ -609,11 +607,11 @@ public class Kettlelog extends Application {
         public TableCell call(final TableColumn<Columns, String> param) {
                 final TableCell<Columns, String> cell = new TableCell<Columns, String>() {
 
+                    CheckBox checkBtn = new CheckBox();
                     Button starBtn = new Button();
-                    Button checkBtn = new Button("c");
-                    Button triangleBtn = new Button("t");
-                    Button penBtn = new Button("p"); 
-                    Button delBtn = new Button("d");
+                    Button triangleBtn = new Button();
+                    Button penBtn = new Button(); 
+                    Button delBtn = new Button();
                     Handler eventHandler = new Handler();
 
                     @Override
@@ -626,43 +624,105 @@ public class Kettlelog extends Application {
                        
                         starBtn.setTooltip(new Tooltip("Star"));                                
                         //FileInputStream starFileClr = new FileInputStream("./Misc/starBtnClr.png");       
-                        Image starImgClr = new Image("./Misc/starBtnClr.png", 20, 20, false, false);        
-                        Image starImgSel = new Image("./Misc/starBtnSel.png", 20, 20, false, false);        
-                        starBtn.setStyle("-fx-background-color: transparent;");     
-                        starBtn.setGraphic(new ImageView(starImgClr));      
+                        Image starImgClr = new Image("./Misc/starBtnClr.png");//, 20, 20, false, false);        
+                        Image starImgSel = new Image("./Misc/starBtnSel.png");//, 20, 20, false, false);
+
+                        ImageView starImg = new ImageView();          
+                        starBtn.setStyle("-fx-background-color: transparent;");             
+                        starImg.setImage(starImgClr);
+                        starImg.setFitWidth(20);
+                        starImg.setPreserveRatio(true);
+                        starImg.setSmooth(true);
+                        starImg.setCache(true); 
+                        starBtn.setGraphic(starImg);  
                         //starBtn.setOnAction(eventHandler);        
                         starBtn.setOnAction(new EventHandler<ActionEvent>() {       
                             @Override       
                             public void handle(ActionEvent event) {     
-                                if(starred==1){ //CURRENTLY starred - deStar        
-                                    starBtn.setGraphic(new ImageView(starImgSel));      
+                                if(starred==1){ //CURRENTLY starred - deStar  
+                                    starImg.setImage(starImgClr);      
+                                    starBtn.setGraphic(starImg);      
                                     starred=0;      
                                 }       
-                                else{ //NOT starred before - now starred        
-                                    starBtn.setGraphic(new ImageView(starImgClr));      
+                                else{ //NOT starred before - now starred
+                                    starImg.setImage(starImgSel);         
+                                    starBtn.setGraphic(starImg);//new ImageView(starImgClr));      
                                     starred=1;      
                                 }       
                             }       
                         });         
 
-                        checkBtn.setId("checkBtn");
+                        checkBtn.setSelected(false);
                         checkBtn.setTooltip(new Tooltip("Select"));
-                        checkBtn.setOnAction(eventHandler);
+                        /*checkBtn.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                        public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) {
+                            System.out.println("Checked");
+                            }
+                        });*/
 
                         triangleBtn.setId("triangleBtn");
                         triangleBtn.setTooltip(new Tooltip("Expand"));
-                        triangleBtn.setOnAction(eventHandler);
+                        triangleBtn.setStyle("-fx-background-color: transparent;");      
+                        Image triangleBtnImg = new Image("./Misc/triangleBtn.png");
+
+                        ImageView triangleImg = new ImageView();          
+                        triangleImg.setStyle("-fx-background-color: transparent;");             
+                        triangleImg.setImage(triangleBtnImg);
+                        triangleImg.setRotate(90);     
+                        triangleImg.setFitWidth(20);
+                        triangleImg.setPreserveRatio(true);
+                        triangleImg.setSmooth(true);
+                        triangleImg.setCache(true); 
+                        triangleBtn.setGraphic(triangleImg);  
+                        //starBtn.setOnAction(eventHandler);        
+                        triangleBtn.setOnAction(new EventHandler<ActionEvent>() {       
+                            @Override       
+                            public void handle(ActionEvent event) {     
+                                if(expanded==1){ //CURRENTLY starred - deStar  
+                                    triangleImg.setRotate(90);     
+                                    triangleBtn.setGraphic(triangleImg);      
+                                    expanded=0;      
+                                }       
+                                else{ //NOT expanded before - now expanded
+                                    triangleImg.setRotate(180);             
+                                    triangleBtn.setGraphic(triangleImg);//new ImageView(starImgClr));      
+                                    expanded=1;      
+                                }       
+                            }       
+                        }); 
 
                         penBtn.setId("penBtn");
                         penBtn.setTooltip(new Tooltip("Edit"));
                         penBtn.setOnAction(eventHandler);
 
+                        Image penBtnImg = new Image("./Misc/pencil.png");
+
+                        ImageView penImg = new ImageView();          
+                        penBtn.setStyle("-fx-background-color: transparent;");             
+                        penImg.setImage(penBtnImg);
+                        penImg.setFitWidth(20);
+                        penImg.setPreserveRatio(true);
+                        penImg.setSmooth(true);
+                        penImg.setCache(true); 
+                        penBtn.setGraphic(penImg);  
+
                         delBtn.setId("delBtn");
                         delBtn.setTooltip(new Tooltip("Delete"));
                         delBtn.setOnAction(eventHandler);
 
-                        HBox iconBox = new HBox(10);
-                        iconBox.getChildren().addAll(starBtn, checkBtn, triangleBtn, penBtn, delBtn);
+                        Image delBtnImg = new Image("./Misc/trash.png");
+
+                        ImageView delImg = new ImageView();          
+                        delBtn.setStyle("-fx-background-color: transparent;");             
+                        delImg.setImage(delBtnImg);
+                        delImg.setFitWidth(20);
+                        delImg.setPreserveRatio(true);
+                        delImg.setSmooth(true);
+                        delImg.setCache(true); 
+                        delBtn.setGraphic(delImg); 
+
+                        HBox iconBox = new HBox();
+                        iconBox.getChildren().addAll(checkBtn, starBtn, triangleBtn, penBtn, delBtn);
                         //setGraphic(iconBox);
 
                         if (empty) {
@@ -670,15 +730,9 @@ public class Kettlelog extends Application {
                             setText(null);
                         }
                         else{
-                            if(numRows>numRowsAdded){
-                                numRowsAdded++;
-                                setGraphic(iconBox);
-                                System.out.println("row: " + numRowsAdded);
-                            }
-                            else{
-                                setGraphic(null);
-                            }
-                        setText(null);
+                            numRowsAdded++;
+                            setGraphic(iconBox);
+                            setText(null);
                         }
                         
                     }
@@ -714,9 +768,6 @@ public class Kettlelog extends Application {
                     break;
                 case "starBtn":
                     System.out.println("Star");
-                    break;
-                case "checkBtn":
-                    System.out.println("Check");
                     break;
                 case "triangleBtn":
                     System.out.println("Triangle");
