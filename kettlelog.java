@@ -17,6 +17,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+//import org.controlsfx.control.table.TableRowExpanderColumn;
 import javafx.scene.control.TextArea;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -48,6 +49,9 @@ public class Kettlelog extends Application {
     TableView<Columns> table = new TableView<Columns>();
     String[] titles = {"", "Name","Status","Quantity","Minimum"};
     TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
+
+    Columns empty = new Columns( "", "", "", "", "", "123");
+
 
     public static void main(String[] args) {
         launch(args);
@@ -127,6 +131,8 @@ public class Kettlelog extends Application {
 
         ColumnHandler columnChange = new ColumnHandler();
         table.getColumns().addListener(columnChange); 
+
+        table.getItems().add(empty);
 
         table.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() >= 1) {
@@ -525,14 +531,7 @@ public class Kettlelog extends Application {
 
         addbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
-            public void handle(ActionEvent event) {
-
-                numRows++;      
-                System.out.println("numRows:"+numRows);     
-                CellGenerator cellFactory = new CellGenerator();        
-                columns[0].setCellFactory(cellFactory);     
-                numRowsAdded=0;    
-
+            public void handle(ActionEvent event) {    
 
                 boolean incomplete = false;
                 String itemStatus = "";
@@ -551,6 +550,12 @@ public class Kettlelog extends Application {
                     missing.setVisible(true);
                 } 
                 else {
+                    numRows++;      
+                    System.out.println("numRows:"+numRows);     
+                    CellGenerator cellFactory = new CellGenerator();        
+                    columns[0].setCellFactory(cellFactory);     
+                    numRowsAdded=0;
+
                     missing.setVisible(false);
                     int intQuan = Integer.parseInt(curQuan);
                     int intMin = Integer.parseInt(minQuan);
@@ -576,6 +581,8 @@ public class Kettlelog extends Application {
 
                     String id = new java.text.SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
 
+                    table.getItems().remove(empty);
+
                     table.getItems().add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan, itemDesc, id));
                     opaqueLayer.setVisible(false);
                     addwindow.hide();
@@ -585,8 +592,8 @@ public class Kettlelog extends Application {
 
         //STAGE INFORMATION 
         addwindow.initStyle(StageStyle.UNDECORATED);
-        addwindow.initOwner(setup);
         addwindow.initModality(Modality.WINDOW_MODAL);
+        addwindow.initOwner(setup);
         addwindow.setResizable(false);
         addwindow.setTitle("Add New Item");
         addwindow.show();
@@ -662,13 +669,12 @@ public class Kettlelog extends Application {
 
                         triangleBtn.setId("triangleBtn");
                         triangleBtn.setTooltip(new Tooltip("Expand"));
-                        triangleBtn.setStyle("-fx-background-color: transparent;");      
+                        triangleBtn.setStyle("-fx-background-color: transparent;");                  
                         Image triangleBtnImg = new Image("./Misc/triangleBtn.png");
 
                         ImageView triangleImg = new ImageView();          
                         triangleImg.setStyle("-fx-background-color: transparent;");             
-                        triangleImg.setImage(triangleBtnImg);
-                        triangleImg.setRotate(90);     
+                        triangleImg.setImage(triangleBtnImg);     
                         triangleImg.setFitWidth(20);
                         triangleImg.setPreserveRatio(true);
                         triangleImg.setSmooth(true);
@@ -678,24 +684,38 @@ public class Kettlelog extends Application {
                         triangleBtn.setOnAction(new EventHandler<ActionEvent>() {       
                             @Override       
                             public void handle(ActionEvent event) {     
-                                if(expanded==1){ //CURRENTLY starred - deStar  
-                                    triangleImg.setRotate(90);     
+                                if(expanded==1){     
+                                    triangleImg.setRotate(90);
                                     triangleBtn.setGraphic(triangleImg);      
                                     expanded=0;      
                                 }       
-                                else{ //NOT expanded before - now expanded
-                                    triangleImg.setRotate(180);             
-                                    triangleBtn.setGraphic(triangleImg);//new ImageView(starImgClr));      
+                                else{
+                                    triangleImg.setRotate(0);             
+                                    triangleBtn.setGraphic(triangleImg);    
                                     expanded=1;      
                                 }       
                             }       
                         }); 
 
+                        /*TableRowExpanderColumn<Columns> expander = new TableRowExpanderColumn<>(param -> {
+                             HBox editor = new HBox(10);
+                             TextField text = new TextField(param.getValue().getName());
+                             Button save = new Button("Save customer");
+                             save.setOnAction(event -> {
+                                 param.toggleExpanded();
+                             });
+                             editor.getChildren().addAll(text, save);
+                             return editor;
+                         });
+
+                        table.getColumns().add(expander);*/
+
                         penBtn.setId("penBtn");
                         penBtn.setTooltip(new Tooltip("Edit"));
                         penBtn.setOnAction(eventHandler);
 
-                        Image penBtnImg = new Image("./Misc/pencil.png");
+                        //Icon taken from flaticon.com
+                        Image penBtnImg = new Image("./Misc/pencil2.png");
 
                         ImageView penImg = new ImageView();          
                         penBtn.setStyle("-fx-background-color: transparent;");             
@@ -710,7 +730,8 @@ public class Kettlelog extends Application {
                         delBtn.setTooltip(new Tooltip("Delete"));
                         delBtn.setOnAction(eventHandler);
 
-                        Image delBtnImg = new Image("./Misc/trash.png");
+                        //Icon taken from flaticon.com
+                        Image delBtnImg = new Image("./Misc/delete2.png");
 
                         ImageView delImg = new ImageView();          
                         delBtn.setStyle("-fx-background-color: transparent;");             
@@ -721,9 +742,24 @@ public class Kettlelog extends Application {
                         delImg.setCache(true); 
                         delBtn.setGraphic(delImg); 
 
-                        HBox iconBox = new HBox();
-                        iconBox.getChildren().addAll(checkBtn, starBtn, triangleBtn, penBtn, delBtn);
-                        //setGraphic(iconBox);
+                        AnchorPane iconPane = new AnchorPane();
+                        iconPane.setPrefSize(200, 30);
+                        //iconPane.setStyle("-fx-background-color: #00FFFF");
+                        double dfromtop = 3.0;
+                        iconPane.setLeftAnchor(checkBtn, 10.0);
+                        iconPane.setTopAnchor(checkBtn, 8.0);
+                        iconPane.setLeftAnchor(starBtn, 33.0);
+                        iconPane.setTopAnchor(starBtn, dfromtop);
+                        iconPane.setLeftAnchor(triangleBtn, 68.0);
+                        iconPane.setTopAnchor(triangleBtn, dfromtop);
+                        iconPane.setLeftAnchor(penBtn, 103.0);
+                        iconPane.setTopAnchor(penBtn, dfromtop);
+                        iconPane.setLeftAnchor(delBtn, 138.0);
+                        iconPane.setTopAnchor(delBtn, dfromtop);
+
+                        iconPane.getChildren().addAll(checkBtn, starBtn, triangleBtn, penBtn, delBtn);
+
+                        HBox iconBox = new HBox(iconPane);
 
                         if (empty) {
                             setGraphic(null);
