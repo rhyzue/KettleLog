@@ -11,7 +11,7 @@ import javafx.geometry.Insets;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import javafx.event.ActionEvent;
-import javafx.scene.image.Image;
+import javafx.scene.image.*;
 import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
@@ -34,6 +34,10 @@ public class Kettlelog extends Application {
     double w = 1024;
     double h = w / w_to_h;
     double spacefromtable = 7.5;
+
+    int numRows = 0;
+    int numRowsAdded = 0;
+    int starred = 0;
 
     double screenX = 0.0;
     double screenY = 0.0;
@@ -116,7 +120,7 @@ public class Kettlelog extends Application {
             column.prefWidthProperty().bind(table.widthProperty().multiply(0.1977));
             column.setResizable(false);
             columns[i] = column;
-            columns[0].setCellFactory(cellFactory);
+            //columns[0].setCellFactory(cellFactory);
         }
         table.getColumns().<Columns, String>addAll(columns);
 
@@ -233,6 +237,7 @@ public class Kettlelog extends Application {
         //0 --> ADD WINDOW
         //1 --> EDIT WINDOW
         //COLOURS
+        Stage addwindow = new Stage();
         String tbcolour = "#006733;";
         String midcolour = "#d5f0e2;";
         String topbottom = String.format("-fx-background-color: %s", tbcolour);
@@ -241,7 +246,6 @@ public class Kettlelog extends Application {
         Bounds sb = base.localToScreen(base.getBoundsInLocal());
 
         //Variable initialization
-        Stage addwindow = new Stage();
         AnchorPane addbottom = new AnchorPane();
         HBox bottomBox = new HBox(10);
         Button cancelbtn = new Button();
@@ -524,6 +528,14 @@ public class Kettlelog extends Application {
         addbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
             public void handle(ActionEvent event) {
+
+                numRows++;      
+                System.out.println("numRows:"+numRows);     
+                CellGenerator cellFactory = new CellGenerator();        
+                columns[0].setCellFactory(cellFactory);     
+                numRowsAdded=0;    
+
+
                 boolean incomplete = false;
                 String itemStatus = "";
                 String iName = itemtext.getText();
@@ -596,8 +608,8 @@ public class Kettlelog extends Application {
         @Override
         public TableCell call(final TableColumn<Columns, String> param) {
                 final TableCell<Columns, String> cell = new TableCell<Columns, String>() {
-                    int b = 0;
-                    Button starBtn = new Button("s");
+
+                    Button starBtn = new Button();
                     Button checkBtn = new Button("c");
                     Button triangleBtn = new Button("t");
                     Button penBtn = new Button("p"); 
@@ -609,27 +621,69 @@ public class Kettlelog extends Application {
                         super.updateItem(item, empty);
 
                         starBtn.setId("starBtn");
-                        starBtn.setOnAction(eventHandler);
+
+                         //starBtn.setOnAction(eventHandler);
+                       
+                        starBtn.setTooltip(new Tooltip("Star"));                                
+                        //FileInputStream starFileClr = new FileInputStream("./Misc/starBtnClr.png");       
+                        Image starImgClr = new Image("./Misc/starBtnClr.png", 20, 20, false, false);        
+                        Image starImgSel = new Image("./Misc/starBtnSel.png", 20, 20, false, false);        
+                        starBtn.setStyle("-fx-background-color: transparent;");     
+                        starBtn.setGraphic(new ImageView(starImgClr));      
+                        //starBtn.setOnAction(eventHandler);        
+                        starBtn.setOnAction(new EventHandler<ActionEvent>() {       
+                            @Override       
+                            public void handle(ActionEvent event) {     
+                                if(starred==1){ //CURRENTLY starred - deStar        
+                                    starBtn.setGraphic(new ImageView(starImgSel));      
+                                    starred=0;      
+                                }       
+                                else{ //NOT starred before - now starred        
+                                    starBtn.setGraphic(new ImageView(starImgClr));      
+                                    starred=1;      
+                                }       
+                            }       
+                        });         
 
                         checkBtn.setId("checkBtn");
+                        checkBtn.setTooltip(new Tooltip("Select"));
                         checkBtn.setOnAction(eventHandler);
 
                         triangleBtn.setId("triangleBtn");
+                        triangleBtn.setTooltip(new Tooltip("Expand"));
                         triangleBtn.setOnAction(eventHandler);
 
                         penBtn.setId("penBtn");
+                        penBtn.setTooltip(new Tooltip("Edit"));
                         penBtn.setOnAction(eventHandler);
 
                         delBtn.setId("delBtn");
+                        delBtn.setTooltip(new Tooltip("Delete"));
                         delBtn.setOnAction(eventHandler);
 
                         HBox iconBox = new HBox(10);
                         iconBox.getChildren().addAll(starBtn, checkBtn, triangleBtn, penBtn, delBtn);
-                        setGraphic(iconBox);
+                        //setGraphic(iconBox);
+
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        }
+                        else{
+                            if(numRows>numRowsAdded){
+                                numRowsAdded++;
+                                setGraphic(iconBox);
+                                System.out.println("row: " + numRowsAdded);
+                            }
+                            else{
+                                setGraphic(null);
+                            }
                         setText(null);
+                        }
                         
                     }
                 };
+
             return cell;
         }
     }
