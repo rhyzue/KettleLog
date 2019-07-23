@@ -17,7 +17,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-//import org.controlsfx.control.table.TableRowExpanderColumn;
 import javafx.scene.control.TextArea;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -123,6 +122,7 @@ public class Kettlelog extends Application {
             TableColumn<Columns, String> column = new TableColumn<Columns, String>(titles[i]);
             column.setCellValueFactory(new PropertyValueFactory<>(titles[i].toLowerCase()));
             column.prefWidthProperty().bind(table.widthProperty().multiply(0.1977));
+            column.setStyle( "-fx-alignment: CENTER-LEFT;");
             column.setResizable(false);
             columns[i] = column;
             //columns[0].setCellFactory(cellFactory);
@@ -697,19 +697,6 @@ public class Kettlelog extends Application {
                             }       
                         }); 
 
-                        /*TableRowExpanderColumn<Columns> expander = new TableRowExpanderColumn<>(param -> {
-                             HBox editor = new HBox(10);
-                             TextField text = new TextField(param.getValue().getName());
-                             Button save = new Button("Save customer");
-                             save.setOnAction(event -> {
-                                 param.toggleExpanded();
-                             });
-                             editor.getChildren().addAll(text, save);
-                             return editor;
-                         });
-
-                        table.getColumns().add(expander);*/
-
                         penBtn.setId("penBtn");
                         penBtn.setTooltip(new Tooltip("Edit"));
                         penBtn.setOnAction(eventHandler);
@@ -745,7 +732,7 @@ public class Kettlelog extends Application {
                         AnchorPane iconPane = new AnchorPane();
                         iconPane.setPrefSize(200, 30);
                         //iconPane.setStyle("-fx-background-color: #00FFFF");
-                        double dfromtop = 3.0;
+                        double dfromtop = 1.0;
                         iconPane.setLeftAnchor(checkBtn, 10.0);
                         iconPane.setTopAnchor(checkBtn, 8.0);
                         iconPane.setLeftAnchor(starBtn, 33.0);
