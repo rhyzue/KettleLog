@@ -125,8 +125,8 @@ public class Kettlelog extends Application {
             column.setStyle( "-fx-alignment: CENTER-LEFT;");
             column.setResizable(false);
             columns[i] = column;
-            //columns[0].setCellFactory(cellFactory);
         }
+
         table.getColumns().<Columns, String>addAll(columns);
 
         ColumnHandler columnChange = new ColumnHandler();
@@ -453,6 +453,17 @@ public class Kettlelog extends Application {
         AnchorPane.setLeftAnchor(stext, 150.0); 
         AnchorPane.setBottomAnchor(stext, 40.0);
 
+        // DELIVERY TEXT FIELD MUST BE NUMERIC
+        stext.textProperty().addListener(new ChangeListener<String>() {
+        @Override
+            public void changed(javafx.beans.value.ObservableValue<? extends String> observable, String oldValue, 
+                String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    stext.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+
         Text sdesc = new Text("An estimate of how long the item would take to deliver to your location.");
             sdesc.setFont(new Font(12));
             sdesc.setFill(Color.GREY);
@@ -550,6 +561,9 @@ public class Kettlelog extends Application {
                     missing.setVisible(true);
                 } 
                 else {
+
+                    //EVERY ITEM GETS ASSIGNED A UNIQUE ID WHICH IS THE TIMESTAMP AT WHICH IT WAS CREATEF
+                    String id = new java.text.SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                     numRows++;      
                     System.out.println("numRows:"+numRows);     
                     CellGenerator cellFactory = new CellGenerator();        
@@ -576,10 +590,6 @@ public class Kettlelog extends Application {
                     } else {
                         itemStatus = "Very Good";
                     }
-
-                    //Every item should have a unique ID. 
-
-                    String id = new java.text.SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
 
                     table.getItems().remove(empty);
 
@@ -626,11 +636,8 @@ public class Kettlelog extends Application {
                         super.updateItem(item, empty);
 
                         starBtn.setId("starBtn");
-
-                         //starBtn.setOnAction(eventHandler);
                        
-                        starBtn.setTooltip(new Tooltip("Star"));                                
-                        //FileInputStream starFileClr = new FileInputStream("./Misc/starBtnClr.png");       
+                        starBtn.setTooltip(new Tooltip("Star"));                                       
                         Image starImgClr = new Image("./Misc/starBtnClr.png");//, 20, 20, false, false);        
                         Image starImgSel = new Image("./Misc/starBtnSel.png");//, 20, 20, false, false);
 
@@ -661,14 +668,8 @@ public class Kettlelog extends Application {
 
                         checkBtn.setSelected(false);
                         checkBtn.setTooltip(new Tooltip("Select"));
-                        /*checkBtn.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                        public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) {
-                            System.out.println("Checked");
-                            }
-                        });*/
 
                         triangleBtn.setId("triangleBtn");
-                        triangleBtn.setTooltip(new Tooltip("Expand"));
                         triangleBtn.setStyle("-fx-background-color: transparent;");                  
                         Image triangleBtnImg = new Image("./Misc/triangleBtn.png");
 
