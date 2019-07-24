@@ -39,8 +39,8 @@ public class Kettlelog extends Application {
     double h = w / w_to_h;
     double spacefromtable = 7.5;
 
-    int numRows = 0;
-    int numRowsAdded = 0;
+    public static int numRows = 0;
+    public static int numRowsAdded = 0;
     int starred = 1;
     int expanded = 0;
 
@@ -119,8 +119,6 @@ public class Kettlelog extends Application {
         table.setFixedCellSize(40.0);
         table.setPrefSize(300, 508.0);
 
-        CellGenerator cellFactory = new CellGenerator();
-
         //COLUMN TITLES
         
         for(int i=0; i<titles.length; i++)
@@ -142,7 +140,7 @@ public class Kettlelog extends Application {
 
         table.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() >= 1) {
-                System.out.println("Hello");
+                System.out.println("PRINTING ROW INFORMATION BELOW.");
                 onSelection();
             }
         });
@@ -571,16 +569,10 @@ public class Kettlelog extends Application {
                     //EVERY ITEM GETS ASSIGNED A UNIQUE ID WHICH IS THE TIMESTAMP AT WHICH IT WAS CREATEF
                     String id = new java.text.SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                     btnids.add(id);
-
-                    System.out.println("numRows:"+numRows); 
-
-                    for(int i=0;i<btnids.size();i++){
-                        System.out.println(btnids.get(i));
-                    } 
-
                     numRows++;      
-                        
-                    CellGenerator cellFactory = new CellGenerator();    
+
+                    System.out.println("numRows:"+ numRows);     
+                    CellGenerator cellFactory = new CellGenerator(btnids);    
                     columns[0].setCellFactory(cellFactory);     
                     numRowsAdded=0;
 
@@ -636,12 +628,17 @@ public class Kettlelog extends Application {
     //================================================================================
 
     public class CellGenerator extends TableCell<Columns, String> implements Callback<TableColumn<Columns, String>, TableCell<Columns, String>> {
+
+        ArrayList<String> btnids;
+
+        public CellGenerator(ArrayList<String> btnids) {
+            this.btnids = btnids;
+        }
+
         @Override
         public TableCell call(final TableColumn<Columns, String> param) {
 
-                ButtonsCell cell = new ButtonsCell();
- 
-            
+                ButtonsCell cell = new ButtonsCell(btnids);
                 return cell;
         }
 
@@ -650,24 +647,27 @@ public class Kettlelog extends Application {
     public class ButtonsCell extends TableCell<Columns, String> {
 
         AnchorPane iconPane;
-        Button starBtn = new Button();
+        Button starBtn;
+        ArrayList<String> btnids;
 
-        public ButtonsCell() {
+        public ButtonsCell(ArrayList<String> btnids) {
+
+            this.btnids = btnids;
 
             CheckBox checkBtn = new CheckBox();
-            //Button starBtn = new Button();
+            Button starBtn = new Button();
+            this.starBtn = starBtn;
             Button triangleBtn = new Button();
             Button penBtn = new Button(); 
             Button delBtn = new Button();
             Handler eventHandler = new Handler();
-    
+
+            
             starBtn.setTooltip(new Tooltip("Star"));                                       
             Image starImgClr = new Image("./Misc/starBtnClr.png");//, 20, 20, false, false);        
             Image starImgSel = new Image("./Misc/starBtnSel.png");//, 20, 20, false, false);
 
-            ImageView starImg = new ImageView(); 
-
-
+            ImageView starImg = new ImageView();          
             starBtn.setStyle("-fx-background-color: transparent;");             
             starImg.setImage(starImgClr);
             starImg.setFitWidth(20);
@@ -675,15 +675,15 @@ public class Kettlelog extends Application {
             starImg.setSmooth(true);
             starImg.setCache(true); 
             starBtn.setGraphic(starImg);  
-            //starBtn.setOnAction(eventHandler);        
+                  
             starBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
-                public void handle(ActionEvent event) {
-                System.out.println(starBtn.getId());     
+                public void handle(ActionEvent event) {     
                     if(starred==1){  
                         starImg.setImage(starImgClr);      
                         starBtn.setGraphic(starImg);      
                         starred=0;      
+                        System.out.println(starBtn.getId());
                     }       
                     else{ 
                         starImg.setImage(starImgSel);         
@@ -787,12 +787,20 @@ public class Kettlelog extends Application {
                         setText(null);
                     }
                     else{
-                        System.out.println("count: "+ numRowsAdded); 
-                        starBtn.setId(btnids.get(numRowsAdded));  
-                        numRowsAdded++;
-                        setGraphic(iconPane);
-                        setText(null);
-                        System.out.println("icon box added");
+                        System.out.println("count: "+numRowsAdded);
+                            if(numRowsAdded>1){
+                            starBtn.setId(btnids.get(numRowsAdded-1));
+                            }
+                            else if (numRowsAdded==1){
+                                starBtn.setId(btnids.get(0));
+                            }
+                            else{
+                            starBtn.setId(btnids.get(numRowsAdded));
+                            }
+                            numRowsAdded++;
+                            setGraphic(iconPane);
+                            setText(null);
+                            System.out.println("icon box added");    
                     }
             }
     }   
