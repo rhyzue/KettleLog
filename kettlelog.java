@@ -27,7 +27,7 @@ public class Kettlelog extends Application {
     //================================================================================
     // GLOBAL VARIABLES
     //================================================================================
-    Stage setup = new Stage();
+    private static Stage setup;
     BorderPane base = new BorderPane();
 
     double w_to_h = 1.4;
@@ -62,6 +62,7 @@ public class Kettlelog extends Application {
         //================================================================================
         // INITIALIZATION
         //================================================================================
+        this.setup = setup;
         opaqueLayer.setStyle("-fx-background-color: #001a34;");
         opaqueLayer.setOpacity(0.7);
         opaqueLayer.setVisible(false);
@@ -603,7 +604,7 @@ public class Kettlelog extends Application {
         //STAGE INFORMATION 
         addwindow.initStyle(StageStyle.UNDECORATED);
         addwindow.initModality(Modality.WINDOW_MODAL);
-        addwindow.initOwner(setup);
+        addwindow.initOwner(Kettlelog.setup);
         addwindow.setResizable(false);
         addwindow.setTitle("Add New Item");
         addwindow.show();
