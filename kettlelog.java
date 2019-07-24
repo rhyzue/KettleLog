@@ -1,4 +1,5 @@
 import Columns.*;
+import java.util.*;
 import javafx.util.*;
 import javafx.scene.text.*;
 import javafx.scene.Scene;
@@ -12,10 +13,13 @@ import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import javafx.event.ActionEvent;
 import javafx.scene.image.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.TableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.TextArea;
 import javafx.application.Application;
@@ -51,6 +55,7 @@ public class Kettlelog extends Application {
 
     Columns empty = new Columns( "", "", "", "", "", "123");
 
+    public static ArrayList<String> btnids = new ArrayList<String>();
 
     public static void main(String[] args) {
         launch(args);
@@ -565,9 +570,17 @@ public class Kettlelog extends Application {
 
                     //EVERY ITEM GETS ASSIGNED A UNIQUE ID WHICH IS THE TIMESTAMP AT WHICH IT WAS CREATEF
                     String id = new java.text.SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+                    btnids.add(id);
+
+                    System.out.println("numRows:"+numRows); 
+
+                    for(int i=0;i<btnids.size();i++){
+                        System.out.println(btnids.get(i));
+                    } 
+
                     numRows++;      
-                    System.out.println("numRows:"+numRows);     
-                    CellGenerator cellFactory = new CellGenerator();        
+                        
+                    CellGenerator cellFactory = new CellGenerator();    
                     columns[0].setCellFactory(cellFactory);     
                     numRowsAdded=0;
 
@@ -613,159 +626,176 @@ public class Kettlelog extends Application {
 
     public void onSelection() {
         Columns selectedItem = table.getSelectionModel().getSelectedItem();
-        System.out.println(selectedItem.getID());
+
+
+        System.out.println(selectedItem.getDesc());
     }
 
     //================================================================================
     // CLASSES
     //================================================================================
 
-    public class CellGenerator implements Callback<TableColumn<Columns, String>, TableCell<Columns, String>>{
+    public class CellGenerator extends TableCell<Columns, String> implements Callback<TableColumn<Columns, String>, TableCell<Columns, String>> {
         @Override
         public TableCell call(final TableColumn<Columns, String> param) {
-                final TableCell<Columns, String> cell = new TableCell<Columns, String>() {
 
-                    CheckBox checkBtn = new CheckBox();
-                    Button starBtn = new Button();
-                    Button triangleBtn = new Button();
-                    Button penBtn = new Button(); 
-                    Button delBtn = new Button();
-                    Handler eventHandler = new Handler();
-
-                    @Override
-                    public void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-
-                        starBtn.setId("starBtn");
-                       
-                        starBtn.setTooltip(new Tooltip("Star"));                                       
-                        Image starImgClr = new Image("./Misc/starBtnClr.png");//, 20, 20, false, false);        
-                        Image starImgSel = new Image("./Misc/starBtnSel.png");//, 20, 20, false, false);
-
-                        ImageView starImg = new ImageView();          
-                        starBtn.setStyle("-fx-background-color: transparent;");             
-                        starImg.setImage(starImgClr);
-                        starImg.setFitWidth(20);
-                        starImg.setPreserveRatio(true);
-                        starImg.setSmooth(true);
-                        starImg.setCache(true); 
-                        starBtn.setGraphic(starImg);  
-                        //starBtn.setOnAction(eventHandler);        
-                        starBtn.setOnAction(new EventHandler<ActionEvent>() {       
-                            @Override       
-                            public void handle(ActionEvent event) {     
-                                if(starred==1){ //CURRENTLY starred - deStar  
-                                    starImg.setImage(starImgClr);      
-                                    starBtn.setGraphic(starImg);      
-                                    starred=0;      
-                                }       
-                                else{ //NOT starred before - now starred
-                                    starImg.setImage(starImgSel);         
-                                    starBtn.setGraphic(starImg);//new ImageView(starImgClr));      
-                                    starred=1;      
-                                }       
-                            }       
-                        });         
-
-                        checkBtn.setSelected(false);
-                        checkBtn.setTooltip(new Tooltip("Select"));
-
-                        triangleBtn.setId("triangleBtn");
-                        triangleBtn.setStyle("-fx-background-color: transparent;");                  
-                        Image triangleBtnImg = new Image("./Misc/triangleBtn.png");
-
-                        ImageView triangleImg = new ImageView();          
-                        triangleImg.setStyle("-fx-background-color: transparent;");             
-                        triangleImg.setImage(triangleBtnImg);     
-                        triangleImg.setFitWidth(20);
-                        triangleImg.setPreserveRatio(true);
-                        triangleImg.setSmooth(true);
-                        triangleImg.setCache(true); 
-                        triangleBtn.setGraphic(triangleImg);  
-                        //starBtn.setOnAction(eventHandler);        
-                        triangleBtn.setOnAction(new EventHandler<ActionEvent>() {       
-                            @Override       
-                            public void handle(ActionEvent event) {     
-                                if(expanded==1){     
-                                    triangleImg.setRotate(90);
-                                    triangleBtn.setGraphic(triangleImg);      
-                                    expanded=0;      
-                                }       
-                                else{
-                                    triangleImg.setRotate(0);             
-                                    triangleBtn.setGraphic(triangleImg);    
-                                    expanded=1;      
-                                }       
-                            }       
-                        }); 
-
-                        penBtn.setId("penBtn");
-                        penBtn.setTooltip(new Tooltip("Edit"));
-                        penBtn.setOnAction(eventHandler);
-
-                        //Icon taken from flaticon.com
-                        Image penBtnImg = new Image("./Misc/pencil2.png");
-
-                        ImageView penImg = new ImageView();          
-                        penBtn.setStyle("-fx-background-color: transparent;");             
-                        penImg.setImage(penBtnImg);
-                        penImg.setFitWidth(20);
-                        penImg.setPreserveRatio(true);
-                        penImg.setSmooth(true);
-                        penImg.setCache(true); 
-                        penBtn.setGraphic(penImg);  
-
-                        delBtn.setId("delBtn");
-                        delBtn.setTooltip(new Tooltip("Delete"));
-                        delBtn.setOnAction(eventHandler);
-
-                        //Icon taken from flaticon.com
-                        Image delBtnImg = new Image("./Misc/delete2.png");
-
-                        ImageView delImg = new ImageView();          
-                        delBtn.setStyle("-fx-background-color: transparent;");             
-                        delImg.setImage(delBtnImg);
-                        delImg.setFitWidth(20);
-                        delImg.setPreserveRatio(true);
-                        delImg.setSmooth(true);
-                        delImg.setCache(true); 
-                        delBtn.setGraphic(delImg); 
-
-                        AnchorPane iconPane = new AnchorPane();
-                        iconPane.setPrefSize(200, 30);
-                        //iconPane.setStyle("-fx-background-color: #00FFFF");
-                        double dfromtop = 1.0;
-                        iconPane.setLeftAnchor(checkBtn, 10.0);
-                        iconPane.setTopAnchor(checkBtn, 8.0);
-                        iconPane.setLeftAnchor(starBtn, 33.0);
-                        iconPane.setTopAnchor(starBtn, dfromtop);
-                        iconPane.setLeftAnchor(triangleBtn, 68.0);
-                        iconPane.setTopAnchor(triangleBtn, dfromtop);
-                        iconPane.setLeftAnchor(penBtn, 103.0);
-                        iconPane.setTopAnchor(penBtn, dfromtop);
-                        iconPane.setLeftAnchor(delBtn, 138.0);
-                        iconPane.setTopAnchor(delBtn, dfromtop);
-
-                        iconPane.getChildren().addAll(checkBtn, starBtn, triangleBtn, penBtn, delBtn);
-
-                        HBox iconBox = new HBox(iconPane);
-
-                        if (empty) {
-                            setGraphic(null);
-                            setText(null);
-                        }
-                        else{
-                            numRowsAdded++;
-                            setGraphic(iconBox);
-                            setText(null);
-                        }
-                        
-                    }
-                };
-
-            return cell;
+                ButtonsCell cell = new ButtonsCell();
+ 
+            
+                return cell;
         }
+
     }
+
+    public class ButtonsCell extends TableCell<Columns, String> {
+
+        AnchorPane iconPane;
+        Button starBtn = new Button();
+
+        public ButtonsCell() {
+
+            CheckBox checkBtn = new CheckBox();
+            //Button starBtn = new Button();
+            Button triangleBtn = new Button();
+            Button penBtn = new Button(); 
+            Button delBtn = new Button();
+            Handler eventHandler = new Handler();
+    
+            starBtn.setTooltip(new Tooltip("Star"));                                       
+            Image starImgClr = new Image("./Misc/starBtnClr.png");//, 20, 20, false, false);        
+            Image starImgSel = new Image("./Misc/starBtnSel.png");//, 20, 20, false, false);
+
+            ImageView starImg = new ImageView(); 
+
+
+            starBtn.setStyle("-fx-background-color: transparent;");             
+            starImg.setImage(starImgClr);
+            starImg.setFitWidth(20);
+            starImg.setPreserveRatio(true);
+            starImg.setSmooth(true);
+            starImg.setCache(true); 
+            starBtn.setGraphic(starImg);  
+            //starBtn.setOnAction(eventHandler);        
+            starBtn.setOnAction(new EventHandler<ActionEvent>() {       
+                @Override       
+                public void handle(ActionEvent event) {
+                System.out.println(starBtn.getId());     
+                    if(starred==1){  
+                        starImg.setImage(starImgClr);      
+                        starBtn.setGraphic(starImg);      
+                        starred=0;      
+                    }       
+                    else{ 
+                        starImg.setImage(starImgSel);         
+                        starBtn.setGraphic(starImg);    
+                        starred=1;      
+                    }       
+                }       
+            });         
+
+            checkBtn.setSelected(false);
+            checkBtn.setTooltip(new Tooltip("Select"));
+
+            triangleBtn.setId("triangleBtn");
+            triangleBtn.setStyle("-fx-background-color: transparent;");                  
+            Image triangleBtnImg = new Image("./Misc/triangleBtn.png");
+
+            ImageView triangleImg = new ImageView();          
+            triangleImg.setStyle("-fx-background-color: transparent;");             
+            triangleImg.setImage(triangleBtnImg);     
+            triangleImg.setFitWidth(20);
+            triangleImg.setPreserveRatio(true);
+            triangleImg.setSmooth(true);
+            triangleImg.setCache(true); 
+            triangleBtn.setGraphic(triangleImg);  
+            //starBtn.setOnAction(eventHandler);    
+
+            triangleBtn.setOnAction(new EventHandler<ActionEvent>() {       
+                @Override       
+                public void handle(ActionEvent event) {     
+                    if(expanded==1){     
+                        triangleImg.setRotate(90);
+                        triangleBtn.setGraphic(triangleImg);      
+                        expanded=0;   
+                    }        
+                    else{
+                        triangleImg.setRotate(0);             
+                        triangleBtn.setGraphic(triangleImg);    
+                        expanded=1;      
+                    }       
+                }       
+            });
+
+            penBtn.setId("penBtn");
+            penBtn.setTooltip(new Tooltip("Edit"));
+            penBtn.setOnAction(eventHandler);
+
+            //Icon taken from flaticon.com
+            Image penBtnImg = new Image("./Misc/pencil2.png");
+
+            ImageView penImg = new ImageView();          
+            penBtn.setStyle("-fx-background-color: transparent;");             
+            penImg.setImage(penBtnImg);
+            penImg.setFitWidth(20);
+            penImg.setPreserveRatio(true);
+            penImg.setSmooth(true);
+            penImg.setCache(true); 
+            penBtn.setGraphic(penImg);  
+
+            delBtn.setId("delBtn");
+            delBtn.setTooltip(new Tooltip("Delete"));
+            delBtn.setOnAction(eventHandler);
+
+            //Icon taken from flaticon.com
+            Image delBtnImg = new Image("./Misc/delete2.png");
+
+            ImageView delImg = new ImageView();          
+            delBtn.setStyle("-fx-background-color: transparent;");             
+            delImg.setImage(delBtnImg);
+            delImg.setFitWidth(20);
+            delImg.setPreserveRatio(true);
+            delImg.setSmooth(true);
+            delImg.setCache(true); 
+            delBtn.setGraphic(delImg); 
+
+            AnchorPane iconPane = new AnchorPane();
+            iconPane.setPrefSize(200, 30);
+            //iconPane.setStyle("-fx-background-color: #00FFFF");
+            double dfromtop = 1.0;
+            iconPane.setLeftAnchor(checkBtn, 10.0);
+            iconPane.setTopAnchor(checkBtn, 8.0);
+            iconPane.setLeftAnchor(starBtn, 33.0);
+            iconPane.setTopAnchor(starBtn, dfromtop);
+            iconPane.setLeftAnchor(triangleBtn, 68.0);
+            iconPane.setTopAnchor(triangleBtn, dfromtop);
+            iconPane.setLeftAnchor(penBtn, 103.0);
+            iconPane.setTopAnchor(penBtn, dfromtop);
+            iconPane.setLeftAnchor(delBtn, 138.0);
+            iconPane.setTopAnchor(delBtn, dfromtop);
+
+            iconPane.getChildren().addAll(checkBtn, starBtn, triangleBtn, penBtn, delBtn);
+
+            this.iconPane = iconPane;
+
+        }
+
+            @Override
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                        setText(null);
+                    }
+                    else{
+                        System.out.println("count: "+ numRowsAdded); 
+                        starBtn.setId(btnids.get(numRowsAdded));  
+                        numRowsAdded++;
+                        setGraphic(iconPane);
+                        setText(null);
+                        System.out.println("icon box added");
+                    }
+            }
+    }   
 
     public class ColumnHandler implements ListChangeListener<TableColumn>{
         public boolean suspended;
