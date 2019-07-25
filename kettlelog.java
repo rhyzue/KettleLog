@@ -689,12 +689,8 @@ public class Kettlelog extends Application {
                         starImg.setImage(starImgClr);      
                         starBtn.setGraphic(starImg);      
                         starred=0;
-                        Object row = cell.getTableRow().getItem();
-
-
-
-
-                        System.out.println("row item: " + row.getDesc());
+                        Columns test = (Columns) cell.getTableRow().getItem();
+                        System.out.println(test.getDesc());
                     }       
                     else{ 
                         starImg.setImage(starImgSel);         
@@ -718,8 +714,7 @@ public class Kettlelog extends Application {
             triangleImg.setPreserveRatio(true);
             triangleImg.setSmooth(true);
             triangleImg.setCache(true); 
-            triangleBtn.setGraphic(triangleImg);  
-            //starBtn.setOnAction(eventHandler);    
+            triangleBtn.setGraphic(triangleImg);    
 
             triangleBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
@@ -739,7 +734,6 @@ public class Kettlelog extends Application {
 
             penBtn.setId("penBtn");
             penBtn.setTooltip(new Tooltip("Edit"));
-            //penBtn.setOnAction(eventHandler);
 
             //Icon taken from flaticon.com
             Image penBtnImg = new Image("./Misc/pencil2.png");
@@ -755,7 +749,6 @@ public class Kettlelog extends Application {
 
             delBtn.setId("delBtn");
             delBtn.setTooltip(new Tooltip("Delete"));
-            //delBtn.setOnAction(eventHandler);
 
             //Icon taken from flaticon.com
             Image delBtnImg = new Image("./Misc/delete2.png");
@@ -771,7 +764,6 @@ public class Kettlelog extends Application {
 
             AnchorPane iconPane = new AnchorPane();
             iconPane.setPrefSize(200, 30);
-            //iconPane.setStyle("-fx-background-color: #00FFFF");
             double dfromtop = 1.0;
             iconPane.setLeftAnchor(checkBtn, 10.0);
             iconPane.setTopAnchor(checkBtn, 8.0);
