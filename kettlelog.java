@@ -634,18 +634,12 @@ public class Kettlelog extends Application {
 
     //Here is a method that creates a new TableCell with buttons attached to it. 
     //The functions of the buttons are also defined here too.
-    public static AnchorPane createButtonAnchorPane(final TableCell cell) {
+    public static AnchorPane createButtonAnchorPane(final TableCell cell, final Button starBtn, final Image starImgClr, final Image starImgSel, final ImageView starImg) {
 
             CheckBox checkBtn = new CheckBox();
-            Button starBtn = new Button();
-            //starBtn = new Button();
             Button triangleBtn = new Button();
             Button penBtn = new Button(); 
-            Button delBtn = new Button();
-
-            Image starImgClr = new Image("./Misc/starBtnClr.png");   
-            Image starImgSel = new Image("./Misc/starBtnSel.png");
-            ImageView starImg = new ImageView();   
+            Button delBtn = new Button();  
 
             starBtn.setTooltip(new Tooltip("Star"));                                      
             starBtn.setStyle("-fx-background-color: transparent;");             
@@ -654,14 +648,6 @@ public class Kettlelog extends Application {
             starImg.setSmooth(true);
             starImg.setCache(true); 
 
-            /*Columns item = (Columns) cell.getTableRow().getItem();
-            starred = item.getStarred();  
-            if(starred==true){   
-                starImg.setImage(starImgClr);    
-            }       
-            else{ 
-                starImg.setImage(starImgSel);           
-            }*/
             starImg.setImage(starImgClr);
             starBtn.setGraphic(starImg);  
                 
@@ -670,7 +656,7 @@ public class Kettlelog extends Application {
                 public void handle(ActionEvent event) { 
                     Columns item = (Columns) cell.getTableRow().getItem();
                     starred = item.getStarred();  
-                    System.out.println("Got item. Starred: "+starred);
+                    System.out.println("Got item. Starred: "+ starred);
                     if(starred==true){  
                         starImg.setImage(starImgClr);      
                         starBtn.setGraphic(starImg);      
@@ -779,11 +765,16 @@ public class Kettlelog extends Application {
 
             return new TableCell<Columns, String>() {
 
-                private final AnchorPane buttonanchor = createButtonAnchorPane(this);
-
                 @Override
                 public void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
+
+                    Button starBtn = new Button();
+                    Image starImgClr = new Image("./Misc/starBtnClr.png");   
+                    Image starImgSel = new Image("./Misc/starBtnSel.png");
+                    ImageView starImg = new ImageView(); 
+
+                    AnchorPane buttonanchor = createButtonAnchorPane(this, starBtn, starImgClr, starImgSel, starImg);
 
                     if (empty) {
                         setGraphic(null);
@@ -792,7 +783,17 @@ public class Kettlelog extends Application {
                     else{
                         setGraphic(buttonanchor);
                         setText(null);
-                        System.out.println("icon box added");    
+                        System.out.println("icon box added");  
+
+                        Columns isStarred = (Columns) this.getTableRow().getItem();
+                        starred = isStarred.getStarred();  
+                        if(starred==true){   
+                            starImg.setImage(starImgSel);    
+                        }       
+                        else{ 
+                            starImg.setImage(starImgClr);           
+                        }
+                        starBtn.setGraphic(starImg);      
                     }
                 }
                 
