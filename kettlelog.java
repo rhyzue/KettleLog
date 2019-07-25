@@ -44,7 +44,7 @@ public class Kettlelog extends Application {
 
     public static int numRows = 0;
     public static int numRowsAdded = 0;
-    public static int starred = 1;
+    public static int starred = 0;
     public static int expanded = 0;
 
     double screenX = 0.0;
@@ -621,9 +621,14 @@ public class Kettlelog extends Application {
 
     }
 
-    public static void onSelection() {
+   public void onSelection() {
         Columns selectedItem = table.getSelectionModel().getSelectedItem();
+        if(table.getSelectionModel().getSelectedItem()==null){
+            System.out.println("No item here");
+        }
+        else{
         System.out.println(selectedItem.getDesc());
+        }
     }
 
     //Here is a method that creates a new TableCell with buttons attached to it. 
@@ -651,13 +656,13 @@ public class Kettlelog extends Application {
                 
             starBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
-                public void handle(ActionEvent event) {     
+                public void handle(ActionEvent event) { 
+                    Columns test = (Columns) cell.getTableRow().getItem();
+                    System.out.println(test.getDesc());    
                     if(starred==1){  
                         starImg.setImage(starImgClr);      
                         starBtn.setGraphic(starImg);      
                         starred=0;
-                        Columns test = (Columns) cell.getTableRow().getItem();
-                        System.out.println(test.getDesc());
                     }       
                     else{ 
                         starImg.setImage(starImgSel);         
