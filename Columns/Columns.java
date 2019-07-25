@@ -8,17 +8,19 @@ public class Columns {
         private String minimum = null;
         private String desc = null;
         private String id = null;
+        private boolean starred = false;
 
         public Columns() {
         }
 
-        public Columns(String name, String status, String quantity, String minimum, String desc, String id) {
+        public Columns(String name, String status, String quantity, String minimum, String desc, String id, boolean starred) {
             this.name = name;
             this.status = status;
             this.quantity = quantity;
             this.minimum = minimum;
             this.desc = desc;
             this.id = id;
+            this.starred = starred;
         }
 
         public String getName() {
@@ -67,6 +69,14 @@ public class Columns {
 
         public void setID(String id) {
             this.id = id;
+        }
+
+        public boolean getStarred() {
+            return starred;
+        }
+
+        public void setStarred(boolean starred) {
+            this.starred = starred;
         }
 
 }

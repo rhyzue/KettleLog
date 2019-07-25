@@ -44,7 +44,7 @@ public class Kettlelog extends Application {
 
     public static int numRows = 0;
     public static int numRowsAdded = 0;
-    public static int starred = 0;
+    public static boolean starred = false;
     public static int expanded = 0;
 
     double screenX = 0.0;
@@ -52,14 +52,15 @@ public class Kettlelog extends Application {
 
     @SuppressWarnings("unchecked")
     Region opaqueLayer = new Region();
+
+    //table with 5 columns
     public static TableView<Columns> table = new TableView<Columns>();
     String[] titles = {"", "Name","Status","Quantity","Minimum"};
-
     TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
-
-    Columns empty = new Columns( "", "", "", "", "", "123");
+    Columns empty = new Columns( "", "", "", "", "", "empty column", false);
 
     public static ArrayList<String> btnids = new ArrayList<String>();
+
 
     public static void main(String[] args) {
         launch(args);
@@ -604,7 +605,7 @@ public class Kettlelog extends Application {
 
                     table.getItems().remove(empty);
 
-                    table.getItems().add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan, itemDesc, id));
+                    table.getItems().add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan, itemDesc, id, false));
                     opaqueLayer.setVisible(false);
                     addwindow.hide();
                 }
@@ -621,9 +622,9 @@ public class Kettlelog extends Application {
 
     }
 
-   public void onSelection() {
+    public void onSelection() {
         Columns selectedItem = table.getSelectionModel().getSelectedItem();
-        if(table.getSelectionModel().getSelectedItem()==null){
+        if(selectedItem==null){
             System.out.println("No item here");
         }
         else{
@@ -637,37 +638,50 @@ public class Kettlelog extends Application {
 
             CheckBox checkBtn = new CheckBox();
             Button starBtn = new Button();
+            //starBtn = new Button();
             Button triangleBtn = new Button();
             Button penBtn = new Button(); 
             Button delBtn = new Button();
 
             Image starImgClr = new Image("./Misc/starBtnClr.png");   
             Image starImgSel = new Image("./Misc/starBtnSel.png");
-            ImageView starImg = new ImageView();      
+            ImageView starImg = new ImageView();   
 
             starBtn.setTooltip(new Tooltip("Star"));                                      
             starBtn.setStyle("-fx-background-color: transparent;");             
-            starImg.setImage(starImgClr);
             starImg.setFitWidth(20);
             starImg.setPreserveRatio(true);
             starImg.setSmooth(true);
             starImg.setCache(true); 
+
+            /*Columns item = (Columns) cell.getTableRow().getItem();
+            starred = item.getStarred();  
+            if(starred==true){   
+                starImg.setImage(starImgClr);    
+            }       
+            else{ 
+                starImg.setImage(starImgSel);           
+            }*/
+            starImg.setImage(starImgClr);
             starBtn.setGraphic(starImg);  
                 
             starBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) { 
-                    Columns test = (Columns) cell.getTableRow().getItem();
-                    System.out.println(test.getDesc());    
-                    if(starred==1){  
+                    Columns item = (Columns) cell.getTableRow().getItem();
+                    starred = item.getStarred();  
+                    System.out.println("Got item. Starred: "+starred);
+                    if(starred==true){  
                         starImg.setImage(starImgClr);      
                         starBtn.setGraphic(starImg);      
-                        starred=0;
+                        item.setStarred(false);
+                        System.out.println("Item set to not starred");
                     }       
                     else{ 
                         starImg.setImage(starImgSel);         
                         starBtn.setGraphic(starImg);    
-                        starred=1;      
+                        item.setStarred(true);
+                        System.out.println("Item starred");    
                     }       
                 }       
             });         
@@ -765,7 +779,6 @@ public class Kettlelog extends Application {
 
             return new TableCell<Columns, String>() {
 
-            
                 private final AnchorPane buttonanchor = createButtonAnchorPane(this);
 
                 @Override
@@ -781,7 +794,7 @@ public class Kettlelog extends Application {
                         setText(null);
                         System.out.println("icon box added");    
                     }
-            }
+                }
                 
         };
 
