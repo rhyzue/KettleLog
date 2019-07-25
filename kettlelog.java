@@ -457,6 +457,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(a4, 46.0);
 
         TextField stext = new TextField();
+            stext.setPromptText("Testing.");
             stext.setPrefWidth(numbertextwidth);
         AnchorPane.setLeftAnchor(stext, 150.0); 
         AnchorPane.setBottomAnchor(stext, 40.0);
@@ -570,7 +571,7 @@ public class Kettlelog extends Application {
                 } 
                 else {
 
-                    //EVERY ITEM GETS ASSIGNED A UNIQUE ID WHICH IS THE TIMESTAMP AT WHICH IT WAS CREATEF
+                    //EVERY ITEM GETS ASSIGNED A UNIQUE ID WHICH IS THE TIMESTAMP AT WHICH IT WAS CREATED
                     String id = new java.text.SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                     btnids.add(id);
                     numRows++;      
@@ -624,40 +625,6 @@ public class Kettlelog extends Application {
         Columns selectedItem = table.getSelectionModel().getSelectedItem();
         System.out.println(selectedItem.getDesc());
     }
-
-    //================================================================================
-    // CLASSES
-    //================================================================================
-
-    public class CellGenerator extends TableCell<Columns, String> implements Callback<TableColumn<Columns, String>, TableCell<Columns, String>> {
-
-        @Override
-        public TableCell call(final TableColumn<Columns, String> param) {
-
-            return new TableCell<Columns, String>() {
-
-            
-                private final AnchorPane buttonanchor = createButtonAnchorPane(this);
-
-                @Override
-                public void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-
-                    if (empty) {
-                        setGraphic(null);
-                        setText(null);
-                    }
-                    else{
-                        setGraphic(buttonanchor);
-                        setText(null);
-                        System.out.println("icon box added");    
-                    }
-            }
-                
-        };
-
-    }
-}
 
     //Here is a method that creates a new TableCell with buttons attached to it. 
     //The functions of the buttons are also defined here too.
@@ -781,6 +748,41 @@ public class Kettlelog extends Application {
             return iconPane;
 
     }   
+
+    //================================================================================
+    // CLASSES
+    //================================================================================
+
+    public class CellGenerator extends TableCell<Columns, String> implements Callback<TableColumn<Columns, String>, TableCell<Columns, String>> {
+
+        @Override
+        public TableCell call(final TableColumn<Columns, String> param) {
+
+            return new TableCell<Columns, String>() {
+
+            
+                private final AnchorPane buttonanchor = createButtonAnchorPane(this);
+
+                @Override
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (empty) {
+                        setGraphic(null);
+                        setText(null);
+                    }
+                    else{
+                        setGraphic(buttonanchor);
+                        setText(null);
+                        System.out.println("icon box added");    
+                    }
+            }
+                
+        };
+
+    }
+}
+
 
     public class ColumnHandler implements ListChangeListener<TableColumn>{
         public boolean suspended;
