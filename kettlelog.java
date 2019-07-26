@@ -1,10 +1,13 @@
 import Columns.*;
 import java.util.*;
 import javafx.util.*;
-import javafx.scene.text.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.geometry.Pos; 
 import javafx.stage.Screen;
+import javafx.scene.text.*;
+import javafx.scene.image.*;
+import javafx.beans.value.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Bounds;
 import javafx.scene.control.*;
@@ -12,25 +15,21 @@ import javafx.geometry.Insets;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Alert.*;
-import javafx.scene.image.*;
-import javafx.geometry.Pos;        
-import javafx.scene.control.OverrunStyle;
-import javafx.scene.control.Alert.*;
-import javafx.collections.FXCollections;
-import javafx.scene.control.TableColumn.CellEditEvent;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.TableCell;
+import javafx.scene.control.Alert.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TableCell;
 import javafx.application.Application;
-import javafx.beans.value.*;
+import javafx.collections.FXCollections;
+import javafx.scene.control.OverrunStyle;
+import javafx.collections.ObservableList;
 import javafx.collections.ListChangeListener;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 
@@ -38,6 +37,8 @@ public class Kettlelog extends Application {
     //================================================================================
     // GLOBAL VARIABLES
     //================================================================================
+    @SuppressWarnings("unchecked")
+
     private static Stage setup;
     BorderPane base = new BorderPane();
 
@@ -54,7 +55,6 @@ public class Kettlelog extends Application {
     double screenX = 0.0;
     double screenY = 0.0;
 
-    @SuppressWarnings("unchecked")
     Region opaqueLayer = new Region();
 
     //table with 5 columns
@@ -267,6 +267,19 @@ public class Kettlelog extends Application {
         }
     }
 
+    //Here is a method that displays the information of a certain item when it is pressed.
+
+    public void displayInfo() {
+
+        Stage infostage = new Stage();
+
+        BorderPane infoborderpane = new BorderPane();
+
+        infostage.setResizable(false);
+        infostage.setScene(new Scene(infoborderpane, 500, 650));
+        infostage.show();
+    }
+
 
     //Here is a method that will display the confirmation alert (stage) when a user wishes to delete an item.
     public void displayAlert(Columns rowinfo) {
@@ -307,7 +320,6 @@ public class Kettlelog extends Application {
             alert.widthProperty().removeListener(widthListener);
             alert.heightProperty().removeListener(heightListener);
         });
-
 
         //Top part of the pane which says "Confirm Deletion.""
         Text deltext = new Text();
@@ -801,14 +813,11 @@ public class Kettlelog extends Application {
 
                     //if the type is to edit, update the information at every field.
                     else {
-
-                        //Columns rowedit = rowinfo;
                         rowinfo.setName(iName);
                         rowinfo.setQuantity(curQuan);
                         rowinfo.setMinimum(minQuan);
                         rowinfo.setDelivery(delTime);
                         rowinfo.setDesc(itemDesc);
-
                     }
                     
                     opaqueLayer.setVisible(false);
@@ -887,7 +896,8 @@ public class Kettlelog extends Application {
 
             triangleBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
-                public void handle(ActionEvent event) {     
+                public void handle(ActionEvent event) {   
+                    displayInfo();  
                     if(expanded==1){     
                         triangleImg.setRotate(90);
                         triangleBtn.setGraphic(triangleImg);      
@@ -1053,10 +1063,6 @@ public class Kettlelog extends Application {
     public class StarComparator implements Comparator<Columns> {
         @Override
         public int compare(Columns c1, Columns c2) {
-            //int it1 = (c1.getStarred())? 1 : 0;
-            //int it2 = (c2.getStarred())? 1 : 0;
-            //return (c1.getName()).compareTo(c2.getName());
-            //return Boolean.compareTo(c1.getStarred(),c2.getStarred());
             return Boolean.valueOf(c1.getStarred()).compareTo(Boolean.valueOf(c2.getStarred()));
         }
     }
@@ -1076,6 +1082,7 @@ public class Kettlelog extends Application {
                     break;
                 case "triangleBtn":
                     System.out.println("Triangle");
+                    displayInfo();
                     break;
                 case "penBtn":
                     System.out.println("Pen");
