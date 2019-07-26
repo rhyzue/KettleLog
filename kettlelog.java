@@ -25,7 +25,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.TextArea;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
+import javafx.beans.value.*;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -60,6 +60,8 @@ public class Kettlelog extends Application {
     Columns empty = new Columns( "", "", "", "", "", "empty column", false);
 
     public static ArrayList<String> btnids = new ArrayList<String>();
+
+    private final ObservableList<Columns> data = FXCollections.observableArrayList(empty);
 
 
     public static void main(String[] args) {
@@ -141,7 +143,7 @@ public class Kettlelog extends Application {
         ColumnHandler columnChange = new ColumnHandler();
         table.getColumns().addListener(columnChange); 
 
-        table.getItems().add(empty);
+        table.setItems(data);
 
         table.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() >= 1) {
@@ -186,14 +188,17 @@ public class Kettlelog extends Application {
             searchbar.setPromptText("Search");
         AnchorPane.setLeftAnchor(searchbar, 305.0); 
         AnchorPane.setBottomAnchor(searchbar, spacefromtable);
+
+        ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Checked", "Most Recent");
         
         //FILTER COMBOBOX
-        ComboBox<String> filter= new ComboBox<String>();
+        ComboBox<String> filter= new ComboBox<String>(filterOptions);
             filter.setPromptText("Filter By");
             filter.setPrefWidth(150.0);
-            filter.getItems().add("Starred");
-            filter.getItems().add("Checked");
-            filter.getItems().add("Most Recent");
+
+            FilterHandler filterListener = new FilterHandler();
+            filter.valueProperty().addListener(filterListener);
+
         AnchorPane.setLeftAnchor(filter, 52.0);
         AnchorPane.setBottomAnchor(filter, spacefromtable);
 
@@ -603,11 +608,12 @@ public class Kettlelog extends Application {
                         itemStatus = "Very Good";
                     }
 
-                    table.getItems().remove(empty);
+                    data.remove(empty);
 
-                    table.getItems().add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan, itemDesc, id, false));
+                    data.add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan, itemDesc, id, false));
                     opaqueLayer.setVisible(false);
                     addwindow.hide();
+                    table.setItems(data);
                 }
             }
         }); 
@@ -815,6 +821,29 @@ public class Kettlelog extends Application {
                     this.suspended = false;
                 }
             }
+    }
+
+    public class FilterHandler implements ChangeListener<String>{
+
+        @Override
+        public void changed(ObservableValue ov, String oldValue, String newValue){
+
+            switch(newValue){
+                case "Starred":
+                    System.out.println("Starred Items:");
+                    SortedList<Columns> sortStarred = data.sorted(starComparator);
+                    for(int i = 0; i<data.size(); i++){
+                        if(data.get(i).getStarred()==true){
+                        System.out.println(data.get(i).getName());
+                        }
+                    }
+
+                    break;
+                default:
+                    System.out.println("Otherstuff");
+            }
+
+        }
     }
 
     public class Handler implements EventHandler<ActionEvent>{
