@@ -12,7 +12,11 @@ import javafx.geometry.Insets;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert.*;
 import javafx.scene.image.*;
+import javafx.geometry.Pos;        
+import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.Alert.*;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -57,7 +61,8 @@ public class Kettlelog extends Application {
     public static TableView<Columns> table = new TableView<Columns>();
     String[] titles = {"", "Name","Status","Quantity","Minimum"};
     TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
-    Columns empty = new Columns( "", "", "", "", "", "empty column", false);
+    Columns empty = new Columns( "", "", "", "", "", "", "empty column", false);
+    public static String[] emptyinfo = {"", "", "", "", ""};
 
     public static ArrayList<String> btnids = new ArrayList<String>();
 
@@ -251,9 +256,178 @@ public class Kettlelog extends Application {
     // METHODS
     //================================================================================
 
-    public void addItemPopup(int popuptype){
+    //Here we are ensuring that when the user clicks on an empty row, an error doesn't occur.
+    public void onSelection() {
+        Columns selectedItem = table.getSelectionModel().getSelectedItem();
+        if(table.getSelectionModel().getSelectedItem()==null){
+            System.out.println("No item here");
+        }
+        else{
+            System.out.println(selectedItem.getDesc());
+        }
+    }
+
+
+    //Here is a method that will display the confirmation alert (stage) when a user wishes to delete an item.
+    public void displayAlert(Columns rowinfo) {
+
+        Stage alert = new Stage();
+        opaqueLayer.setVisible(true);
+
+        String striphex = "#610031;";
+        String alertmidhex = "#dfccd5;";
+        String stripcolour = String.format("-fx-background-color: %s", striphex);
+        String alertmidcolour = String.format("-fx-background-color: %s", alertmidhex);
+
+        double alertwidth = 500.0;
+        double alertw_to_h = 1.42857;
+        double alertheight = alertwidth / alertw_to_h;
+
+        Bounds sb = base.localToScreen(base.getBoundsInLocal());
+
+        screenX = (sb.getMinX() + w / 2 - alertwidth / 2); 
+        screenY = (sb.getMinY() + h / 2 - alertheight / 2);
+
+        alert.initStyle(StageStyle.UNDECORATED);
+        alert.initModality(Modality.WINDOW_MODAL);
+        alert.initOwner(Kettlelog.setup);
+
+        //Ensures that alert popup is centered relatively to its parent stage (setup).
+        ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
+            alert.setX(screenX);
+        };
+        ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
+            alert.setY(screenY);
+        };
+
+        alert.widthProperty().addListener(widthListener);
+        alert.heightProperty().addListener(heightListener);
+
+        alert.setOnShown(shown -> {
+            alert.widthProperty().removeListener(widthListener);
+            alert.heightProperty().removeListener(heightListener);
+        });
+
+
+        //Top part of the pane which says "Confirm Deletion.""
+        Text deltext = new Text();
+            deltext.setText("Confirm Deletion");
+            deltext.setFont(new Font(18));
+            deltext.setFill(Color.WHITE);
+
+        AnchorPane alerttstrip = new AnchorPane();
+            AnchorPane.setLeftAnchor(deltext, 30.0);
+            AnchorPane.setBottomAnchor(deltext, 10.0);
+            alerttstrip.setStyle(stripcolour);
+            alerttstrip.setPrefSize(alertwidth, 75); //(width, height)
+            alerttstrip.getChildren().addAll(deltext);
+
+        //Center part of the pane which contains the Kettlelog logo and some text labels.
+
+        Text delconfirm = new Text();
+            delconfirm.setText("Are you sure you want to delete item");
+            delconfirm.setFont(new Font(16));
+
+        Image kettleonlyimage = new Image("./Misc/kettle.png");
+        ImageView kettle = new ImageView();
+            kettle.setFitHeight(150);
+            kettle.setFitWidth(150);
+            kettle.setImage(kettleonlyimage);
+
+        Label itemlabel = new Label();
+            itemlabel.setText(rowinfo.getName() + "?");
+            itemlabel.setFont(new Font(16));
+            itemlabel.setPrefHeight(50.0);
+            itemlabel.setPrefWidth(280.0);
+            itemlabel.setAlignment(Pos.CENTER);
+            itemlabel.setTextOverrun(OverrunStyle.ELLIPSIS);
+            itemlabel.setStyle("-fx-background-color: #cbadc3;");
+
+        Text delperm = new Text();
+            delperm.setText("This item will be deleted permanently.");
+            delperm.setFont(new Font(14));
+
+        Text delundo = new Text();
+            delundo.setText("You can't undo this action.");
+            delundo.setFont(new Font(14));
+
+        VBox alertcentervbox = new VBox(10);
+            alertcentervbox.setPrefSize(220.0, 230.0);
+            alertcentervbox.getChildren().addAll(delconfirm, itemlabel, delperm, delundo);
+            alertcentervbox.setPadding(new Insets(50.0, 0.0, 0.0, 0.0));
+            //alertcentervbox.setStyle("-fx-background-color: #cf1020;");
+ 
+        AnchorPane alertcenter = new AnchorPane();
+            AnchorPane.setTopAnchor(alertcentervbox, 0.0);
+            AnchorPane.setRightAnchor(alertcentervbox, 30.0);
+            AnchorPane.setLeftAnchor(kettle, 10.0);
+            AnchorPane.setTopAnchor(kettle, 40.0);
+
+            alertcenter.setStyle(alertmidcolour);
+            alertcenter.getChildren().addAll(kettle, alertcentervbox);
+
+        //Bottom part of the pane which has the two buttons "Cancel" and "Delete".  
+        Button alertcancel = new Button();
+            alertcancel.setText("Cancel");
+            alertcancel.setPrefHeight(30);
+
+            alertcancel.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                    public void handle(ActionEvent event) {
+                        alert.hide();
+                        opaqueLayer.setVisible(false);
+                    }
+                }); 
+
+        Button alertdelete = new Button();
+            alertdelete.setText("Delete Item");
+            alertdelete.setPrefHeight(30);
+
+            alertdelete.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                    public void handle(ActionEvent event) {
+                        data.remove(rowinfo);
+                        table.setItems(data);
+                        alert.hide();
+                        opaqueLayer.setVisible(false);
+                    }
+                }); 
+
+        HBox alertbbx = new HBox(15);
+            alertbbx.getChildren().addAll(alertcancel, alertdelete);
+
+        AnchorPane alertbstrip = new AnchorPane();
+            AnchorPane.setRightAnchor(alertbbx, 7.5);
+            AnchorPane.setTopAnchor(alertbbx, 7.5);
+            alertbstrip.setStyle(stripcolour);
+            alertbstrip.setPrefSize(alertwidth, 50); //(width, height)
+            alertbstrip.getChildren().addAll(alertbbx);
+    
+        BorderPane alertpane = new BorderPane();
+
+        alertpane.setTop(alerttstrip);
+        alertpane.setCenter(alertcenter);
+        alertpane.setBottom(alertbstrip);
+
+        alert.setResizable(false);
+        alert.setScene(new Scene(alertpane, alertwidth, alertheight));
+        alert.showAndWait();
+    }
+
+    //Here is a singular method that allows a user to either Edit or Add an item depending on the parameters specified.
+    public void addItemPopup(int popuptype, String[]textarray, Columns rowinfo){
         //0 --> ADD WINDOW
         //1 --> EDIT WINDOW
+
+        //PRE-SET TEXT FIELDS TAKEN FROM 5-ELEMENT ARRAY
+        //This array takes the name, quantity, minimum, shipping time, and description of the column.
+        //The purpose of this is to save the information so that it can be displayed when the edit button is clicked.
+        String prename = textarray[0];
+        String prequan = textarray[1];
+        String premin = textarray[2];
+        String predel = textarray[3];
+        String predesc = textarray[4];
+
         //COLOURS
         Stage addwindow = new Stage();
         String tbcolour = "#006733;";
@@ -268,7 +442,7 @@ public class Kettlelog extends Application {
         HBox bottomBox = new HBox(10);
         Button cancelbtn = new Button();
         Button addbtn = new Button();
-        bottomBox.getChildren().addAll(addbtn, cancelbtn);
+        bottomBox.getChildren().addAll(cancelbtn, addbtn);
 
         opaqueLayer.setVisible(true);
         double addwidth = 600;
@@ -299,7 +473,13 @@ public class Kettlelog extends Application {
         //BOTTOM PART of the window which includes an "Add" and "Cancel" button.
         addbottom.setStyle(topbottom);
         addbottom.setPrefSize(30, 40); 
-        addbtn.setText("Create");
+
+        if (popuptype == 0) {
+            addbtn.setText("Create");
+        } else {
+            addbtn.setText("Edit");
+        }
+        
         addbtn.setId("createditem");  
         addbtn.setStyle("-fx-background-color: #093d23;");
         addbtn.setTextFill(Color.WHITE);
@@ -343,6 +523,7 @@ public class Kettlelog extends Application {
 
         TextField itemtext = new TextField();
             itemtext.setPrefWidth(200);
+            itemtext.setText(prename);
         AnchorPane.setLeftAnchor(itemtext, 150.0); 
         AnchorPane.setBottomAnchor(itemtext, 10.0);
  
@@ -368,6 +549,7 @@ public class Kettlelog extends Application {
 
         TextField qtext = new TextField();
             qtext.setPrefWidth(numbertextwidth);
+            qtext.setText(prequan);
         AnchorPane.setLeftAnchor(qtext, 150.0); 
         AnchorPane.setBottomAnchor(qtext, 40.0);
 
@@ -416,6 +598,7 @@ public class Kettlelog extends Application {
 
         TextField mtext = new TextField();
             mtext.setPrefWidth(numbertextwidth);
+            mtext.setText(premin);
         AnchorPane.setLeftAnchor(mtext, 150.0); 
         AnchorPane.setBottomAnchor(mtext, 40.0);
 
@@ -463,7 +646,7 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(a4, 46.0);
 
         TextField stext = new TextField();
-            stext.setPromptText("Testing.");
+            stext.setText(predel);
             stext.setPrefWidth(numbertextwidth);
         AnchorPane.setLeftAnchor(stext, 150.0); 
         AnchorPane.setBottomAnchor(stext, 40.0);
@@ -510,6 +693,7 @@ public class Kettlelog extends Application {
             dtext.setPrefWidth(400);
             dtext.setPrefHeight(175);
             dtext.setWrapText(true);
+            dtext.setText(predesc);
 
         AnchorPane.setLeftAnchor(dtext, 150.0); 
         AnchorPane.setTopAnchor(dtext, 20.0);
@@ -610,7 +794,23 @@ public class Kettlelog extends Application {
 
                     data.remove(empty);
 
-                    data.add(new Columns(itemtext.getText(), itemStatus, curQuan, minQuan, itemDesc, id, false));
+                    //if the type is to add, then add the row.
+                    if (popuptype == 0) {
+                        data.add(new Columns(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, id, false));
+                    } 
+
+                    //if the type is to edit, update the information at every field.
+                    else {
+
+                        //Columns rowedit = rowinfo;
+                        rowinfo.setName(iName);
+                        rowinfo.setQuantity(curQuan);
+                        rowinfo.setMinimum(minQuan);
+                        rowinfo.setDelivery(delTime);
+                        rowinfo.setDesc(itemDesc);
+
+                    }
+                    
                     opaqueLayer.setVisible(false);
                     addwindow.hide();
                     table.setItems(data);
@@ -628,20 +828,11 @@ public class Kettlelog extends Application {
 
     }
 
-    public void onSelection() {
-        Columns selectedItem = table.getSelectionModel().getSelectedItem();
-        if(selectedItem==null){
-            System.out.println("No item here");
-        }
-        else{
-        System.out.println(selectedItem.getDesc());
-        }
-    }
-
     //Here is a method that creates a new TableCell with buttons attached to it. 
     //The functions of the buttons are also defined here too.
-    public static AnchorPane createButtonAnchorPane(final TableCell cell, final Button starBtn, final Image starImgClr, final Image starImgSel, final ImageView starImg) {
+    public AnchorPane createButtonAnchorPane(final TableCell cell, final Button starBtn, final Image starImgClr, final Image starImgSel, final ImageView starImg) {
 
+            double dfromtop = 1.0;
             CheckBox checkBtn = new CheckBox();
             Button triangleBtn = new Button();
             Button penBtn = new Button(); 
@@ -723,7 +914,16 @@ public class Kettlelog extends Application {
             penImg.setPreserveRatio(true);
             penImg.setSmooth(true);
             penImg.setCache(true); 
-            penBtn.setGraphic(penImg);  
+            penBtn.setGraphic(penImg);
+
+            penBtn.setOnAction(new EventHandler<ActionEvent>() {            
+                @Override               
+                public void handle(ActionEvent event) {         
+                    Columns test = (Columns) cell.getTableRow().getItem();      
+                    String[] editinfo = {test.getName(), test.getQuantity(), test.getMinimum(), test.getDelivery(), test.getDesc()};        
+                    addItemPopup(1, editinfo, test);        
+                }       
+            });  
 
             delBtn.setId("delBtn");
             delBtn.setTooltip(new Tooltip("Delete"));
@@ -740,9 +940,16 @@ public class Kettlelog extends Application {
             delImg.setCache(true); 
             delBtn.setGraphic(delImg); 
 
+            delBtn.setOnAction(new EventHandler<ActionEvent>() {       
+                @Override       
+                public void handle(ActionEvent event) { 
+                    Columns test = (Columns) cell.getTableRow().getItem();
+                    displayAlert(test);
+                }
+            });    
+
             AnchorPane iconPane = new AnchorPane();
             iconPane.setPrefSize(200, 30);
-            double dfromtop = 1.0;
             iconPane.setLeftAnchor(checkBtn, 10.0);
             iconPane.setTopAnchor(checkBtn, 8.0);
             iconPane.setLeftAnchor(starBtn, 33.0);
@@ -831,18 +1038,26 @@ public class Kettlelog extends Application {
             switch(newValue){
                 case "Starred":
                     System.out.println("Starred Items:");
-                    SortedList<Columns> sortStarred = data.sorted(starComparator);
-                    for(int i = 0; i<data.size(); i++){
-                        if(data.get(i).getStarred()==true){
-                        System.out.println(data.get(i).getName());
-                        }
-                    }
-
+                    StarComparator comp = new StarComparator();
+                    //Collections.sort(data, comp);
+                    data.sort(comp.reversed());
+                    table.setItems(data);
                     break;
                 default:
                     System.out.println("Otherstuff");
             }
 
+        }
+    }
+
+    public class StarComparator implements Comparator<Columns> {
+        @Override
+        public int compare(Columns c1, Columns c2) {
+            //int it1 = (c1.getStarred())? 1 : 0;
+            //int it2 = (c2.getStarred())? 1 : 0;
+            //return (c1.getName()).compareTo(c2.getName());
+            //return Boolean.compareTo(c1.getStarred(),c2.getStarred());
+            return Boolean.valueOf(c1.getStarred()).compareTo(Boolean.valueOf(c2.getStarred()));
         }
     }
 
@@ -854,7 +1069,7 @@ public class Kettlelog extends Application {
 
             switch(itemClicked){
                 case "addBtn":
-                    addItemPopup(0); 
+                    addItemPopup(0, emptyinfo, empty); 
                     break;
                 case "starBtn":
                     System.out.println("Star");
@@ -864,7 +1079,6 @@ public class Kettlelog extends Application {
                     break;
                 case "penBtn":
                     System.out.println("Pen");
-                    addItemPopup(1);
                     break;
                 case "delBtn":
                     System.out.println("Delete");

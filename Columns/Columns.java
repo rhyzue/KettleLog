@@ -6,6 +6,7 @@ public class Columns {
         private String status = null;
         private String quantity= null;
         private String minimum = null;
+        private String delivery = null;
         private String desc = null;
         private String id = null;
         private boolean starred = false;
@@ -13,11 +14,12 @@ public class Columns {
         public Columns() {
         }
 
-        public Columns(String name, String status, String quantity, String minimum, String desc, String id, boolean starred) {
+        public Columns(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred) {
             this.name = name;
             this.status = status;
             this.quantity = quantity;
             this.minimum = minimum;
+            this.delivery = delivery;
             this.desc = desc;
             this.id = id;
             this.starred = starred;
@@ -53,6 +55,14 @@ public class Columns {
 
         public void setMinimum(String minimum) {
             this.minimum = minimum;
+        }
+
+        public String getDelivery() {
+            return delivery;
+        }
+
+        public void setDelivery(String delivery) {
+            this.delivery = delivery;
         }
 
         public String getDesc() {
