@@ -1,16 +1,19 @@
 import Columns.*;
+import java.time.*; 
 import java.util.*;
 import javafx.util.*;
+import java.time.chrono.*; 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.geometry.Pos; 
 import javafx.stage.Screen;
 import javafx.scene.text.*;
+import java.time.LocalDate;
 import javafx.scene.image.*;
 import javafx.beans.value.*;
 import javafx.scene.layout.*;
-import javafx.geometry.Bounds;
 import javafx.scene.control.*;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
@@ -268,15 +271,107 @@ public class Kettlelog extends Application {
     }
 
     //Here is a method that displays the information of a certain item when it is pressed.
-
-    public void displayInfo() {
+    public void displayInfo(Columns rowinfo) {
 
         Stage infostage = new Stage();
+        double infowidth = 500;
+        double infoheight = 700;
+        opaqueLayer.setVisible(true);
+
+        //Hex codes for colours used on this stage
+        String infostriphex = "#004545;";
+        String infomidhex = "#b8d6d6;";
+        String infostripcolour = String.format("-fx-background-color: %s", infostriphex);
+        String infomidcolour = String.format("-fx-background-color: %s", infomidhex);
+
+        //Ensures that alert popup is centered relatively to its parent stage (setup).
+        Bounds sb = base.localToScreen(base.getBoundsInLocal());
+
+        screenX = (sb.getMinX() + w / 2 - infowidth / 2); 
+        screenY = (sb.getMinY() + h / 2 - infoheight / 2);
+
+        ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
+            infostage.setX(screenX);
+        };
+        ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
+            infostage.setY(screenY);
+        };
+
+        infostage.widthProperty().addListener(widthListener);
+        infostage.heightProperty().addListener(heightListener);
+
+        infostage.setOnShown(shown -> {
+            infostage.widthProperty().removeListener(widthListener);
+            infostage.heightProperty().removeListener(heightListener);
+        });
+
+        //Top strip of info panel which has text saying "Item Information"
+        Text infotitle = new Text();
+            infotitle.setText("Item Information");
+            infotitle.setFont(new Font(18));
+            infotitle.setFill(Color.WHITE);
+
+        AnchorPane infotstrip = new AnchorPane();
+            AnchorPane.setLeftAnchor(infotitle, 50.0);
+            AnchorPane.setBottomAnchor(infotitle, 5.0);
+            infotstrip.setStyle(infostripcolour);
+            infotstrip.setPrefSize(infowidth, 50); //(width, height)
+            infotstrip.getChildren().addAll(infotitle);
+
+        //Center portion of the info panel
+        Label infolabel = new Label();
+            infolabel.setText(rowinfo.getName());
+            infolabel.setFont(new Font(16));
+            infolabel.setPrefHeight(50.0);
+            infolabel.setPrefWidth(300.0);
+            infolabel.setFont(new Font(16));
+            infolabel.setAlignment(Pos.CENTER);
+            infolabel.setTextOverrun(OverrunStyle.ELLIPSIS);
+            infolabel.setStyle("-fx-background-color: #709c9c");
+
+        Text dateadded = new Text();
+            dateadded.setText("Date Added");
+            dateadded.setFont(new Font(14));
+            AnchorPane.setLeftAnchor(dateadded, 25.0);
+            AnchorPane.setTopAnchor(dateadded, 100.0);
+
+        AnchorPane infocenter = new AnchorPane();
+        AnchorPane.setTopAnchor(infolabel, 25.0);
+        AnchorPane.setLeftAnchor(infolabel, 100.0);
+
+        infocenter.setStyle(infomidcolour);
+        infocenter.getChildren().addAll(infolabel, dateadded);
+
+        //Bottom part of the strip that has a cancel button
+        Button infocancel = new Button();
+            infocancel.setText("Close");
+            infocancel.setPrefHeight(27.5);
+
+            infocancel.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                    public void handle(ActionEvent event) {
+                        infostage.hide();
+                        opaqueLayer.setVisible(false);
+                    }
+                }); 
+
+        AnchorPane infobstrip = new AnchorPane();
+            AnchorPane.setRightAnchor(infocancel, 5.0);
+            AnchorPane.setTopAnchor(infocancel, 5.0);
+            infobstrip.setStyle(infostripcolour);
+            infobstrip.setPrefSize(infowidth, 37.5);
+            infobstrip.getChildren().addAll(infocancel);
 
         BorderPane infoborderpane = new BorderPane();
+        infoborderpane.setTop(infotstrip);
+        infoborderpane.setCenter(infocenter);
+        infoborderpane.setBottom(infobstrip);
 
         infostage.setResizable(false);
-        infostage.setScene(new Scene(infoborderpane, 500, 650));
+        infostage.initStyle(StageStyle.UNDECORATED);
+        infostage.initModality(Modality.WINDOW_MODAL);
+        infostage.initOwner(Kettlelog.setup);
+        infostage.setScene(new Scene(infoborderpane, infowidth, infoheight));
         infostage.show();
     }
 
@@ -534,13 +629,48 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(a, 16.0);
 
         TextField itemtext = new TextField();
-            itemtext.setPrefWidth(200);
+            itemtext.setPrefWidth(150);
             itemtext.setText(prename);
         AnchorPane.setLeftAnchor(itemtext, 150.0); 
         AnchorPane.setBottomAnchor(itemtext, 10.0);
- 
+
+        //Icon taken from flaticon.com
+        Image helpBtnImg = new Image("./Misc/help.png");
+        ImageView helpImg = new ImageView(); 
+            helpImg.setImage(helpBtnImg);
+            helpImg.setFitWidth(20);
+            helpImg.setPreserveRatio(true);
+            helpImg.setSmooth(true);
+            helpImg.setCache(true);  
+
+        //instruction tooltip for help button
+        String addtip = "add";
+        String edittip = "edit";
+        Tooltip helptip = new Tooltip();
+        helptip.setShowDuration(javafx.util.Duration.seconds(60));
+        if (popuptype == 0) {
+            helptip.setText(addtip);
+        } else {
+            helptip.setText(edittip);
+        }
+
+        Button helpBtn = new Button();
+            helpBtn.setGraphic(helpImg);    
+            helpBtn.setStyle("-fx-background-color: transparent;");    
+            helpBtn.setTooltip(helptip);     
+            AnchorPane.setRightAnchor(helpBtn, 175.0);
+            AnchorPane.setBottomAnchor(helpBtn, 8.0);
+            
+        //datepicker where user can select when the action occurred
+        DatePicker datepicker = new DatePicker();
+            datepicker.setPrefWidth(125);
+            datepicker.setEditable(false);
+            datepicker.setValue(LocalDate.now());
+        AnchorPane.setRightAnchor(datepicker, 50.0);
+        AnchorPane.setBottomAnchor(datepicker, 10.0);
+
         ianchor.setStyle(middle);
-        ianchor.getChildren().addAll(itemname, itemtext, a);
+        ianchor.getChildren().addAll(itemname, itemtext, a, datepicker, helpBtn);
         HBox iBox = new HBox(ianchor);
 
         //QUANTITY ~ REQUIRED FIELD
@@ -883,7 +1013,7 @@ public class Kettlelog extends Application {
 
             triangleBtn.setId("triangleBtn");
             triangleBtn.setStyle("-fx-background-color: transparent;");                  
-            Image triangleBtnImg = new Image("./Misc/triangleBtn.png");
+            Image triangleBtnImg = new Image("./Misc/info.png");
 
             ImageView triangleImg = new ImageView();          
             triangleImg.setStyle("-fx-background-color: transparent;");             
@@ -897,17 +1027,8 @@ public class Kettlelog extends Application {
             triangleBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) {   
-                    displayInfo();  
-                    if(expanded==1){     
-                        triangleImg.setRotate(90);
-                        triangleBtn.setGraphic(triangleImg);      
-                        expanded=0;   
-                    }        
-                    else{
-                        triangleImg.setRotate(0);             
-                        triangleBtn.setGraphic(triangleImg);    
-                        expanded=1;      
-                    }       
+                    Columns test = (Columns) cell.getTableRow().getItem();
+                    displayInfo(test);  
                 }       
             });
 
@@ -1082,7 +1203,6 @@ public class Kettlelog extends Application {
                     break;
                 case "triangleBtn":
                     System.out.println("Triangle");
-                    displayInfo();
                     break;
                 case "penBtn":
                     System.out.println("Pen");
