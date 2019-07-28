@@ -40,6 +40,7 @@ public class Kettlelog extends Application {
     //================================================================================
     private static Stage setup;
     BorderPane base = new BorderPane();
+    Button removeBtn;
 
     double w_to_h = 1.4;
     double w = 1024;
@@ -54,6 +55,8 @@ public class Kettlelog extends Application {
     double screenX = 0.0;
     double screenY = 0.0;
 
+    int filterSel = 0; //1=starred,2=checked, 3=mostrecent, 4=none
+
     @SuppressWarnings("unchecked")
     Region opaqueLayer = new Region();
 
@@ -61,12 +64,13 @@ public class Kettlelog extends Application {
     public static TableView<Columns> table = new TableView<Columns>();
     String[] titles = {"", "Name","Status","Quantity","Minimum"};
     TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
-    Columns empty = new Columns( "", "", "", "", "", "", "empty column", false);
+    Columns empty = new Columns( "", "", "", "", "", "", "empty column", false, false);
     public static String[] emptyinfo = {"", "", "", "", ""};
 
     public static ArrayList<String> btnids = new ArrayList<String>();
 
     private final ObservableList<Columns> data = FXCollections.observableArrayList(empty);
+    private final ObservableList<Columns> itemsToDelete = FXCollections.observableArrayList(empty);
 
 
     public static void main(String[] args) {
@@ -171,15 +175,18 @@ public class Kettlelog extends Application {
         addBtn.setId("addBtn");
 
         //REMOVE BUTTON
-        Button removeBtn = new Button();
+        //Button removeBtn = new Button();
+        removeBtn = new Button();
         removeBtn.setText("REMOVE");
         removeBtn.setId("removeBtn"); 
+        removeBtn.setDisable(true);
 
         //================================================================================
         // ADD AND REMOVE BUTTON FUNCTIONALITY
         //================================================================================
         Handler eventHandler = new Handler();
         addBtn.setOnAction(eventHandler);
+        removeBtn.setOnAction(eventHandler);
         
         //POSITIONS OF ADD AND REMOVE
         AnchorPane.setRightAnchor(addBtn, 135.0);
@@ -194,7 +201,7 @@ public class Kettlelog extends Application {
         AnchorPane.setLeftAnchor(searchbar, 305.0); 
         AnchorPane.setBottomAnchor(searchbar, spacefromtable);
 
-        ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Checked", "Most Recent");
+        ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Checked", "Most Recent", "None");
         
         //FILTER COMBOBOX
         ComboBox<String> filter= new ComboBox<String>(filterOptions);
@@ -269,7 +276,7 @@ public class Kettlelog extends Application {
 
 
     //Here is a method that will display the confirmation alert (stage) when a user wishes to delete an item.
-    public void displayAlert(Columns rowinfo) {
+    public void displayAlert(ObservableList<Columns> itemsToDelete){//Columns rowinfo) {
 
         Stage alert = new Stage();
         opaqueLayer.setVisible(true);
@@ -335,7 +342,12 @@ public class Kettlelog extends Application {
             kettle.setImage(kettleonlyimage);
 
         Label itemlabel = new Label();
-            itemlabel.setText(rowinfo.getName() + "?");
+            if(itemsToDelete.size()==1){
+                itemlabel.setText(itemsToDelete.get(0).getName() + "?");
+            }
+            else{
+                itemlabel.setText("[Multiple Items]?");
+            }
             itemlabel.setFont(new Font(16));
             itemlabel.setPrefHeight(50.0);
             itemlabel.setPrefWidth(280.0);
@@ -386,7 +398,17 @@ public class Kettlelog extends Application {
             alertdelete.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                     public void handle(ActionEvent event) {
-                        data.remove(rowinfo);
+                        for(int i = 0; i<itemsToDelete.size(); i++){ //cycle thru itemsToDelete list and remove from data 
+                            data.remove(itemsToDelete.get(i));
+                        }
+                        itemsToDelete.clear(); //clear itemsToDelete list
+                        removeBtn.setDisable(true);
+
+                        for(int j = 0; j<data.size(); j++){//search items for checked property
+                            if((data.get(j)).getChecked()==true){
+                                removeBtn.setDisable(false);
+                            }
+                        }
                         table.setItems(data);
                         alert.hide();
                         opaqueLayer.setVisible(false);
@@ -793,10 +815,11 @@ public class Kettlelog extends Application {
                     }
 
                     data.remove(empty);
+                    itemsToDelete.remove(empty);
 
                     //if the type is to add, then add the row.
                     if (popuptype == 0) {
-                        data.add(new Columns(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, id, false));
+                        data.add(new Columns(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, id, false, false));
                     } 
 
                     //if the type is to edit, update the information at every field.
@@ -814,6 +837,10 @@ public class Kettlelog extends Application {
                     opaqueLayer.setVisible(false);
                     addwindow.hide();
                     table.setItems(data);
+                }
+
+                if(filterSel==1){
+                    sortByStarred();
                 }
             }
         }); 
@@ -852,25 +879,39 @@ public class Kettlelog extends Application {
                 @Override       
                 public void handle(ActionEvent event) { 
                     Columns item = (Columns) cell.getTableRow().getItem();
-                    starred = item.getStarred();  
-                    System.out.println("Got item. Starred: "+ starred);
+                    starred = item.getStarred();
                     if(starred==true){  
                         starImg.setImage(starImgClr);      
                         starBtn.setGraphic(starImg);      
                         item.setStarred(false);
-                        System.out.println("Item set to not starred");
                     }       
                     else{ 
                         starImg.setImage(starImgSel);         
                         starBtn.setGraphic(starImg);    
-                        item.setStarred(true);
-                        System.out.println("Item starred");    
-                    }       
+                        item.setStarred(true);  
+                    } 
+                    if(filterSel==1){
+                        sortByStarred();
+                    }      
                 }       
             });         
 
             checkBtn.setSelected(false);
             checkBtn.setTooltip(new Tooltip("Select"));
+            checkBtn.setOnAction(new EventHandler<ActionEvent>() {       
+                @Override       
+                public void handle(ActionEvent event) { 
+                    Columns item = (Columns) cell.getTableRow().getItem();
+                    if(checkBtn.isSelected()){
+                        item.setChecked(true); //set checked property
+                        removeBtn.setDisable(false);
+                    }
+                    else{
+                        item.setChecked(false);
+                        removeBtn.setDisable(true);
+                    }
+                }       
+            });         
 
             triangleBtn.setId("triangleBtn");
             triangleBtn.setStyle("-fx-background-color: transparent;");                  
@@ -944,7 +985,8 @@ public class Kettlelog extends Application {
                 @Override       
                 public void handle(ActionEvent event) { 
                     Columns test = (Columns) cell.getTableRow().getItem();
-                    displayAlert(test);
+                    itemsToDelete.add(test);
+                    displayAlert(itemsToDelete);
                 }
             });    
 
@@ -966,6 +1008,12 @@ public class Kettlelog extends Application {
             return iconPane;
 
     }   
+
+    public void sortByStarred(){
+        StarComparator comp = new StarComparator();
+        data.sort(comp.reversed());
+        table.setItems(data);
+    }
 
     //================================================================================
     // CLASSES
@@ -1037,12 +1085,15 @@ public class Kettlelog extends Application {
 
             switch(newValue){
                 case "Starred":
-                    System.out.println("Starred Items:");
-                    StarComparator comp = new StarComparator();
-                    //Collections.sort(data, comp);
-                    data.sort(comp.reversed());
-                    table.setItems(data);
+                    filterSel = 1;
+                    sortByStarred();
                     break;
+                case "Checked":
+                    filterSel = 2;
+                case "Most Recent":
+                    filterSel = 3;
+                case "None":
+                    filterSel = 4;
                 default:
                     System.out.println("Otherstuff");
             }
@@ -1053,10 +1104,6 @@ public class Kettlelog extends Application {
     public class StarComparator implements Comparator<Columns> {
         @Override
         public int compare(Columns c1, Columns c2) {
-            //int it1 = (c1.getStarred())? 1 : 0;
-            //int it2 = (c2.getStarred())? 1 : 0;
-            //return (c1.getName()).compareTo(c2.getName());
-            //return Boolean.compareTo(c1.getStarred(),c2.getStarred());
             return Boolean.valueOf(c1.getStarred()).compareTo(Boolean.valueOf(c2.getStarred()));
         }
     }
@@ -1071,18 +1118,15 @@ public class Kettlelog extends Application {
                 case "addBtn":
                     addItemPopup(0, emptyinfo, empty); 
                     break;
-                case "starBtn":
-                    System.out.println("Star");
-                    break;
-                case "triangleBtn":
-                    System.out.println("Triangle");
-                    break;
-                case "penBtn":
-                    System.out.println("Pen");
-                    break;
-                case "delBtn":
-                    System.out.println("Delete");
-                    break;
+                case "removeBtn":
+                    for(int i=0; i<data.size(); i++){
+                        Columns curItem = data.get(i);
+                        if(curItem.getChecked()==true){
+                            itemsToDelete.add(curItem);
+                        }
+                    }
+                    displayAlert(itemsToDelete);
+                    break;    
                 default:
                     System.out.println("Otherstuff");
             }
