@@ -1,0 +1,23 @@
+To be safe, update your local master to be exactly the same as the remote one. 
+  git checkout master
+  git fetch --all
+  git reset --hard origin/master
+
+If you're happy with your local branch:
+  git checkout name-branch
+  git add .
+  git commit -m "message"
+  git push origin name-branch
+Now, the git remote branch is updated with your local branch.
+
+Next, push to master. 
+  git checkout master
+  git pull origin master
+  git merge name-branch
+  git push origin master
+  
+Now, check the status of your branch.
+  git checkout name-branch
+  git status
+  
+Continue working!
