@@ -19,11 +19,14 @@ import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import javafx.event.ActionEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.chart.XYChart;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.chart.LineChart;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.*;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TableCell;
@@ -34,6 +37,8 @@ import javafx.scene.control.OverrunStyle;
 import javafx.collections.ObservableList;
 import java.time.format.DateTimeFormatter;
 import javafx.collections.ListChangeListener;
+import javafx.collections.transformation.SortedList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
@@ -71,6 +76,8 @@ public class Kettlelog extends Application {
     public static TableView<Columns> table = new TableView<Columns>();
     String[] titles = {"", "Name","Status","Quantity","Minimum"};
     TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
+
+    public static TextField searchbar = new TextField();
 
     Columns empty = new Columns( "", "", "", "", "", "", "empty column", false, false, "", "");
     public static String[] emptyinfo = {"", "", "", "", "", ""};
@@ -203,11 +210,33 @@ public class Kettlelog extends Application {
         AnchorPane.setBottomAnchor(removeBtn, spacefromtable);
        
         //SEARCH BAR
-        TextField searchbar = new TextField();
-            searchbar.setPrefWidth(w / 2.56);
-            searchbar.setPromptText("Search");
+        searchbar.setPrefWidth(w / 2.56);
+        searchbar.setPromptText("Search");
         AnchorPane.setLeftAnchor(searchbar, 305.0); 
         AnchorPane.setBottomAnchor(searchbar, spacefromtable);
+
+        FilteredList<Columns> filteredData = new FilteredList<>(data, p -> true);
+
+        searchbar.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(Columns -> {
+                // If there is nothing in the search bar, we want to display all the items.
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                // lowercasesearch is referring to what the user is searching in the search bar
+                String lowercasesearch = newValue.toLowerCase();
+                if (String.valueOf(Columns.getName()).toLowerCase().contains(lowercasesearch)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            SortedList<Columns> sortedData = new SortedList<>(filteredData);
+            sortedData.comparatorProperty().bind(table.comparatorProperty());
+            CellGenerator cellFactory = new CellGenerator();    
+            columns[0].setCellFactory(cellFactory);     
+            table.setItems(sortedData);
+        });
 
         ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Checked", "Most Recent", "None");
         
@@ -550,6 +579,7 @@ public class Kettlelog extends Application {
             alertcancel.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                     public void handle(ActionEvent event) {
+                        searchbar.clear();
                         alert.hide();
                         opaqueLayer.setVisible(false);
                         itemsToDelete.clear();
@@ -577,6 +607,7 @@ public class Kettlelog extends Application {
                                 removeBtn.setDisable(false);
                             }
                         }
+                        searchbar.clear();
                         CellGenerator cellFactory = new CellGenerator();    
                         columns[0].setCellFactory(cellFactory);
                         table.setItems(data);
@@ -1060,6 +1091,7 @@ public class Kettlelog extends Application {
                         data.remove(empty);
                         itemsToDelete.remove(empty);
 
+                        searchbar.clear();
                         opaqueLayer.setVisible(false);
 	                    addwindow.hide();
 	                    table.setItems(data);
@@ -1074,13 +1106,12 @@ public class Kettlelog extends Application {
                         rowinfo.setDesc(itemDesc);
                         rowinfo.setDate(newdate);
 
+                        searchbar.clear();
                         opaqueLayer.setVisible(false);
 	                    addwindow.hide();
 	                    table.setItems(data);
                     }
-                    
                 }
-
                 if(filterSel==1){
                     sortByStarred();
                 }
@@ -1140,7 +1171,6 @@ public class Kettlelog extends Application {
                         curItem.setChecked(false);
                         CellGenerator cellFactory = new CellGenerator();    
                         columns[0].setCellFactory(cellFactory);
-                        //checkBtn.setSelected(false);
                     } 
                     removeBtn.setDisable(true);
                         sortByStarred();
@@ -1157,7 +1187,7 @@ public class Kettlelog extends Application {
                     checkBtn.setSelected(newValue);
                     Columns item = (Columns) cell.getTableRow().getItem();
                     item.setChecked(newValue);
-                    //removeBtn.setDisable(!newValue);
+
                     removeBtn.setDisable(true);
                     for(int x=0; x<data.size(); x++){ //if at least one item is checked, removeBtn should be enabled
                         Columns curItem = data.get(x);
@@ -1282,9 +1312,7 @@ public class Kettlelog extends Application {
                     Image starImgClr = new Image("./Misc/starBtnClr.png");   
                     Image starImgSel = new Image("./Misc/starBtnSel.png");
                     ImageView starImg = new ImageView(); 
-
                     CheckBox checkBtn = new CheckBox();
-
                     AnchorPane buttonanchor = createButtonAnchorPane(this, starBtn, starImgClr, starImgSel, starImg, checkBtn);
 
                     if (empty) {
@@ -1294,7 +1322,6 @@ public class Kettlelog extends Application {
                     else{
                         setGraphic(buttonanchor);
                         setText(null);
-                        System.out.println("icon box added");  
 
                         Columns curItem = (Columns) this.getTableRow().getItem();
                         starred = curItem.getStarred();  
