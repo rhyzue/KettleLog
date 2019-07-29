@@ -22,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.TextArea;
@@ -54,6 +55,8 @@ public class Kettlelog extends Application {
     public static int numRowsAdded = 0;
     public static boolean starred = false;
     public static int expanded = 0;
+    public static int presscount = 0; 
+    public static boolean duplicatefound = false;
 
     double screenX = 0.0;
     double screenY = 0.0;
@@ -64,7 +67,7 @@ public class Kettlelog extends Application {
     public static TableView<Columns> table = new TableView<Columns>();
     String[] titles = {"", "Name","Status","Quantity","Minimum"};
     TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
-    Columns empty = new Columns( "", "", "", "", "", "", "empty column", false, "");
+    Columns empty = new Columns( "", "", "", "", "", "", "empty column", false, "", "");
     public static String[] emptyinfo = {"", "", "", "", "", ""};
 
     public static ArrayList<String> btnids = new ArrayList<String>();
@@ -340,7 +343,7 @@ public class Kettlelog extends Application {
         Label datelabel = new Label();
             AnchorPane.setRightAnchor(datelabel, 25.0);
             AnchorPane.setTopAnchor(datelabel, 100.0);
-            datelabel.setText(rowinfo.getDate());
+            datelabel.setText(rowinfo.getDateAdded());
             datelabel.setPrefHeight(25.0);
             datelabel.setPrefWidth(125.0);
             datelabel.setFont(new Font(16));
@@ -351,7 +354,6 @@ public class Kettlelog extends Application {
             AnchorPane.setTopAnchor(line1, 110.0);
             AnchorPane.setRightAnchor(line1, 160.0);
             line1.setPrefWidth(220.0);
-
 
         double distancedown = 40.0;
 
@@ -375,10 +377,25 @@ public class Kettlelog extends Application {
             AnchorPane.setRightAnchor(line2, 160.0);
             line2.setPrefWidth(100.0);
 
+        TextArea infodesc = new TextArea();
+        	AnchorPane.setLeftAnchor(infodesc, 25.0);
+        	AnchorPane.setTopAnchor(infodesc, 100.0 + (distancedown * 2) + 10.0);
+        	infodesc.setPrefWidth(450.0);
+        	infodesc.setPrefHeight(125.0);
+        	infodesc.setEditable(false);
+        	infodesc.setStyle("-fx-opacity: 1;");
+        	infodesc.setWrapText(true);
+        	if (rowinfo.getDesc().trim().length() <= 0) {
+        		infodesc.setText("There is no description for this item.");
+        	} else {
+        		infodesc.setText("Item Description: " + rowinfo.getDesc());
+        	}
+
+    	//CONSUMPTION GRAPH THAT WILL SHOW THE USER'S USAGE
         AnchorPane infocenter = new AnchorPane();
 
         infocenter.setStyle(infomidcolour);
-        infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel, line2);
+        infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel, line2, infodesc);
 
         //Bottom part of the strip that has a cancel button
         Button infocancel = new Button();
@@ -686,7 +703,7 @@ public class Kettlelog extends Application {
         String addtip = "add";
         String edittip = "edit";
         Tooltip helptip = new Tooltip();
-        helptip.setShowDuration(javafx.util.Duration.seconds(60));
+        //helptip.setShowDuration(javafx.util.Duration.seconds(60));
         if (popuptype == 0) {
             helptip.setText(addtip);
         } else {
@@ -707,8 +724,8 @@ public class Kettlelog extends Application {
             if (popuptype == 0) {
                 datepicker.setValue(LocalDate.now());
             } else {
-            LocalDate originaldate = LocalDate.parse(predate);
-            datepicker.setValue(originaldate);
+	            LocalDate originaldate = LocalDate.parse(predate);
+	            datepicker.setValue(originaldate);
             }
             
         AnchorPane.setRightAnchor(datepicker, 50.0);
@@ -885,7 +902,7 @@ public class Kettlelog extends Application {
         AnchorPane.setLeftAnchor(dtext, 150.0); 
         AnchorPane.setTopAnchor(dtext, 20.0);
 
-        Text missing = new Text("* One or more required fields have not been filled out.");
+        Text missing = new Text();
             missing.setFont(new Font(12));
             missing.setFill(Color.FIREBRICK);
         AnchorPane.setRightAnchor(missing, 50.0);
@@ -923,12 +940,18 @@ public class Kettlelog extends Application {
             public void handle(ActionEvent event) {
                 addwindow.hide();
                 opaqueLayer.setVisible(false);
+                duplicatefound = false;
+                presscount = 0;
             }
         }); 
 
         addbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
-            public void handle(ActionEvent event) {    
+            public void handle(ActionEvent event) {
+
+            	if(duplicatefound){
+            		presscount++;
+            	}
 
                 boolean incomplete = false;
                 String itemStatus = "";
@@ -947,16 +970,26 @@ public class Kettlelog extends Application {
                 }
 
                 if (incomplete) {
+                    missing.setText("* One or more required fields have not been filled out.");
                     missing.setVisible(true);
-                } 
+                }
                 else {
+                	duplicatefound = false;
+                	for (int i = 0; i < data.size(); i++) {
+                		if ((data.get(i)).getName().equals(iName)) {
+                			duplicatefound = true;	
+                		} 
+                	}
+
+                	if (!duplicatefound) {
+                		presscount = 2;
+                	}
 
                     //EVERY ITEM GETS ASSIGNED A UNIQUE ID WHICH IS THE TIMESTAMP AT WHICH IT WAS CREATED
                     String id = new java.text.SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                     btnids.add(id);
                     numRows++;      
 
-                    System.out.println("numRows:"+ numRows);     
                     CellGenerator cellFactory = new CellGenerator();    
                     columns[0].setCellFactory(cellFactory);     
                     numRowsAdded=0;
@@ -982,11 +1015,23 @@ public class Kettlelog extends Application {
                         itemStatus = "Very Good";
                     }
 
-                    data.remove(empty);
+                    //user tries to add a duplicate for the first time, so we should display the message.
+                    if (popuptype == 0 && presscount == 1) {
+                    	missing.setText("* Possible duplicate found. Are you sure you want to add this item?");
+                		missing.setVisible(true);
+                    } 
 
                     //if the type is to add, then add the row.
-                    if (popuptype == 0) {
-                        data.add(new Columns(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, id, false, newdate));
+                    else if (popuptype == 0 && presscount == 2) {
+                    	String olddate = newdate;
+                        data.add(new Columns(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, id, false, newdate, olddate));
+                        presscount = 0;
+                        duplicatefound = false;
+                        data.remove(empty);
+
+                        opaqueLayer.setVisible(false);
+	                    addwindow.hide();
+	                    table.setItems(data);
                     } 
 
                     //if the type is to edit, update the information at every field.
@@ -997,11 +1042,12 @@ public class Kettlelog extends Application {
                         rowinfo.setDelivery(delTime);
                         rowinfo.setDesc(itemDesc);
                         rowinfo.setDate(newdate);
+
+                        opaqueLayer.setVisible(false);
+	                    addwindow.hide();
+	                    table.setItems(data);
                     }
                     
-                    opaqueLayer.setVisible(false);
-                    addwindow.hide();
-                    table.setItems(data);
                 }
             }
         }); 
@@ -1245,6 +1291,7 @@ public class Kettlelog extends Application {
 
             switch(itemClicked){
                 case "addBtn":
+                	presscount = 1;
                     addItemPopup(0, emptyinfo, empty); 
                     break;
                 case "starBtn":

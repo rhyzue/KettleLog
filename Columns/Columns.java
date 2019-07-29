@@ -11,11 +11,12 @@ public class Columns {
         private String id = null;
         private boolean starred = false;
         private String date = null;
+        private String dateadded = null;
 
         public Columns() {
         }
 
-        public Columns(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred, String date) {
+        public Columns(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred, String date, String dateadded) {
             this.name = name;
             this.status = status;
             this.quantity = quantity;
@@ -25,6 +26,7 @@ public class Columns {
             this.id = id;
             this.starred = starred;
             this.date = date;
+            this.dateadded = dateadded;
         }
 
         public String getName() {
@@ -97,6 +99,14 @@ public class Columns {
 
         public void setDate(String date) {
             this.date = date;
+        }
+
+        public String getDateAdded() {
+            return dateadded;
+        }
+
+        public void setDateAdded(String dateadded) {
+            this.dateadded = dateadded;
         }
 
 }
