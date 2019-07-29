@@ -392,6 +392,7 @@ public class Kettlelog extends Application {
                     public void handle(ActionEvent event) {
                         alert.hide();
                         opaqueLayer.setVisible(false);
+                        itemsToDelete.clear();
                     }
                 }); 
 
@@ -402,17 +403,22 @@ public class Kettlelog extends Application {
             alertdelete.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                     public void handle(ActionEvent event) {
+                        //System.out.println("Old size: "+ data.size());
                         for(int i = 0; i<itemsToDelete.size(); i++){ //cycle thru itemsToDelete list and remove from data 
                             data.remove(itemsToDelete.get(i));
+                            //System.out.println("Deleted: " +itemsToDelete.get(i).getName());
                         }
                         itemsToDelete.clear(); //clear itemsToDelete list
                         removeBtn.setDisable(true);
 
+                        //System.out.println("New size: "+ data.size());
                         for(int j = 0; j<data.size(); j++){//search items for checked property
                             if((data.get(j)).getChecked()==true){
                                 removeBtn.setDisable(false);
                             }
                         }
+                        CellGenerator cellFactory = new CellGenerator();    
+                        columns[0].setCellFactory(cellFactory);
                         table.setItems(data);
                         alert.hide();
                         opaqueLayer.setVisible(false);
@@ -1076,8 +1082,6 @@ public class Kettlelog extends Application {
                         }
                         starBtn.setGraphic(starImg);
 
-                        System.out.println("Checked: " + curItem.getChecked());
-
                         if(curItem.getChecked()==true){
                             checkBtn.setSelected(true);
                         }
@@ -1151,6 +1155,7 @@ public class Kettlelog extends Application {
                     for(int i=0; i<data.size(); i++){
                         Columns curItem = data.get(i);
                         if(curItem.getChecked()==true){
+                            System.out.println("Delete: "+ curItem.getName());
                             itemsToDelete.add(curItem);
                         }
                     }
