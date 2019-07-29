@@ -10,11 +10,12 @@ public class Columns {
         private String desc = null;
         private String id = null;
         private boolean starred = false;
+        private String date = null;
 
         public Columns() {
         }
 
-        public Columns(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred) {
+        public Columns(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred, String date) {
             this.name = name;
             this.status = status;
             this.quantity = quantity;
@@ -23,6 +24,7 @@ public class Columns {
             this.desc = desc;
             this.id = id;
             this.starred = starred;
+            this.date = date;
         }
 
         public String getName() {
@@ -87,6 +89,14 @@ public class Columns {
 
         public void setStarred(boolean starred) {
             this.starred = starred;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
         }
 
 }

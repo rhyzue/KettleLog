@@ -27,14 +27,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TableCell;
 import javafx.application.Application;
+import javafx.scene.control.Separator;
 import javafx.collections.FXCollections;
 import javafx.scene.control.OverrunStyle;
 import javafx.collections.ObservableList;
+import java.time.format.DateTimeFormatter;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
-import javafx.scene.control.cell.PropertyValueFactory;
-
 
 public class Kettlelog extends Application {
     //================================================================================
@@ -64,8 +64,8 @@ public class Kettlelog extends Application {
     public static TableView<Columns> table = new TableView<Columns>();
     String[] titles = {"", "Name","Status","Quantity","Minimum"};
     TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
-    Columns empty = new Columns( "", "", "", "", "", "", "empty column", false);
-    public static String[] emptyinfo = {"", "", "", "", ""};
+    Columns empty = new Columns( "", "", "", "", "", "", "empty column", false, "");
+    public static String[] emptyinfo = {"", "", "", "", "", ""};
 
     public static ArrayList<String> btnids = new ArrayList<String>();
 
@@ -320,6 +320,8 @@ public class Kettlelog extends Application {
 
         //Center portion of the info panel
         Label infolabel = new Label();
+            AnchorPane.setTopAnchor(infolabel, 25.0);
+            AnchorPane.setLeftAnchor(infolabel, 100.0);
             infolabel.setText(rowinfo.getName());
             infolabel.setFont(new Font(16));
             infolabel.setPrefHeight(50.0);
@@ -330,17 +332,53 @@ public class Kettlelog extends Application {
             infolabel.setStyle("-fx-background-color: #709c9c");
 
         Text dateadded = new Text();
-            dateadded.setText("Date Added");
-            dateadded.setFont(new Font(14));
             AnchorPane.setLeftAnchor(dateadded, 25.0);
-            AnchorPane.setTopAnchor(dateadded, 100.0);
+            AnchorPane.setTopAnchor(dateadded, 102.0);
+            dateadded.setText("Date Added");
+            dateadded.setFont(new Font(16));
+
+        Label datelabel = new Label();
+            AnchorPane.setRightAnchor(datelabel, 25.0);
+            AnchorPane.setTopAnchor(datelabel, 100.0);
+            datelabel.setText(rowinfo.getDate());
+            datelabel.setPrefHeight(25.0);
+            datelabel.setPrefWidth(125.0);
+            datelabel.setFont(new Font(16));
+            datelabel.setAlignment(Pos.CENTER);
+            datelabel.setStyle("-fx-background-color: #95bfbf");
+
+        Separator line1 = new Separator();
+            AnchorPane.setTopAnchor(line1, 110.0);
+            AnchorPane.setRightAnchor(line1, 160.0);
+            line1.setPrefWidth(220.0);
+
+
+        double distancedown = 40.0;
+
+        Text adc = new Text();
+            AnchorPane.setLeftAnchor(adc, 25.0);
+            AnchorPane.setTopAnchor(adc, 102.0 + distancedown); // we're moving the other parts down
+            adc.setText("Average Daily Consumption");
+            adc.setFont(new Font(16));
+
+        Label adclabel = new Label();
+            AnchorPane.setRightAnchor(adclabel, 25.0);
+            AnchorPane.setTopAnchor(adclabel, 100.0 + distancedown);
+            adclabel.setFont(new Font(14));
+            adclabel.setPrefHeight(25.0);
+            adclabel.setPrefWidth(125.0);
+            adclabel.setAlignment(Pos.CENTER);
+            adclabel.setStyle("-fx-background-color: #95bfbf");
+
+        Separator line2 = new Separator();
+            AnchorPane.setTopAnchor(line2, 110.0 + distancedown);
+            AnchorPane.setRightAnchor(line2, 160.0);
+            line2.setPrefWidth(100.0);
 
         AnchorPane infocenter = new AnchorPane();
-        AnchorPane.setTopAnchor(infolabel, 25.0);
-        AnchorPane.setLeftAnchor(infolabel, 100.0);
 
         infocenter.setStyle(infomidcolour);
-        infocenter.getChildren().addAll(infolabel, dateadded);
+        infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel, line2);
 
         //Bottom part of the strip that has a cancel button
         Button infocancel = new Button();
@@ -363,9 +401,9 @@ public class Kettlelog extends Application {
             infobstrip.getChildren().addAll(infocancel);
 
         BorderPane infoborderpane = new BorderPane();
-        infoborderpane.setTop(infotstrip);
-        infoborderpane.setCenter(infocenter);
-        infoborderpane.setBottom(infobstrip);
+            infoborderpane.setTop(infotstrip);
+            infoborderpane.setCenter(infocenter);
+            infoborderpane.setBottom(infobstrip);
 
         infostage.setResizable(false);
         infostage.initStyle(StageStyle.UNDECORATED);
@@ -527,14 +565,15 @@ public class Kettlelog extends Application {
         //1 --> EDIT WINDOW
 
         //PRE-SET TEXT FIELDS TAKEN FROM 5-ELEMENT ARRAY
-        //This array takes the name, quantity, minimum, shipping time, and description of the column.
+        //This array takes the name, quantity, minimum, shipping time, description and date of the column.
         //The purpose of this is to save the information so that it can be displayed when the edit button is clicked.
         String prename = textarray[0];
         String prequan = textarray[1];
         String premin = textarray[2];
         String predel = textarray[3];
         String predesc = textarray[4];
-
+        String predate = textarray[5];
+        
         //COLOURS
         Stage addwindow = new Stage();
         String tbcolour = "#006733;";
@@ -665,7 +704,13 @@ public class Kettlelog extends Application {
         DatePicker datepicker = new DatePicker();
             datepicker.setPrefWidth(125);
             datepicker.setEditable(false);
-            datepicker.setValue(LocalDate.now());
+            if (popuptype == 0) {
+                datepicker.setValue(LocalDate.now());
+            } else {
+            LocalDate originaldate = LocalDate.parse(predate);
+            datepicker.setValue(originaldate);
+            }
+            
         AnchorPane.setRightAnchor(datepicker, 50.0);
         AnchorPane.setBottomAnchor(datepicker, 10.0);
 
@@ -893,6 +938,9 @@ public class Kettlelog extends Application {
                 String delTime = stext.getText();
                 String itemDesc = dtext.getText();
 
+                //we need to get the value that the user sets as the date and convert it to a string
+                String newdate = datepicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
                 //CHECKS IF THERE ARE ANY REQUIRED FIELDS THAT ARE LEFT EMPTY
                 if ((iName.trim().length() <= 0) || curQuan.isEmpty() || minQuan.isEmpty() || delTime.isEmpty()) {
                     incomplete = true;
@@ -938,7 +986,7 @@ public class Kettlelog extends Application {
 
                     //if the type is to add, then add the row.
                     if (popuptype == 0) {
-                        data.add(new Columns(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, id, false));
+                        data.add(new Columns(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, id, false, newdate));
                     } 
 
                     //if the type is to edit, update the information at every field.
@@ -948,6 +996,7 @@ public class Kettlelog extends Application {
                         rowinfo.setMinimum(minQuan);
                         rowinfo.setDelivery(delTime);
                         rowinfo.setDesc(itemDesc);
+                        rowinfo.setDate(newdate);
                     }
                     
                     opaqueLayer.setVisible(false);
@@ -1051,7 +1100,7 @@ public class Kettlelog extends Application {
                 @Override               
                 public void handle(ActionEvent event) {         
                     Columns test = (Columns) cell.getTableRow().getItem();      
-                    String[] editinfo = {test.getName(), test.getQuantity(), test.getMinimum(), test.getDelivery(), test.getDesc()};        
+                    String[] editinfo = {test.getName(), test.getQuantity(), test.getMinimum(), test.getDelivery(), test.getDesc(), test.getDate()};        
                     addItemPopup(1, editinfo, test);        
                 }       
             });  
