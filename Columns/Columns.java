@@ -12,11 +12,13 @@ public class Columns {
         private boolean starred = false;
         private String date = null;
         private String dateadded = null;
+        private boolean checked = false;
 
         public Columns() {
         }
 
-        public Columns(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred, String date, String dateadded) {
+        public Columns(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred, boolean checked, String date, String dateadded) {
+
             this.name = name;
             this.status = status;
             this.quantity = quantity;
@@ -25,8 +27,10 @@ public class Columns {
             this.desc = desc;
             this.id = id;
             this.starred = starred;
+            this.checked = checked;
             this.date = date;
             this.dateadded = dateadded;
+ 
         }
 
         public String getName() {
@@ -93,6 +97,7 @@ public class Columns {
             this.starred = starred;
         }
 
+
         public String getDate() {
             return date;
         }
@@ -108,5 +113,14 @@ public class Columns {
         public void setDateAdded(String dateadded) {
             this.dateadded = dateadded;
         }
+        
+        public boolean getChecked() {
+            return checked;
+        }
+
+        public void setChecked(boolean checked) {
+            this.checked = checked;
+        }
+
 
 }
