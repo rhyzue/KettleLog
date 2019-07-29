@@ -1,3 +1,7 @@
+//REMOVE BTN CAUSES NULL POINTER EXCEPTION
+//CAN'T UNCHECK ALL CHECKBOXES UPON STARRING, ONLY STARRED ROW
+//solution: reset items, use if condition
+
 import Columns.*;
 import java.util.*;
 import javafx.util.*;
@@ -388,6 +392,7 @@ public class Kettlelog extends Application {
                     public void handle(ActionEvent event) {
                         alert.hide();
                         opaqueLayer.setVisible(false);
+                        itemsToDelete.clear();
                     }
                 }); 
 
@@ -398,17 +403,22 @@ public class Kettlelog extends Application {
             alertdelete.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                     public void handle(ActionEvent event) {
+                        //System.out.println("Old size: "+ data.size());
                         for(int i = 0; i<itemsToDelete.size(); i++){ //cycle thru itemsToDelete list and remove from data 
                             data.remove(itemsToDelete.get(i));
+                            //System.out.println("Deleted: " +itemsToDelete.get(i).getName());
                         }
                         itemsToDelete.clear(); //clear itemsToDelete list
                         removeBtn.setDisable(true);
 
+                        //System.out.println("New size: "+ data.size());
                         for(int j = 0; j<data.size(); j++){//search items for checked property
                             if((data.get(j)).getChecked()==true){
                                 removeBtn.setDisable(false);
                             }
                         }
+                        CellGenerator cellFactory = new CellGenerator();    
+                        columns[0].setCellFactory(cellFactory);
                         table.setItems(data);
                         alert.hide();
                         opaqueLayer.setVisible(false);
@@ -857,10 +867,10 @@ public class Kettlelog extends Application {
 
     //Here is a method that creates a new TableCell with buttons attached to it. 
     //The functions of the buttons are also defined here too.
-    public AnchorPane createButtonAnchorPane(final TableCell cell, final Button starBtn, final Image starImgClr, final Image starImgSel, final ImageView starImg) {
+    public AnchorPane createButtonAnchorPane(final TableCell cell, final Button starBtn, final Image starImgClr, final Image starImgSel, final ImageView starImg, final CheckBox checkBtn) {
 
             double dfromtop = 1.0;
-            CheckBox checkBtn = new CheckBox();
+            //CheckBox checkBtn = new CheckBox();
             Button triangleBtn = new Button();
             Button penBtn = new Button(); 
             Button delBtn = new Button();  
@@ -878,6 +888,8 @@ public class Kettlelog extends Application {
             starBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) { 
+                    //deselect all checkboxes
+
                     Columns item = (Columns) cell.getTableRow().getItem();
                     starred = item.getStarred();
                     if(starred==true){  
@@ -891,27 +903,38 @@ public class Kettlelog extends Application {
                         item.setStarred(true);  
                     } 
                     if(filterSel==1){
+                        for(int i = 0; i<data.size(); i++){
+                        Columns curItem = data.get(i);
+                        curItem.setChecked(false);
+                        CellGenerator cellFactory = new CellGenerator();    
+                        columns[0].setCellFactory(cellFactory);
+                        //checkBtn.setSelected(false);
+                    } 
+                    removeBtn.setDisable(true);
                         sortByStarred();
-                    }      
+                    }     
                 }       
             });         
 
             checkBtn.setSelected(false);
             checkBtn.setTooltip(new Tooltip("Select"));
-            checkBtn.setOnAction(new EventHandler<ActionEvent>() {       
-                @Override       
-                public void handle(ActionEvent event) { 
+
+            checkBtn.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    checkBtn.setSelected(newValue);
                     Columns item = (Columns) cell.getTableRow().getItem();
-                    if(checkBtn.isSelected()){
-                        item.setChecked(true); //set checked property
-                        removeBtn.setDisable(false);
+                    item.setChecked(newValue);
+                    //removeBtn.setDisable(!newValue);
+                    removeBtn.setDisable(true);
+                    for(int x=0; x<data.size(); x++){ //if at least one item is checked, removeBtn should be enabled
+                        Columns curItem = data.get(x);
+                        if(curItem.getChecked()==true){
+                            removeBtn.setDisable(false);
+                        }
                     }
-                    else{
-                        item.setChecked(false);
-                        removeBtn.setDisable(true);
-                    }
-                }       
-            });         
+                }
+            });       
 
             triangleBtn.setId("triangleBtn");
             triangleBtn.setStyle("-fx-background-color: transparent;");                  
@@ -1013,6 +1036,7 @@ public class Kettlelog extends Application {
         StarComparator comp = new StarComparator();
         data.sort(comp.reversed());
         table.setItems(data);
+
     }
 
     //================================================================================
@@ -1035,7 +1059,9 @@ public class Kettlelog extends Application {
                     Image starImgSel = new Image("./Misc/starBtnSel.png");
                     ImageView starImg = new ImageView(); 
 
-                    AnchorPane buttonanchor = createButtonAnchorPane(this, starBtn, starImgClr, starImgSel, starImg);
+                    CheckBox checkBtn = new CheckBox();
+
+                    AnchorPane buttonanchor = createButtonAnchorPane(this, starBtn, starImgClr, starImgSel, starImg, checkBtn);
 
                     if (empty) {
                         setGraphic(null);
@@ -1046,15 +1072,22 @@ public class Kettlelog extends Application {
                         setText(null);
                         System.out.println("icon box added");  
 
-                        Columns isStarred = (Columns) this.getTableRow().getItem();
-                        starred = isStarred.getStarred();  
+                        Columns curItem = (Columns) this.getTableRow().getItem();
+                        starred = curItem.getStarred();  
                         if(starred==true){   
                             starImg.setImage(starImgSel);    
                         }       
                         else{ 
                             starImg.setImage(starImgClr);           
                         }
-                        starBtn.setGraphic(starImg);      
+                        starBtn.setGraphic(starImg);
+
+                        if(curItem.getChecked()==true){
+                            checkBtn.setSelected(true);
+                        }
+                        else{
+                            checkBtn.setSelected(false);
+                        }   
                     }
                 }
                 
@@ -1122,6 +1155,7 @@ public class Kettlelog extends Application {
                     for(int i=0; i<data.size(); i++){
                         Columns curItem = data.get(i);
                         if(curItem.getChecked()==true){
+                            System.out.println("Delete: "+ curItem.getName());
                             itemsToDelete.add(curItem);
                         }
                     }
