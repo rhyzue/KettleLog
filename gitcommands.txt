@@ -1,3 +1,4 @@
+PUSHING LOCAL CHANGES TO MASTER
 To be safe, update your local master to be exactly the same as the remote one. 
   git checkout master
   git fetch --all
@@ -21,3 +22,14 @@ Now, check the status of your branch.
   git status
   
 Continue working!
+
+PULLING CHANGES FORM MASTER TO LOCAL BRANCH
+To completely replace your local branch (ONLY IF YOU HAVE NOTHING ON YOUR LOCAL)
+  git checkout name-branch
+  git fetch --all
+  git reset --hard origin/master
+  
+If you have work on your local, 
+  commit to your own branch
+  pull master
+  fix merge conflicts
