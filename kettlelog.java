@@ -13,27 +13,16 @@ import javafx.scene.image.*;
 import javafx.beans.value.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
-import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
-import javafx.stage.Modality;
-import javafx.stage.StageStyle;
-import javafx.event.ActionEvent;
+import javafx.geometry.*;
+import javafx.stage.*;
+import javafx.event.*;
 import javafx.scene.paint.Color;
-import javafx.event.EventHandler;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TableCell;
 import javafx.application.Application;
-import javafx.scene.control.Separator;
-import javafx.collections.FXCollections;
-import javafx.scene.control.OverrunStyle;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 import java.time.format.DateTimeFormatter;
-import javafx.collections.ListChangeListener;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
@@ -209,7 +198,7 @@ public class Kettlelog extends Application {
         AnchorPane.setLeftAnchor(searchbar, 305.0); 
         AnchorPane.setBottomAnchor(searchbar, spacefromtable);
 
-        ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Checked", "Most Recent", "None");
+        ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "None");
         
         //FILTER COMBOBOX
         ComboBox<String> filter= new ComboBox<String>(filterOptions);
@@ -577,9 +566,15 @@ public class Kettlelog extends Application {
                                 removeBtn.setDisable(false);
                             }
                         }
+
+                        if(data.size()==0){
+                            data.add(empty);
+                        }
+
                         CellGenerator cellFactory = new CellGenerator();    
                         columns[0].setCellFactory(cellFactory);
                         table.setItems(data);
+
                         alert.hide();
                         opaqueLayer.setVisible(false);
                     }
@@ -1285,7 +1280,17 @@ public class Kettlelog extends Application {
 
                     CheckBox checkBtn = new CheckBox();
 
-                    AnchorPane buttonanchor = createButtonAnchorPane(this, starBtn, starImgClr, starImgSel, starImg, checkBtn);
+                    AnchorPane buttonanchor = new AnchorPane();
+
+                    int sz = data.size();
+                    String desc = "";
+                    if(sz == 1){
+                        desc = (data.get(0)).getID();
+                    }
+
+                    if(!desc.equals("empty column")){
+                        buttonanchor = createButtonAnchorPane(this, starBtn, starImgClr, starImgSel, starImg, checkBtn);
+                    }
 
                     if (empty) {
                         setGraphic(null);
@@ -1345,14 +1350,12 @@ public class Kettlelog extends Application {
                     filterSel = 1;
                     sortByStarred();
                     break;
-                case "Checked":
-                    filterSel = 2;
                 case "Most Recent":
-                    filterSel = 3;
+                    filterSel = 2;
                 case "None":
-                    filterSel = 4;
+                    filterSel = 0;
                 default:
-                    System.out.println("Otherstuff");
+                    filterSel = 0;
             }
 
         }
