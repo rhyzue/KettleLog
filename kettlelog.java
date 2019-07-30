@@ -134,10 +134,10 @@ public class Kettlelog extends Application {
 
         table.setFixedCellSize(40.0);
         table.setPrefSize(300, 508.0);
-        table.setPlaceholder(new Label("Sorry, your search does not match any item names."));
+        table.setPlaceholder(new Label("Sorry, your search did not match any item names."));
+
 
         //COLUMN TITLES
-        
         for(int i=0; i<titles.length; i++)
         {
             TableColumn<Columns, String> column = new TableColumn<Columns, String>(titles[i]);
@@ -524,7 +524,9 @@ public class Kettlelog extends Application {
                 itemlabel.setText(itemsToDelete.get(0).getName() + "?");
             }
             else{
-                itemlabel.setText("all selected items?");
+
+                itemlabel.setText("the selected items?");
+
             }
             itemlabel.setFont(new Font(16));
             itemlabel.setPrefHeight(50.0);
