@@ -1364,7 +1364,6 @@ public class Kettlelog extends Application {
     }
 }
 
-
     public class ColumnHandler implements ListChangeListener<TableColumn>{
         public boolean suspended;
 
@@ -1387,17 +1386,21 @@ public class Kettlelog extends Application {
             switch(newValue){
                 case "Starred":
                     filterSel = 1;
+                    searchbar.clear();
                     sortByStarred();
                     break;
                 case "Most Recent":
                     filterSel = 2;
+                    searchbar.clear();
                     sortByMostRecent(2);
                     break;
                 case "Oldest Added":
                     filterSel = 3;
+                    searchbar.clear();
                     sortByMostRecent(3);
                     break;
                 case "None":
+                    searchbar.clear();
                     filterSel = 0;
                 default:
                     filterSel = 0;
