@@ -134,9 +134,9 @@ public class Kettlelog extends Application {
 
         table.setFixedCellSize(40.0);
         table.setPrefSize(300, 508.0);
+        table.setPlaceholder(new Label("Sorry, your search did not match any item names."));
 
         //COLUMN TITLES
-        
         for(int i=0; i<titles.length; i++)
         {
             TableColumn<Columns, String> column = new TableColumn<Columns, String>(titles[i]);
@@ -509,7 +509,7 @@ public class Kettlelog extends Application {
         //Center part of the pane which contains the Kettlelog logo and some text labels.
 
         Text delconfirm = new Text();
-            delconfirm.setText("Are you sure you want to delete item");
+            delconfirm.setText("Are you sure you want to delete");
             delconfirm.setFont(new Font(16));
 
         Image kettleonlyimage = new Image("./Misc/kettle.png");
@@ -523,7 +523,7 @@ public class Kettlelog extends Application {
                 itemlabel.setText(itemsToDelete.get(0).getName() + "?");
             }
             else{
-                itemlabel.setText("[Multiple Items]?");
+                itemlabel.setText("the selected items?");
             }
             itemlabel.setFont(new Font(16));
             itemlabel.setPrefHeight(50.0);
