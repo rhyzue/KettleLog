@@ -73,7 +73,6 @@ public class Kettlelog extends Application {
     private final ObservableList<Columns> data = FXCollections.observableArrayList(empty);
     private final ObservableList<Columns> itemsToDelete = FXCollections.observableArrayList(empty);
 
-
     public static void main(String[] args) {
         launch(args);
     }
@@ -223,10 +222,9 @@ public class Kettlelog extends Application {
             columns[0].setCellFactory(cellFactory);     
             table.setItems(sortedData);
         });
-
-        ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "None");
         
         //FILTER COMBOBOX
+        ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
         ComboBox<String> filter= new ComboBox<String>(filterOptions);
             filter.setPromptText("Filter By");
             filter.setPrefWidth(150.0);
@@ -1105,6 +1103,9 @@ public class Kettlelog extends Application {
                 if(filterSel==1){
                     sortByStarred();
                 }
+                else if(filterSel==2 || filterSel==3){
+                    sortByMostRecent(filterSel);
+                }
             }
         }); 
 
@@ -1283,6 +1284,17 @@ public class Kettlelog extends Application {
 
     }
 
+    public void sortByMostRecent(int order){
+        DateComparator comp = new DateComparator();
+        if(order==2){
+            data.sort(comp.reversed());
+        }
+        else if (order==3){
+            data.sort(comp);
+        }
+        table.setItems(data);
+    }
+
     //================================================================================
     // CLASSES
     //================================================================================
@@ -1374,6 +1386,12 @@ public class Kettlelog extends Application {
                     break;
                 case "Most Recent":
                     filterSel = 2;
+                    sortByMostRecent(2);
+                    break;
+                case "Oldest Added":
+                    filterSel = 3;
+                    sortByMostRecent(3);
+                    break;
                 case "None":
                     filterSel = 0;
                 default:
@@ -1387,6 +1405,43 @@ public class Kettlelog extends Application {
         @Override
         public int compare(Columns c1, Columns c2) {
             return Boolean.valueOf(c1.getStarred()).compareTo(Boolean.valueOf(c2.getStarred()));
+        }
+    }
+
+    public class DateComparator implements Comparator<Columns>{
+        @Override
+        public int compare(Columns c1, Columns c2){
+
+            //Split date string into an array: year, month, day
+            String[] c1Split = (c1.getDateAdded()).split("-");
+            String[] c2Split = (c2.getDateAdded()).split("-");
+
+            int[] c1Dates = new int[3];
+            int[] c2Dates = new int[3];
+
+            //Convert String dates to integer
+            for(int i = 0; i<3; i++){
+                try {
+                   c1Dates[i] = Integer.parseInt(c1Split[i]);
+                   c2Dates[i] = Integer.parseInt(c2Split[i]);
+                }
+                catch (NumberFormatException e){
+                   c1Dates[i] = 0;
+                   c2Dates[i] = 0;
+                   System.out.println("ERROR");
+                }
+
+                //Compare each element in the array only if they are different
+                //ie. if yr1==yr2, then don't return and instead compare the next element
+                if (c1Dates[i] != c2Dates[i]){
+                    return Integer.valueOf(c1Dates[i]).compareTo(Integer.valueOf(c2Dates[i]));
+                }
+
+            }
+
+            //if the for loop has not returned anything, 2 dates are the same. return any random comparison
+            return Integer.valueOf(c1Dates[0]).compareTo(Integer.valueOf(c2Dates[0]));
+            
         }
     }
 
