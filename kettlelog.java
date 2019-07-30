@@ -70,8 +70,8 @@ public class Kettlelog extends Application {
 
     public static ArrayList<String> btnids = new ArrayList<String>();
 
-    private final ObservableList<Columns> data = FXCollections.observableArrayList(empty);
-    private final ObservableList<Columns> itemsToDelete = FXCollections.observableArrayList(empty);
+    public ObservableList<Columns> data = FXCollections.observableArrayList(empty);
+    public ObservableList<Columns> itemsToDelete = FXCollections.observableArrayList(empty);
 
     public static void main(String[] args) {
         launch(args);
@@ -134,6 +134,7 @@ public class Kettlelog extends Application {
 
         table.setFixedCellSize(40.0);
         table.setPrefSize(300, 508.0);
+        table.setPlaceholder(new Label("Sorry, your search does not match any item names."));
 
         //COLUMN TITLES
         
@@ -509,7 +510,7 @@ public class Kettlelog extends Application {
         //Center part of the pane which contains the Kettlelog logo and some text labels.
 
         Text delconfirm = new Text();
-            delconfirm.setText("Are you sure you want to delete item");
+            delconfirm.setText("Are you sure you want to delete");
             delconfirm.setFont(new Font(16));
 
         Image kettleonlyimage = new Image("./Misc/kettle.png");
@@ -523,7 +524,7 @@ public class Kettlelog extends Application {
                 itemlabel.setText(itemsToDelete.get(0).getName() + "?");
             }
             else{
-                itemlabel.setText("[Multiple Items]?");
+                itemlabel.setText("all selected items?");
             }
             itemlabel.setFont(new Font(16));
             itemlabel.setPrefHeight(50.0);
@@ -749,9 +750,11 @@ public class Kettlelog extends Application {
             helpImg.setCache(true);  
 
         //instruction tooltip for help button
-        String addtip = "add";
-        String edittip = "edit";
+        String addtip = "This is the date you wish logging to begin on and cannot be edited once the item is added.";
+        String edittip = "This is the date you want this log to correspond to.";
         Tooltip helptip = new Tooltip();
+            helptip.setPrefWidth(175.0);
+            helptip.setWrapText(true);
         //helptip.setShowDuration(javafx.util.Duration.seconds(60));
         if (popuptype == 0) {
             helptip.setText(addtip);
