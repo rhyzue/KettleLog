@@ -1,6 +1,6 @@
-package Columns;
+package Item;
 
-public class Columns {
+public class Item {
 
         private String name= null;
         private String status = null;
@@ -14,10 +14,7 @@ public class Columns {
         private String dateadded = null;
         private boolean checked = false;
 
-        public Columns() {
-        }
-
-        public Columns(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred, boolean checked, String date, String dateadded) {
+        public Items(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred, boolean checked, String date, String dateadded) {
 
             this.name = name;
             this.status = status;
