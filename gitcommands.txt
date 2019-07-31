@@ -33,3 +33,5 @@ If you have work on your local,
   commit to your own branch
   pull master
   fix merge conflicts
+  
+  https://stackoverflow.com/questions/1022880/accessing-a-variable-from-another-class
