@@ -35,3 +35,4 @@ If you have work on your local,
   fix merge conflicts
   
   https://stackoverflow.com/questions/1022880/accessing-a-variable-from-another-class
+https://github.com/goxr3plus/XR3Player/tree/master/src/main/java/com/goxr3plus/xr3player
