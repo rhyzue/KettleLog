@@ -43,6 +43,9 @@ public class Kettlelog extends Application {
     double h = w / w_to_h;
     double spacefromtable = 7.5;
 
+    double xBounds = 0.0;
+    double yBounds = 0.0;
+
     public static boolean starred = false;
     public static int expanded = 0;
     public static int presscount = 0; 
@@ -54,7 +57,7 @@ public class Kettlelog extends Application {
     int filterSel = 0; //1=starred,2=checked, 3=mostrecent, 4=none
 
     @SuppressWarnings("unchecked")
-    Region opaqueLayer = new Region();
+    public static Region opaqueLayer = new Region();
 
     //table with 5 columns
     public TableView<Columns> table = new TableView<Columns>();
@@ -294,162 +297,7 @@ public class Kettlelog extends Application {
         }
     }
 
-    //Here is a method that displays the information of a certain item when it is pressed.
-    public void displayInfo(Columns rowinfo) {
-
-        Stage infostage = new Stage();
-        double infowidth = 500;
-        double infoheight = 700;
-        opaqueLayer.setVisible(true);
-
-        //Hex codes for colours used on this stage
-        String infostriphex = "#004545;";
-        String infomidhex = "#b8d6d6;";
-        String infostripcolour = String.format("-fx-background-color: %s", infostriphex);
-        String infomidcolour = String.format("-fx-background-color: %s", infomidhex);
-
-        //Ensures that alert popup is centered relatively to its parent stage (setup).
-        Bounds sb = base.localToScreen(base.getBoundsInLocal());
-
-        screenX = (sb.getMinX() + w / 2 - infowidth / 2); 
-        screenY = (sb.getMinY() + h / 2 - infoheight / 2);
-
-        ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
-            infostage.setX(screenX);
-        };
-        ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
-            infostage.setY(screenY);
-        };
-
-        infostage.widthProperty().addListener(widthListener);
-        infostage.heightProperty().addListener(heightListener);
-
-        infostage.setOnShown(shown -> {
-            infostage.widthProperty().removeListener(widthListener);
-            infostage.heightProperty().removeListener(heightListener);
-        });
-
-        //Top strip of info panel which has text saying "Item Information"
-        Text infotitle = new Text();
-            infotitle.setText("Item Information");
-            infotitle.setFont(new Font(18));
-            infotitle.setFill(Color.WHITE);
-
-        AnchorPane infotstrip = new AnchorPane();
-            AnchorPane.setLeftAnchor(infotitle, 50.0);
-            AnchorPane.setBottomAnchor(infotitle, 5.0);
-            infotstrip.setStyle(infostripcolour);
-            infotstrip.setPrefSize(infowidth, 50); //(width, height)
-            infotstrip.getChildren().addAll(infotitle);
-
-        //Center portion of the info panel
-        Label infolabel = new Label();
-            AnchorPane.setTopAnchor(infolabel, 25.0);
-            AnchorPane.setLeftAnchor(infolabel, 100.0);
-            infolabel.setText(rowinfo.getName());
-            infolabel.setFont(new Font(16));
-            infolabel.setPrefHeight(50.0);
-            infolabel.setPrefWidth(300.0);
-            infolabel.setFont(new Font(16));
-            infolabel.setAlignment(Pos.CENTER);
-            infolabel.setTextOverrun(OverrunStyle.ELLIPSIS);
-            infolabel.setStyle("-fx-background-color: #709c9c");
-
-        Text dateadded = new Text();
-            AnchorPane.setLeftAnchor(dateadded, 25.0);
-            AnchorPane.setTopAnchor(dateadded, 102.0);
-            dateadded.setText("Date Added");
-            dateadded.setFont(new Font(16));
-
-        Label datelabel = new Label();
-            AnchorPane.setRightAnchor(datelabel, 25.0);
-            AnchorPane.setTopAnchor(datelabel, 100.0);
-            datelabel.setText(rowinfo.getDateAdded());
-            datelabel.setPrefHeight(25.0);
-            datelabel.setPrefWidth(125.0);
-            datelabel.setFont(new Font(16));
-            datelabel.setAlignment(Pos.CENTER);
-            datelabel.setStyle("-fx-background-color: #95bfbf");
-
-        Separator line1 = new Separator();
-            AnchorPane.setTopAnchor(line1, 110.0);
-            AnchorPane.setRightAnchor(line1, 160.0);
-            line1.setPrefWidth(220.0);
-
-        double distancedown = 40.0;
-
-        Text adc = new Text();
-            AnchorPane.setLeftAnchor(adc, 25.0);
-            AnchorPane.setTopAnchor(adc, 102.0 + distancedown); // we're moving the other parts down
-            adc.setText("Average Daily Consumption");
-            adc.setFont(new Font(16));
-
-        Label adclabel = new Label();
-            AnchorPane.setRightAnchor(adclabel, 25.0);
-            AnchorPane.setTopAnchor(adclabel, 100.0 + distancedown);
-            adclabel.setFont(new Font(14));
-            adclabel.setPrefHeight(25.0);
-            adclabel.setPrefWidth(125.0);
-            adclabel.setAlignment(Pos.CENTER);
-            adclabel.setStyle("-fx-background-color: #95bfbf");
-
-        Separator line2 = new Separator();
-            AnchorPane.setTopAnchor(line2, 110.0 + distancedown);
-            AnchorPane.setRightAnchor(line2, 160.0);
-            line2.setPrefWidth(100.0);
-
-        TextArea infodesc = new TextArea();
-            AnchorPane.setLeftAnchor(infodesc, 25.0);
-            AnchorPane.setTopAnchor(infodesc, 100.0 + (distancedown * 2) + 10.0);
-            infodesc.setPrefWidth(450.0);
-            infodesc.setPrefHeight(125.0);
-            infodesc.setEditable(false);
-            infodesc.setStyle("-fx-opacity: 1;");
-            infodesc.setWrapText(true);
-            if (rowinfo.getDesc().trim().length() <= 0) {
-                infodesc.setText("There is no description for this item.");
-            } else {
-                infodesc.setText("Item Description: " + rowinfo.getDesc());
-            }
-
-        //CONSUMPTION GRAPH THAT WILL SHOW THE USER'S USAGE
-        AnchorPane infocenter = new AnchorPane();
-
-        infocenter.setStyle(infomidcolour);
-        infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel, line2, infodesc);
-
-        //Bottom part of the strip that has a cancel button
-        Button infocancel = new Button();
-            infocancel.setText("Close");
-            infocancel.setPrefHeight(27.5);
-
-            infocancel.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                    public void handle(ActionEvent event) {
-                        infostage.hide();
-                        opaqueLayer.setVisible(false);
-                    }
-                }); 
-
-        AnchorPane infobstrip = new AnchorPane();
-            AnchorPane.setRightAnchor(infocancel, 5.0);
-            AnchorPane.setTopAnchor(infocancel, 5.0);
-            infobstrip.setStyle(infostripcolour);
-            infobstrip.setPrefSize(infowidth, 37.5);
-            infobstrip.getChildren().addAll(infocancel);
-
-        BorderPane infoborderpane = new BorderPane();
-            infoborderpane.setTop(infotstrip);
-            infoborderpane.setCenter(infocenter);
-            infoborderpane.setBottom(infobstrip);
-
-        infostage.setResizable(false);
-        infostage.initStyle(StageStyle.UNDECORATED);
-        infostage.initModality(Modality.WINDOW_MODAL);
-        infostage.initOwner(Kettlelog.setup);
-        infostage.setScene(new Scene(infoborderpane, infowidth, infoheight));
-        infostage.show();
-    }
+    
 
 
     //Here is a method that will display the confirmation alert (stage) when a user wishes to delete an item.
@@ -1123,6 +971,17 @@ public class Kettlelog extends Application {
 
     }
 
+    public void hideInfoStage(InfoStage infoStage){
+        opaqueLayer.setVisible(false);
+        infoStage.hide();
+        infoStage = null;
+    }
+
+    public void showInfoStage(InfoStage infoStage){
+        opaqueLayer.setVisible(true);       
+        infoStage.show();
+    }
+
     //Here is a method that creates a new TableCell with buttons attached to it. 
     //The functions of the buttons are also defined here too.
     public AnchorPane createButtonAnchorPane(final TableCell cell, final Button starBtn, final Image starImgClr, final Image starImgSel, final ImageView starImg, final CheckBox checkBtn) {
@@ -1211,7 +1070,13 @@ public class Kettlelog extends Application {
                 @Override       
                 public void handle(ActionEvent event) {   
                     Columns test = (Columns) cell.getTableRow().getItem();
-                    displayInfo(test);  
+                    Bounds sb = base.localToScreen(base.getBoundsInLocal());
+                    xBounds = sb.getMinX();
+                    yBounds = sb.getMinY();
+
+                    InfoStage infoStage = new InfoStage(xBounds, yBounds, w, h, test);
+                    infoStage.initOwner(Kettlelog.setup);
+                    showInfoStage(infoStage);
                 }       
             });
 
