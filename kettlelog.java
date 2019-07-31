@@ -43,8 +43,6 @@ public class Kettlelog extends Application {
     double h = w / w_to_h;
     double spacefromtable = 7.5;
 
-    public static int numRows = 0;
-    public static int numRowsAdded = 0;
     public static boolean starred = false;
     public static int expanded = 0;
     public static int presscount = 0; 
@@ -59,7 +57,7 @@ public class Kettlelog extends Application {
     Region opaqueLayer = new Region();
 
     //table with 5 columns
-    public static TableView<Columns> table = new TableView<Columns>();
+    public TableView<Columns> table = new TableView<Columns>();
     String[] titles = {"", "Name","Status","Quantity","Minimum"};
     TableColumn<Columns, String>[] columns = (TableColumn<Columns, String>[])new TableColumn[titles.length];
 
@@ -136,8 +134,8 @@ public class Kettlelog extends Application {
         table.setPrefSize(300, 508.0);
         table.setPlaceholder(new Label("Sorry, your search did not match any item names."));
 
-
         //COLUMN TITLES
+        
         for(int i=0; i<titles.length; i++)
         {
             TableColumn<Columns, String> column = new TableColumn<Columns, String>(titles[i]);
@@ -401,20 +399,20 @@ public class Kettlelog extends Application {
             line2.setPrefWidth(100.0);
 
         TextArea infodesc = new TextArea();
-        	AnchorPane.setLeftAnchor(infodesc, 25.0);
-        	AnchorPane.setTopAnchor(infodesc, 100.0 + (distancedown * 2) + 10.0);
-        	infodesc.setPrefWidth(450.0);
-        	infodesc.setPrefHeight(125.0);
-        	infodesc.setEditable(false);
-        	infodesc.setStyle("-fx-opacity: 1;");
-        	infodesc.setWrapText(true);
-        	if (rowinfo.getDesc().trim().length() <= 0) {
-        		infodesc.setText("There is no description for this item.");
-        	} else {
-        		infodesc.setText("Item Description: " + rowinfo.getDesc());
-        	}
+            AnchorPane.setLeftAnchor(infodesc, 25.0);
+            AnchorPane.setTopAnchor(infodesc, 100.0 + (distancedown * 2) + 10.0);
+            infodesc.setPrefWidth(450.0);
+            infodesc.setPrefHeight(125.0);
+            infodesc.setEditable(false);
+            infodesc.setStyle("-fx-opacity: 1;");
+            infodesc.setWrapText(true);
+            if (rowinfo.getDesc().trim().length() <= 0) {
+                infodesc.setText("There is no description for this item.");
+            } else {
+                infodesc.setText("Item Description: " + rowinfo.getDesc());
+            }
 
-    	//CONSUMPTION GRAPH THAT WILL SHOW THE USER'S USAGE
+        //CONSUMPTION GRAPH THAT WILL SHOW THE USER'S USAGE
         AnchorPane infocenter = new AnchorPane();
 
         infocenter.setStyle(infomidcolour);
@@ -524,9 +522,7 @@ public class Kettlelog extends Application {
                 itemlabel.setText(itemsToDelete.get(0).getName() + "?");
             }
             else{
-
                 itemlabel.setText("the selected items?");
-
             }
             itemlabel.setFont(new Font(16));
             itemlabel.setPrefHeight(50.0);
@@ -536,7 +532,12 @@ public class Kettlelog extends Application {
             itemlabel.setStyle("-fx-background-color: #cbadc3;");
 
         Text delperm = new Text();
-            delperm.setText("This item will be deleted permanently.");
+            if(itemsToDelete.size()==1){
+                delperm.setText("This item will be deleted permanently.");
+            }
+            else{
+                delperm.setText("The items will be deleted permanently.");
+            }
             delperm.setFont(new Font(14));
 
         Text delundo = new Text();
@@ -752,11 +753,9 @@ public class Kettlelog extends Application {
             helpImg.setCache(true);  
 
         //instruction tooltip for help button
-        String addtip = "This is the date you wish logging to begin on and cannot be edited once the item is added.";
-        String edittip = "This is the date you want this log to correspond to.";
+        String addtip = "add";
+        String edittip = "edit";
         Tooltip helptip = new Tooltip();
-            helptip.setPrefWidth(175.0);
-            helptip.setWrapText(true);
         //helptip.setShowDuration(javafx.util.Duration.seconds(60));
         if (popuptype == 0) {
             helptip.setText(addtip);
@@ -778,8 +777,8 @@ public class Kettlelog extends Application {
             if (popuptype == 0) {
                 datepicker.setValue(LocalDate.now());
             } else {
-	            LocalDate originaldate = LocalDate.parse(predate);
-	            datepicker.setValue(originaldate);
+                LocalDate originaldate = LocalDate.parse(predate);
+                datepicker.setValue(originaldate);
             }
             
         AnchorPane.setRightAnchor(datepicker, 50.0);
@@ -1003,9 +1002,9 @@ public class Kettlelog extends Application {
         @Override
             public void handle(ActionEvent event) {
 
-            	if(duplicatefound){
-            		presscount++;
-            	}
+                if(duplicatefound){
+                    presscount++;
+                }
 
                 boolean incomplete = false;
                 String itemStatus = "";
@@ -1028,25 +1027,23 @@ public class Kettlelog extends Application {
                     missing.setVisible(true);
                 }
                 else {
-                	duplicatefound = false;
-                	for (int i = 0; i < data.size(); i++) {
-                		if ((data.get(i)).getName().equals(iName)) {
-                			duplicatefound = true;	
-                		} 
-                	}
+                    duplicatefound = false;
+                    for (int i = 0; i < data.size(); i++) {
+                        if ((data.get(i)).getName().equals(iName)) {
+                            duplicatefound = true;  
+                        } 
+                    }
 
-                	if (!duplicatefound) {
-                		presscount = 2;
-                	}
+                    if (!duplicatefound) {
+                        presscount = 2;
+                    }
 
                     //EVERY ITEM GETS ASSIGNED A UNIQUE ID WHICH IS THE TIMESTAMP AT WHICH IT WAS CREATED
                     String id = new java.text.SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-                    btnids.add(id);
-                    numRows++;      
+                    btnids.add(id);     
 
                     CellGenerator cellFactory = new CellGenerator();    
                     columns[0].setCellFactory(cellFactory);     
-                    numRowsAdded=0;
 
                     missing.setVisible(false);
                     int intQuan = Integer.parseInt(curQuan);
@@ -1071,13 +1068,13 @@ public class Kettlelog extends Application {
 
                     //user tries to add a duplicate for the first time, so we should display the message.
                     if (popuptype == 0 && presscount == 1) {
-                    	missing.setText("* Possible duplicate found. Are you sure you want to add this item?");
-                		missing.setVisible(true);
+                        missing.setText("* Possible duplicate found. Are you sure you want to add this item?");
+                        missing.setVisible(true);
                     } 
 
                     //if the type is to add, then add the row.
                     else if (popuptype == 0 && presscount == 2) {
-                    	String olddate = newdate;
+                        String olddate = newdate;
                         data.add(new Columns(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, id, false, false, newdate, olddate));
                         presscount = 0;
                         duplicatefound = false;
@@ -1086,8 +1083,8 @@ public class Kettlelog extends Application {
 
                         searchbar.clear();
                         opaqueLayer.setVisible(false);
-	                    addwindow.hide();
-	                    table.setItems(data);
+                        addwindow.hide();
+                        table.setItems(data);
                     }
 
                     //if the type is to edit, update the information at every field.
@@ -1101,15 +1098,17 @@ public class Kettlelog extends Application {
 
                         searchbar.clear();
                         opaqueLayer.setVisible(false);
-	                    addwindow.hide();
-	                    table.setItems(data);
+                        addwindow.hide();
+                        table.setItems(data);
                     }
                 }
+
+                FilterComparators filterObject = new FilterComparators(data, table);
                 if(filterSel==1){
-                    sortByStarred();
+                    filterObject.sortByStarred();
                 }
                 else if(filterSel==2 || filterSel==3){
-                    sortByMostRecent(filterSel);
+                    filterObject.sortByMostRecent(filterSel);
                 }
             }
         }); 
@@ -1169,7 +1168,8 @@ public class Kettlelog extends Application {
                         columns[0].setCellFactory(cellFactory);
                     } 
                     removeBtn.setDisable(true);
-                        sortByStarred();
+                        FilterComparators filterObject = new FilterComparators(data, table);
+                        filterObject.sortByStarred();
                     }     
                 }       
             });         
@@ -1282,24 +1282,6 @@ public class Kettlelog extends Application {
 
     }   
 
-    public void sortByStarred(){
-        StarComparator comp = new StarComparator();
-        data.sort(comp.reversed());
-        table.setItems(data);
-
-    }
-
-    public void sortByMostRecent(int order){
-        DateComparator comp = new DateComparator();
-        if(order==2){
-            data.sort(comp.reversed());
-        }
-        else if (order==3){
-            data.sort(comp);
-        }
-        table.setItems(data);
-    }
-
     //================================================================================
     // CLASSES
     //================================================================================
@@ -1364,6 +1346,7 @@ public class Kettlelog extends Application {
     }
 }
 
+
     public class ColumnHandler implements ListChangeListener<TableColumn>{
         public boolean suspended;
 
@@ -1382,22 +1365,23 @@ public class Kettlelog extends Application {
 
         @Override
         public void changed(ObservableValue ov, String oldValue, String newValue){
+            FilterComparators filterObject = new FilterComparators(data, table);
 
             switch(newValue){
                 case "Starred":
                     filterSel = 1;
+                    filterObject.sortByStarred();
                     searchbar.clear();
-                    sortByStarred();
                     break;
                 case "Most Recent":
                     filterSel = 2;
+                    filterObject.sortByMostRecent(2);
                     searchbar.clear();
-                    sortByMostRecent(2);
                     break;
                 case "Oldest Added":
                     filterSel = 3;
+                    filterObject.sortByMostRecent(3);
                     searchbar.clear();
-                    sortByMostRecent(3);
                     break;
                 case "None":
                     searchbar.clear();
@@ -1409,50 +1393,6 @@ public class Kettlelog extends Application {
         }
     }
 
-    public class StarComparator implements Comparator<Columns> {
-        @Override
-        public int compare(Columns c1, Columns c2) {
-            return Boolean.valueOf(c1.getStarred()).compareTo(Boolean.valueOf(c2.getStarred()));
-        }
-    }
-
-    public class DateComparator implements Comparator<Columns>{
-        @Override
-        public int compare(Columns c1, Columns c2){
-
-            //Split date string into an array: year, month, day
-            String[] c1Split = (c1.getDateAdded()).split("-");
-            String[] c2Split = (c2.getDateAdded()).split("-");
-
-            int[] c1Dates = new int[3];
-            int[] c2Dates = new int[3];
-
-            //Convert String dates to integer
-            for(int i = 0; i<3; i++){
-                try {
-                   c1Dates[i] = Integer.parseInt(c1Split[i]);
-                   c2Dates[i] = Integer.parseInt(c2Split[i]);
-                }
-                catch (NumberFormatException e){
-                   c1Dates[i] = 0;
-                   c2Dates[i] = 0;
-                   System.out.println("ERROR");
-                }
-
-                //Compare each element in the array only if they are different
-                //ie. if yr1==yr2, then don't return and instead compare the next element
-                if (c1Dates[i] != c2Dates[i]){
-                    return Integer.valueOf(c1Dates[i]).compareTo(Integer.valueOf(c2Dates[i]));
-                }
-
-            }
-
-            //if the for loop has not returned anything, 2 dates are the same. return any random comparison
-            return Integer.valueOf(c1Dates[0]).compareTo(Integer.valueOf(c2Dates[0]));
-            
-        }
-    }
-
     public class Handler implements EventHandler<ActionEvent>{
         @Override
         public void handle(ActionEvent e) {
@@ -1461,7 +1401,7 @@ public class Kettlelog extends Application {
 
             switch(itemClicked){
                 case "addBtn":
-                	presscount = 1;
+                    presscount = 1;
                     addItemPopup(0, emptyinfo, empty); 
                     break;
                 case "removeBtn":
