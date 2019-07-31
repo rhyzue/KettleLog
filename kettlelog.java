@@ -74,6 +74,8 @@ public class Kettlelog extends Application {
     public ObservableList<Columns> data = FXCollections.observableArrayList(empty);
     public ObservableList<Columns> itemsToDelete = FXCollections.observableArrayList(empty);
 
+    public static InfoStage infoStage = new InfoStage();
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -81,6 +83,7 @@ public class Kettlelog extends Application {
     @Override
     //SETUP
     public void start(Stage setup) {
+        System.out.println("Initialized infoStage");
         //================================================================================
         // INITIALIZATION
         //================================================================================
@@ -970,15 +973,32 @@ public class Kettlelog extends Application {
         addwindow.show();
 
     }
+/*
+    public InfoStage initInfoStage(){
+        Bounds sb = base.localToScreen(base.getBoundsInLocal());
+        xBounds = sb.getMinX();
+        yBounds = sb.getMinY();
 
-    public void hideInfoStage(InfoStage infoStage){
+        infoStage = new InfoStage(xBounds, yBounds, w, h);
+        infoStage.initOwner(Kettlelog.setup);
+        return infoStage;
+
+    }*/
+
+    public void hideInfoStage(){
         opaqueLayer.setVisible(false);
         infoStage.hide();
-        infoStage = null;
     }
 
-    public void showInfoStage(InfoStage infoStage){
-        opaqueLayer.setVisible(true);       
+    public void showInfoStage(Columns rowInfo){
+        opaqueLayer.setVisible(true); 
+
+        //Update info stage with current row info
+        Bounds sb = base.localToScreen(base.getBoundsInLocal());
+        xBounds = sb.getMinX();
+        yBounds = sb.getMinY();
+        infoStage.updateInfoStage(xBounds, yBounds, w, h, rowInfo);
+        //show stage
         infoStage.show();
     }
 
@@ -1070,13 +1090,7 @@ public class Kettlelog extends Application {
                 @Override       
                 public void handle(ActionEvent event) {   
                     Columns test = (Columns) cell.getTableRow().getItem();
-                    Bounds sb = base.localToScreen(base.getBoundsInLocal());
-                    xBounds = sb.getMinX();
-                    yBounds = sb.getMinY();
-
-                    InfoStage infoStage = new InfoStage(xBounds, yBounds, w, h, test);
-                    infoStage.initOwner(Kettlelog.setup);
-                    showInfoStage(infoStage);
+                    showInfoStage(test);
                 }       
             });
 
