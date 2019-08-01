@@ -32,9 +32,10 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 public class InfoStage extends Stage{
 
 	/*
-	In kettlelog.java, before the program even starts, we initialize an object of this class
-	The constructor will execute and we will have a "blank" infoStage without any data info
-	When we want to show the stage, we need to use
+	In kettlelog.java, before the program even starts, we initialize an object of this class.
+	The constructor will execute and we will have a "blank" infoStage without any data info. 
+    Since this object is a Stage, we can use any stage methods like .show(), .hide() inside kettlelog.java
+	When we want to show the stage, we need to use the method updateInfoStage() with its respective parameters.
 	*/
 
 	//Private Variables
