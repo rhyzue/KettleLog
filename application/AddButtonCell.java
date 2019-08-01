@@ -226,7 +226,7 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
                     else{
                         setGraphic(buttonanchor);
                         setText(null);
-                        Columns curItem = (Columns) this.getTableRow().getItem();
+                        Item curItem = (Item) this.getTableRow().getItem();
 
                         starred = curItem.getStarred();  
                         if(starred==true){   

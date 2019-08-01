@@ -33,12 +33,16 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class InfoStage extends Stage{
 
+
     //Private Variables
     private static double infowidth = 500;
     private static double infoheight = 700;
     private static String infostriphex = "#004545;";
     private static String infomidhex = "#b8d6d6;";
     private static double distancedown = 40.0;
+
+    private static double screenX = 0.0;
+    private static double screenY = 0.0;
 
     //Objects
     private static Text infotitle = new Text();
@@ -109,8 +113,6 @@ public class InfoStage extends Stage{
         //  Block of code to handle errors
             System.out.println("Already added");
         }
-
-
 
         //Center portion of the info panel
         AnchorPane.setTopAnchor(infolabel, 25.0);
@@ -212,7 +214,6 @@ public class InfoStage extends Stage{
             System.out.println("Already added");
         }
         
-        
         infoborderpane.setTop(infotstrip);
         infoborderpane.setCenter(infocenter);
         infoborderpane.setBottom(infobstrip);
@@ -222,7 +223,10 @@ public class InfoStage extends Stage{
         this.initModality(Modality.WINDOW_MODAL);
         //this.initOwner(Kettlelog.setup);
         this.setScene(new Scene(infoborderpane, infowidth, infoheight));
-        this.show();
+    }
+
+    public void updateStageInfo(double xBounds, double yBounds, double w, double h, Columns rowinfo){
+
     }
 
     public class InfoHandler implements EventHandler<ActionEvent>{
@@ -233,7 +237,7 @@ public class InfoStage extends Stage{
 
             switch(itemClicked){
                 case "infocancel":
-                    InfoStage.this.hide();
+                    kettle.hideInfoStage(InfoStage.this);
                     break;    
                 default:
                     System.out.println("Otherstuff");

@@ -98,6 +98,17 @@ public class Kettlelog extends Application {
         new PrimaryStage();
     }
 
+    public void hideInfoStage(InfoStage infoStage){
+        opaqueLayer.setVisible(false);
+        infoStage.hide();
+        infoStage = null;
+    }
+
+    public void showInfoStage(InfoStage infoStage){
+        opaqueLayer.setVisible(true);       
+        infoStage.show();
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
