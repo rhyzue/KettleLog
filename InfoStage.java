@@ -1,32 +1,13 @@
 import Columns.*;
-import java.time.*; 
-import java.util.*;
-import javafx.util.*;
 import javafx.stage.*;
 import javafx.event.*;
 import javafx.geometry.*;
-import java.time.chrono.*; 
 import javafx.scene.Scene;
 import javafx.scene.text.*;
-import java.time.LocalDate;
-import javafx.collections.*;
-import javafx.scene.image.*;
 import javafx.beans.value.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
-import javafx.scene.chart.XYChart;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.chart.LineChart;
-import javafx.scene.image.ImageView;
-import javafx.scene.control.Alert.*;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.input.MouseEvent;
-import javafx.application.Application;
-import java.time.format.DateTimeFormatter;
-import javafx.collections.transformation.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.TableColumn.CellEditEvent;
 
 
 public class InfoStage extends Stage{
@@ -74,6 +55,7 @@ public class InfoStage extends Stage{
     private double w = 0;
     private double h = 0;
 
+    //kettlelog object
     private static Kettlelog kettle = new Kettlelog();
     
 	//Constructor
@@ -172,12 +154,6 @@ public class InfoStage extends Stage{
         infodesc.setEditable(false);
         infodesc.setStyle("-fx-opacity: 1;");
         infodesc.setWrapText(true);
-        /*
-        if (rowinfo.getDesc().trim().length() <= 0) {
-            infodesc.setText("There is no description for this item.");
-        } else {
-            infodesc.setText("Item Description: " + rowinfo.getDesc());
-        }*/
 
         //CONSUMPTION GRAPH THAT WILL SHOW THE USER'S USAGE
         infocenter.setStyle(infomidcolour);     
@@ -204,11 +180,12 @@ public class InfoStage extends Stage{
         this.setResizable(false);
         this.initStyle(StageStyle.UNDECORATED);
         this.initModality(Modality.WINDOW_MODAL);
-        //this.initOwner(Kettlelog.setup);
         this.setScene(new Scene(infoborderpane, infowidth, infoheight));
 	}
 
 	public void updateInfoStage(double xB, double yB, double wi, double hi, Columns rowinfo){
+
+        //Update position when click info
 		w = wi;
 		h = hi;
 
@@ -218,6 +195,7 @@ public class InfoStage extends Stage{
 		screenX = (xBounds + w / 2 - infowidth / 2); 
         screenY = (yBounds + h / 2 - infoheight / 2);
 
+        //Set text to correct item
         infolabel.setText(rowinfo.getName());
         datelabel.setText(rowinfo.getDateAdded());
 
