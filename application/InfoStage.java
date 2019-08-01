@@ -33,6 +33,11 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class InfoStage extends Stage{
 
+    /*
+    In kettlelog.java, before the program even starts, we initialize an object of this class
+    The constructor will execute and we will have a "blank" infoStage without any data info
+    When we want to show the stage, we need to use
+    */
 
     //Private Variables
     private static double infowidth = 500;
@@ -40,7 +45,6 @@ public class InfoStage extends Stage{
     private static String infostriphex = "#004545;";
     private static String infomidhex = "#b8d6d6;";
     private static double distancedown = 40.0;
-
     private static double screenX = 0.0;
     private static double screenY = 0.0;
 
@@ -60,22 +64,20 @@ public class InfoStage extends Stage{
     private static AnchorPane infobstrip = new AnchorPane();
     private static BorderPane infoborderpane = new BorderPane();
 
+
     //Variables whos values may change
     private String infostripcolour;
     private String infomidcolour;
+
+    private double xBounds = 0;
+    private double yBounds = 0;
+    private double w = 0;
+    private double h = 0;
 
     private static Kettlelog kettle = new Kettlelog();
     
     //Constructor
     InfoStage(){
-
-        //Assign values to variables
-        infostripcolour = String.format("-fx-background-color: %s", infostriphex);
-        infomidcolour = String.format("-fx-background-color: %s", infomidhex);
-
-        screenX = (xBounds + w / 2 - infowidth / 2); 
-        screenY = (yBounds + h / 2 - infoheight / 2);
-
         //Don't allow stage to be moved
         ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
             this.setX(screenX);
@@ -92,32 +94,27 @@ public class InfoStage extends Stage{
             this.heightProperty().removeListener(heightListener);
         });
 
+        System.out.println("Info1");
+
+        //Assign values to variables
+        infostripcolour = String.format("-fx-background-color: %s", infostriphex);
+        infomidcolour = String.format("-fx-background-color: %s", infomidhex);
 
         //Top strip of info panel which has text saying "Item Information"      
         infotitle.setText("Item Information");
         infotitle.setFont(new Font(18));
         infotitle.setFill(Color.WHITE);
-
         
         AnchorPane.setLeftAnchor(infotitle, 50.0);
         AnchorPane.setBottomAnchor(infotitle, 5.0);
         infotstrip.setStyle(infostripcolour);
-        infotstrip.setPrefSize(infowidth, 50); //(width, height)
-        
-
-        try {
-            //  Block of code to try
-            infotstrip.getChildren().addAll(infotitle);
-        }
-        catch(Exception e) {
-        //  Block of code to handle errors
-            System.out.println("Already added");
-        }
+        infotstrip.setPrefSize(infowidth, 50); //(width, height)       
+        infotstrip.getChildren().addAll(infotitle);
 
         //Center portion of the info panel
         AnchorPane.setTopAnchor(infolabel, 25.0);
         AnchorPane.setLeftAnchor(infolabel, 100.0);
-        infolabel.setText(rowinfo.getName());
+        //infolabel.setText(rowinfo.getName());
         infolabel.setFont(new Font(16));
         infolabel.setPrefHeight(50.0);
         infolabel.setPrefWidth(300.0);
@@ -134,13 +131,13 @@ public class InfoStage extends Stage{
 
         AnchorPane.setRightAnchor(datelabel, 25.0);
         AnchorPane.setTopAnchor(datelabel, 100.0);
-        datelabel.setText(rowinfo.getDateAdded());
+        //datelabel.setText(rowinfo.getDateAdded());
         datelabel.setPrefHeight(25.0);
         datelabel.setPrefWidth(125.0);
         datelabel.setFont(new Font(16));
         datelabel.setAlignment(Pos.CENTER);
         datelabel.setStyle("-fx-background-color: #95bfbf");
-
+        System.out.println("Info2");
 
         //Seperator
         AnchorPane.setTopAnchor(line1, 110.0);
@@ -175,28 +172,16 @@ public class InfoStage extends Stage{
         infodesc.setEditable(false);
         infodesc.setStyle("-fx-opacity: 1;");
         infodesc.setWrapText(true);
-        if (rowinfo.getDesc().trim().length() <= 0) {
-            infodesc.setText("There is no description for this item.");
-        } else {
-            infodesc.setText("Item Description: " + rowinfo.getDesc());
-        }
 
         //CONSUMPTION GRAPH THAT WILL SHOW THE USER'S USAGE
-        infocenter.setStyle(infomidcolour);
-        
-        try {
-            //  Block of code to try
-            infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel, line2, infodesc);
-        }
-        catch(Exception e) {
-        //  Block of code to handle errors
-            System.out.println("Already added");
-        }
+        infocenter.setStyle(infomidcolour);     
+        infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel, line2, infodesc);
 
         //Bottom part of the strip that has a cancel button
         infocancel.setText("Close");
         infocancel.setPrefHeight(27.5);
         infocancel.setId("infocancel");
+
         InfoHandler infoHandler = new InfoHandler();
         infocancel.setOnAction(infoHandler); 
         
@@ -204,15 +189,7 @@ public class InfoStage extends Stage{
         AnchorPane.setTopAnchor(infocancel, 5.0);
         infobstrip.setStyle(infostripcolour);
         infobstrip.setPrefSize(infowidth, 37.5);
-
-        try {
-            //  Block of code to try
-            infobstrip.getChildren().addAll(infocancel);
-        }
-        catch(Exception e) {
-        //  Block of code to handle errors
-            System.out.println("Already added");
-        }
+        infobstrip.getChildren().addAll(infocancel);  
         
         infoborderpane.setTop(infotstrip);
         infoborderpane.setCenter(infocenter);
@@ -221,11 +198,27 @@ public class InfoStage extends Stage{
         this.setResizable(false);
         this.initStyle(StageStyle.UNDECORATED);
         this.initModality(Modality.WINDOW_MODAL);
-        //this.initOwner(Kettlelog.setup);
         this.setScene(new Scene(infoborderpane, infowidth, infoheight));
     }
 
-    public void updateStageInfo(double xBounds, double yBounds, double w, double h, Columns rowinfo){
+    public void updateInfoStage(double xB, double yB, double wi, double hi, Item rowinfo){
+        w = wi;
+        h = hi;
+
+        xBounds = xB;
+        yBounds = yB;
+
+        screenX = (xBounds + w / 2 - infowidth / 2); 
+        screenY = (yBounds + h / 2 - infoheight / 2);
+
+        infolabel.setText(rowinfo.getName());
+        datelabel.setText(rowinfo.getDateAdded());
+
+        if (rowinfo.getDesc().trim().length() <= 0) {
+            infodesc.setText("There is no description for this item.");
+        } else {
+            infodesc.setText("Item Description: " + rowinfo.getDesc());
+        }
 
     }
 
@@ -237,7 +230,7 @@ public class InfoStage extends Stage{
 
             switch(itemClicked){
                 case "infocancel":
-                    kettle.hideInfoStage(InfoStage.this);
+                    kettle.hideInfoStage();
                     break;    
                 default:
                     System.out.println("Otherstuff");

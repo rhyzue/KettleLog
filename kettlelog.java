@@ -98,15 +98,22 @@ public class Kettlelog extends Application {
         new PrimaryStage();
     }
 
-    public void hideInfoStage(InfoStage infoStage){
-        opaqueLayer.setVisible(false);
-        infoStage.hide();
-        infoStage = null;
+    public void showInfoStage(Columns rowInfo){
+        opaqueLayer.setVisible(true); 
+
+        //Update info stage with current row info
+        Bounds sb = base.localToScreen(base.getBoundsInLocal());
+        xBounds = sb.getMinX();
+        yBounds = sb.getMinY();
+        //Here we pass in the row's information to updateinfostage.
+        infoStage.updateInfoStage(xBounds, yBounds, w, h, rowInfo);
+        infoStage.initOwner(Kettlelog.setup);
+        infoStage.show();
     }
 
-    public void showInfoStage(InfoStage infoStage){
-        opaqueLayer.setVisible(true);       
-        infoStage.show();
+    public void hideInfoStage(){
+        opaqueLayer.setVisible(false);
+        infoStage.hide();
     }
 
     public static void main(String[] args) {
