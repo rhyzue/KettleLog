@@ -31,11 +31,10 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class InfoStage extends Stage{
 
-	/*Variables from Kettlelog:
-	Region opaqueLayer
-	BorderPane base
-	double screenX
-	double screenY
+	/*
+	In kettlelog.java, before the program even starts, we initialize an object of this class
+	The constructor will execute and we will have a "blank" infoStage without any data info
+	When we want to show the stage, we need to use
 	*/
 
 	//Private Variables
