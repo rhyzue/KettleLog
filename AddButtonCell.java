@@ -28,17 +28,75 @@ import javafx.collections.transformation.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
-private class AddButtonCell extends TableCell<Item, Boolean>{
+public class AddButtonCell extends TableCell<Item, String> implements Callback<TableColumn<Item, String>, TableCell<Item, String>> {
 
-    AddButtonCell(TableView table, ObservableList data ){
+        Kettlelog kettle = new Kettlelog();
+
+        @Override
+        public TableCell call(final TableColumn<Item, String> param) {
+
+            return new TableCell<Item, String>() {
+
+                @Override
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    Button starBtn = new Button();
+                    Image starImgClr = new Image("./Misc/starBtnClr.png");   
+                    Image starImgSel = new Image("./Misc/starBtnSel.png");
+                    ImageView starImg = new ImageView(); 
+                    CheckBox checkBtn = new CheckBox();
+                    AnchorPane buttonanchor = new AnchorPane();
+
+                    buttonanchor = createButtonAnchorPane(this, starBtn, starImgClr, starImgSel, starImg, checkBtn);
+
+                    //int sz = data.size();
+                    //String desc = "";
+                    //if(sz == 1){
+                    //    desc = (data.get(0)).getID();
+                    //}
+
+                    /*if(!desc.equals("empty column")){
+                        buttonanchor = createButtonAnchorPane(this, starBtn, starImgClr, starImgSel, starImg, checkBtn);
+                    }*/
+
+                    if (empty) {
+                        setGraphic(null);
+                        setText(null);
+                    }
+                    else{
+                        setGraphic(buttonanchor);
+                        setText(null);
+
+                        Item curItem = (Item) this.getTableRow().getItem();
+                        /*starred = curItem.getStarred();  
+                        if(starred==true){   
+                            starImg.setImage(starImgSel);    
+                        }       
+                        else{ 
+                            starImg.setImage(starImgClr);           
+                        }
+                        starBtn.setGraphic(starImg);
+
+                        if(curItem.getChecked()==true){
+                            checkBtn.setSelected(true);
+                        }
+                        else{
+                            checkBtn.setSelected(false);
+                        }*/ 
+                    }
+                }
+                
+        };
+
     }
 
     //Here is a method that creates a new TableCell with buttons attached to it. 
     //The functions of the buttons are also defined here too.
-    public AnchorPane createButtonPane(final TableCell cell, final Button starBtn, final Image starImgClr, final Image starImgSel, final ImageView starImg, final CheckBox checkBtn) {
+    public AnchorPane createButtonAnchorPane(final TableCell cell, final Button starBtn, final Image starImgClr, final Image starImgSel, final ImageView starImg, final CheckBox checkBtn) {
 
             double dfromtop = 1.0;
-            
+            //CheckBox checkBtn = new CheckBox();
             Button triangleBtn = new Button();
             Button penBtn = new Button(); 
             Button delBtn = new Button();  
@@ -53,7 +111,7 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
             starImg.setImage(starImgClr);
             starBtn.setGraphic(starImg);  
                 
-            starBtn.setOnAction(new EventHandler<ActionEvent>() {       
+            /*starBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) { 
                     //deselect all checkboxes
@@ -78,8 +136,7 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
                         columns[0].setCellFactory(cellFactory);
                     } 
                     removeBtn.setDisable(true);
-                        FilterComparators filterObject = new FilterComparators(data, table);
-                        filterObject.sortByStarred();
+                        sortByStarred();
                     }     
                 }       
             });         
@@ -102,7 +159,7 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
                         }
                     }
                 }
-            });       
+            });   */    
 
             triangleBtn.setId("triangleBtn");
             triangleBtn.setStyle("-fx-background-color: transparent;");                  
@@ -120,8 +177,8 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
             triangleBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) {   
-                    Columns test = (Columns) cell.getTableRow().getItem();
-                    showInfoStage(test); 
+                    Item test = (Item) cell.getTableRow().getItem();
+                    //displayInfo(test);  
                 }       
             });
 
@@ -143,11 +200,12 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
             penBtn.setOnAction(new EventHandler<ActionEvent>() {            
                 @Override               
                 public void handle(ActionEvent event) {         
-                    Columns test = (Columns) cell.getTableRow().getItem();      
+                    Item test = (Item) cell.getTableRow().getItem();      
+                    System.out.println(test.getName());
                     String[] editinfo = {test.getName(), test.getQuantity(), test.getMinimum(), test.getDelivery(), test.getDesc(), test.getDate()};        
-                    showAddStage(1, editinfo, test);        
+                    kettle.showAddStage(1, editinfo);     
                 }       
-            });  
+            }); 
 
             delBtn.setId("delBtn");
             delBtn.setTooltip(new Tooltip("Delete"));
@@ -169,9 +227,9 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
                 public void handle(ActionEvent event) { 
                     Columns test = (Columns) cell.getTableRow().getItem();
                     itemsToDelete.add(test);
-                    //displayAlert(itemsToDelete);
+                    displayAlert(itemsToDelete);
                 }
-            });*/ 
+            });*/   
 
             AnchorPane iconPane = new AnchorPane();
             iconPane.setPrefSize(200, 30);
@@ -192,59 +250,4 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
 
     }   
 
-        @Override
-        public TableCell call(final TableColumn<Columns, Boolean> param) {
-
-            return new TableCell<Columns, Boolean>() {
-
-                @Override
-                public void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-
-                    Button starBtn = new Button();
-                        Image starImgClr = new Image("./Misc/starBtnClr.png");   
-                        Image starImgSel = new Image("./Misc/starBtnSel.png");
-                        ImageView starImg = new ImageView();
-                    CheckBox checkBtn = new CheckBox();
-
-                    int sz = data.size();
-                    String desc = "";
-                    if(sz == 1){
-                        desc = (data.get(0)).getID();
-                    }
-
-                    if(!desc.equals("empty column")){
-                        buttonanchor = createButtonAnchorPane(this, starBtn, starImgClr, starImgSel, starImg, checkBtn);
-                    }
-
-                    if (empty) {
-                        setGraphic(null);
-                        setText(null);
-                    }
-                    else{
-                        setGraphic(buttonanchor);
-                        setText(null);
-                        Item curItem = (Item) this.getTableRow().getItem();
-
-                        starred = curItem.getStarred();  
-                        if(starred==true){   
-                            starImg.setImage(starImgSel);    
-                        }       
-                        else{ 
-                            starImg.setImage(starImgClr);           
-                        }
-                        starBtn.setGraphic(starImg);
-
-                        if(curItem.getChecked()==true){
-                            checkBtn.setSelected(true);
-                        }
-                        else{
-                            checkBtn.setSelected(false);
-                        }   
-                    }
-                }
-                
-        };
-
-    }
 }

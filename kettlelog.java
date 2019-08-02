@@ -57,6 +57,8 @@ public class Kettlelog extends Application {
     double h = w / w_to_h;
     double spacefromtable = 7.5;
 
+    double extraheight = 5.0;
+
     private static PrimaryStage primaryStage = new PrimaryStage();
 
     //public InfoStage infoStage = new InfoStage();
@@ -80,10 +82,12 @@ public class Kettlelog extends Application {
 
     public void showAddStage(int popuptype, String[] textarray){//int popuptype, String[]textarray, Item rowinfo){
 
-        xBounds = primaryStage.getXBounds();
-        yBounds = primaryStage.getYBounds();
+        primaryStage.showOpaqueLayer();
+        addStage.updateAddStage(popuptype, textarray);
 
-        addStage.updateAddStage(xBounds, yBounds, w, h, popuptype, textarray);
+        addStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 300);
+        addStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 352.94) + extraheight);
+
         addStage.show();
     }
 
@@ -106,15 +110,6 @@ public class Kettlelog extends Application {
         primaryStage.updatePrimaryStage(data);
 
     }
-
-
-
-
-
-
-
-
-
    
 /*
     public void showInfoStage(Item rowInfo){
@@ -139,19 +134,5 @@ public class Kettlelog extends Application {
         primaryStage.hideOpaqueLayer();
         addStage.hide();
     } 
-/*
-    public class ColumnHandler implements ListChangeListener<TableColumn>{
-        public boolean suspended;
-
-        @Override
-        public void onChanged(Change change) {
-            change.next();
-            if (change.wasReplaced() && !suspended) {
-                this.suspended = true;
-                table.getColumns().setAll(columns);
-                this.suspended = false;
-            }
-        }
-    }*/
 
 }

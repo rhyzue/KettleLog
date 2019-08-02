@@ -25,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.application.Application;
 import java.time.format.DateTimeFormatter;
 import javafx.collections.transformation.*;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
@@ -45,7 +46,9 @@ public class PrimaryStage extends Stage{
 	private static MenuBar kettlemenu = new MenuBar();
     private static Region opaqueLayer = new Region();
     private static TableView<Item> table = new TableView<Item>();
-    private static final String[] titles = {"", "Name","Status","Quantity","Minimum"};
+    private static final String[] titles = {"Name","Status","Quantity","Minimum"};
+    private static TableColumn<Item, String> buttoncolumn = new TableColumn<>("");
+
     private static TableColumn<Item, String>[] itemArray = (TableColumn<Item, String>[]) new TableColumn[titles.length];
     private static BorderPane base = new BorderPane();
 
@@ -106,6 +109,33 @@ public class PrimaryStage extends Stage{
         table.setPrefSize(300, 508.0);
         table.setPlaceholder(new Label("Sorry, your search did not match any item names."));
 
+        //Here is our leftmost column, the one with the anchorpane full of buttons.
+
+        //ensuring that our cellfactory is only added for non-empty rows.
+        
+        /*buttoncolumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, Boolean>, ObservableValue<Boolean>>() {
+              @Override
+              public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Item, Boolean> features) {
+                return new SimpleBooleanProperty(features.getValue() != null);
+              }
+          });*/
+
+        System.out.println("HELLOWORLD");
+
+        System.out.println("object");
+
+        buttoncolumn.prefWidthProperty().bind(table.widthProperty().multiply(0.1977));
+
+        //AddButtonCell cell = new AddButtonCell();
+        //buttoncolumn.setCellFactory(cell);
+
+        /*buttoncolumn.setCellFactory(new Callback<TableColumn<Item, Boolean>, TableCell<Item, Boolean>>() {
+              @Override 
+              public TableCell<Item, Boolean> call(TableColumn<Item, Boolean> itemBooleanTableColumn) {
+                return cell;
+              }
+          });*/
+
         //COLUMN TITLES       
         for(int i=0; i<titles.length; i++)
         {
@@ -117,7 +147,7 @@ public class PrimaryStage extends Stage{
             itemArray[i] = item;
         }
 
-        table.getColumns().<Item, String>addAll(itemArray);
+        table.getColumns().<Item, String>addAll(buttoncolumn, itemArray[0], itemArray[1], itemArray[2], itemArray[3]);
 
         ColumnHandler columnChange = new ColumnHandler();
         table.getColumns().addListener(columnChange);  
@@ -259,6 +289,7 @@ public class PrimaryStage extends Stage{
 
     public double getXBounds(){
         Bounds sb = base.localToScreen(base.getBoundsInLocal());
+        System.out.println(sb.getMinX());
         return sb.getMinX();
     }
 
@@ -267,11 +298,14 @@ public class PrimaryStage extends Stage{
         return sb.getMinY();
     }
 
-    public void updatePrimaryStage(ObservableList data){
+    public void updatePrimaryStage(ObservableList<Item> data){
+
+        if (!data.get(0).getName().equals("")) {
+            AddButtonCell cell = new AddButtonCell(); 
+            buttoncolumn.setCellFactory(cell);
+        }
         table.setItems(data);
     }
-
-
 
     public class ColumnHandler implements ListChangeListener<TableColumn>{
         public boolean suspended;
@@ -298,7 +332,6 @@ public class PrimaryStage extends Stage{
                     //presscount = 1;
                     System.out.println("hello!");
                     kettle.showAddStage(0, emptyinfo);
-                    //addItemPopup(0, emptyinfo, empty); 
                     break;
                 /*case "removeBtn":
                     for(int i=0; i<data.size(); i++){

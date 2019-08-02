@@ -94,13 +94,6 @@ public class AddStage extends Stage{
     private String predesc;
     private String predate;
 
-    private double xBounds = 0;
-    private double yBounds = 0;
-    private double w = 0;
-    private double h = 0;
-    private double screenX = 0.0;
-    private double screenY = 0.0;
-
     private int presscount = 0; 
     private boolean duplicatefound = false;
 
@@ -108,24 +101,9 @@ public class AddStage extends Stage{
 
     AddStage(){
 
-        System.out.println("========================= 1 =======");
-
         //0 --> ADD WINDOW
         //1 --> EDIT WINDOW
-        ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
-            this.setX(screenX);
-        };
-        ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
-            this.setY(screenY);
-        };
-
-        this.widthProperty().addListener(widthListener);
-        this.heightProperty().addListener(heightListener);
-
-        this.setOnShown(shown -> {
-            this.widthProperty().removeListener(widthListener);
-            this.heightProperty().removeListener(heightListener);
-        });
+        System.out.println("IN CONSTRUCTOR.");
 
         //PRE-SET TEXT FIELDS TAKEN FROM 5-ELEMENT ARRAY
         //This array takes the name, quantity, minimum, shipping time, description and date of the column.
@@ -137,8 +115,6 @@ public class AddStage extends Stage{
         bottomBox.getChildren().addAll(cancelbtn, createbtn);
         addtop.setStyle(topbottom);
         addtop.setPrefSize(60, 80); 
-
-        System.out.println("========================= 2 =======");
 
         AnchorPane.setLeftAnchor(addtext, 42.0);
         AnchorPane.setBottomAnchor(addtext, 10.0);
@@ -173,7 +149,6 @@ public class AddStage extends Stage{
         AnchorPane.setBottomAnchor(a, 16.0);
 
         itemtext.setPrefWidth(150);
-        itemtext.setText(prename);
         AnchorPane.setLeftAnchor(itemtext, 150.0); 
         AnchorPane.setBottomAnchor(itemtext, 10.0);
 
@@ -210,7 +185,6 @@ public class AddStage extends Stage{
         AnchorPane.setBottomAnchor(a2, 46.0);
 
         qtext.setPrefWidth(numbertextwidth);
-        qtext.setText(prequan);
         AnchorPane.setLeftAnchor(qtext, 150.0); 
         AnchorPane.setBottomAnchor(qtext, 40.0);
 
@@ -251,7 +225,6 @@ public class AddStage extends Stage{
         AnchorPane.setBottomAnchor(a3, 46.0);
 
         mtext.setPrefWidth(numbertextwidth);
-        mtext.setText(premin);
         AnchorPane.setLeftAnchor(mtext, 150.0); 
         AnchorPane.setBottomAnchor(mtext, 40.0);
 
@@ -270,7 +243,6 @@ public class AddStage extends Stage{
         AnchorPane.setLeftAnchor(mdesc, 150.0);
         AnchorPane.setBottomAnchor(mdesc, 20.0);
 
-        
         mdesc2.setFont(new Font(12));
         mdesc2.setFill(Color.GREY);
         AnchorPane.setLeftAnchor(mdesc2, 150.0);
@@ -293,7 +265,6 @@ public class AddStage extends Stage{
         AnchorPane.setRightAnchor(a4, 565.0);
         AnchorPane.setBottomAnchor(a4, 46.0);
 
-        stext.setText(predel);
         stext.setPrefWidth(numbertextwidth);
         AnchorPane.setLeftAnchor(stext, 150.0); 
         AnchorPane.setBottomAnchor(stext, 40.0);
@@ -331,7 +302,6 @@ public class AddStage extends Stage{
         dtext.setPrefWidth(400);
         dtext.setPrefHeight(175);
         dtext.setWrapText(true);
-        dtext.setText(predesc);
 
         AnchorPane.setLeftAnchor(dtext, 150.0); 
         AnchorPane.setTopAnchor(dtext, 20.0);
@@ -358,7 +328,7 @@ public class AddStage extends Stage{
                 //duplicatefound = false;
             }
         });
-        
+
         this.setScene(new Scene(abase, addwidth, addheight));
         this.initStyle(StageStyle.UNDECORATED);
         this.initOwner(kettle.getPrimaryStage());
@@ -368,7 +338,7 @@ public class AddStage extends Stage{
     }
 
 
-    public void updateAddStage(double xB, double yB, double wi, double hi, int popuptype, String[] textarray){
+    public void updateAddStage(int popuptype, String[] textarray){
 
         String prename = textarray[0];
         String prequan = textarray[1];
@@ -377,12 +347,11 @@ public class AddStage extends Stage{
         String predesc = textarray[4];
         String predate = textarray[5];
 
-        w = wi;
-        h = hi;
-        xBounds = xB;
-        yBounds = yB;
-        screenX = (xBounds + w / 2 - addwidth / 2); 
-        screenY = (yBounds + h / 2 - addheight / 2);
+        itemtext.setText(prename);
+        qtext.setText(prequan);
+        mtext.setText(premin);
+        stext.setText(predel);
+        dtext.setText(predesc);
 
         if (popuptype == 0) {
             addtext.setText("Add New Item");
@@ -480,6 +449,12 @@ public class AddStage extends Stage{
                         //itemsToDelete.remove(empty);
                         //searchbar.clear();
                         //opaqueLayer.setVisible(false);
+                        //AddButtonCell cellFactory = new AddButtonCell();    
+                        //itemsArray[0].setCellFactory(cellFactory);
+  
+
+
+
                         kettle.hideAddStage();
                     }
 
