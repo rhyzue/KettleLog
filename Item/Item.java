@@ -8,7 +8,6 @@ public class Item {
         private String minimum = null;
         private String delivery = null;
         private String desc = null;
-        private String id = null;
         private boolean starred = false;
         private String date = null;
         private String dateadded = null;
@@ -18,7 +17,7 @@ public class Item {
             
         }
 
-        public Item(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred, boolean checked, String date, String dateadded) {
+        public Item(String name, String status, String quantity, String minimum, String delivery, String desc, boolean starred, boolean checked, String date, String dateadded) {
 
             this.name = name;
             this.status = status;
@@ -26,7 +25,6 @@ public class Item {
             this.minimum = minimum;
             this.delivery = delivery;
             this.desc = desc;
-            this.id = id;
             this.starred = starred;
             this.checked = checked;
             this.date = date;
@@ -80,14 +78,6 @@ public class Item {
 
         public void setDesc(String desc) {
             this.desc = desc;
-        }
-
-        public String getID() {
-            return id;
-        }
-
-        public void setID(String id) {
-            this.id = id;
         }
 
         public boolean getStarred() {

@@ -35,12 +35,9 @@ public class Kettlelog extends Application {
     //================================================================================
     @SuppressWarnings("unchecked")
 
-    private ObservableList<Item> data; 
+    private static ObservableList<Item> data = FXCollections.observableArrayList();
     private ObservableList<Item> itemsToDelete;
-    private TableView<Item> table;
-
-    private String[] emptyinfo = {"", "", "", "", "", ""};
-    private Item empty = new Item( "", "", "", "", "", "", "empty column", false, false, "", "");
+    private static Item empty = new Item("", "", "", "", "", "", false, false, "", "");
 
     public static boolean starred = false;
     public static int expanded = 0;
@@ -50,8 +47,8 @@ public class Kettlelog extends Application {
 
     public static int filterSel = 0; //1=starred,2=checked, 3=mostrecent, 4=none
 
-    double xBounds = 0.0;
-    double yBounds = 0.0;
+    private static double xBounds = 0.0;
+    private static double yBounds = 0.0;
     double screenX = 0.0;
     double screenY = 0.0;
 
@@ -60,12 +57,10 @@ public class Kettlelog extends Application {
     double h = w / w_to_h;
     double spacefromtable = 7.5;
 
-    public static Region opaqueLayer = new Region();
-    //public InfoStage infoStage = new InfoStage();
-    //public AddStage addStage = new AddStage();
-    //public PrimaryStage primaryStage;
+    private static PrimaryStage primaryStage = new PrimaryStage();
 
-    public BorderPane base = new BorderPane();
+    //public InfoStage infoStage = new InfoStage();
+    private static AddStage addStage = new AddStage();
 
     //FilteredList<Item> filteredData = new FilteredList<>(data, p -> true);
 
@@ -75,17 +70,51 @@ public class Kettlelog extends Application {
  
     @Override
     public void start(Stage setup) {
-    	setup = new PrimaryStage(base, opaqueLayer);
-
-    	//make setup the primaryStage
-    	//setup = primaryStage;        
-        data = FXCollections.observableArrayList(empty);
-        itemsToDelete = FXCollections.observableArrayList(empty);
-
-        setup.show();
         
+        data.add(empty);
+        itemsToDelete = FXCollections.observableArrayList(empty);
+        primaryStage.show();
+        primaryStage.updatePrimaryStage(data);
+    
+    }
+
+    public void showAddStage(int popuptype, String[] textarray){//int popuptype, String[]textarray, Item rowinfo){
+
+        xBounds = primaryStage.getXBounds();
+        yBounds = primaryStage.getYBounds();
+
+        addStage.updateAddStage(xBounds, yBounds, w, h, popuptype, textarray);
+        addStage.show();
+    }
+
+    public PrimaryStage getPrimaryStage(){
+        return primaryStage;
+    }
+
+
+    //takes in one item from AddStage and adds it to our data.
+    public void setData(ObservableList<Item> items, int changetype){
+        //0 refers to adding data
+        //1 refers to DELETING data
+
+        if (changetype == 0){
+            data.remove(empty);
+            data.add(items.get(0)); //ITEMS WILL ONLY HAVE 1 ITEM, THE ONE THAT WE ARE ADDING.
+        }
+
+        //System.out.println(data.size());
+        primaryStage.updatePrimaryStage(data);
 
     }
+
+
+
+
+
+
+
+
+
    
 /*
     public void showInfoStage(Item rowInfo){
@@ -103,22 +132,13 @@ public class Kettlelog extends Application {
     public void hideInfoStage(){
         opaqueLayer.setVisible(false);
         infoStage.hide();
-    }
+    }*/
 
-    public void showAddStage(int popuptype, String[]textarray, Item rowinfo){
-        opaqueLayer.setVisible(true); 
-        Bounds sb = base.localToScreen(base.getBoundsInLocal());
-        xBounds = sb.getMinX();
-        yBounds = sb.getMinY();
-        addStage.updateInfoStage(xBounds, yBounds, w, h, popuptype, textarray, table, data, rowInfo);
-        addStage.initOwner(Kettlelog.primary);
-        addStage.show();
-    }
 
     public void hideAddStage(){
-        opaqueLayer.setVisible(false);
+        primaryStage.hideOpaqueLayer();
         addStage.hide();
-    } */
+    } 
 /*
     public class ColumnHandler implements ListChangeListener<TableColumn>{
         public boolean suspended;

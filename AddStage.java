@@ -30,9 +30,9 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class AddStage extends Stage{
 
-    private final int popuptype;
-    private final String[]textarray;
-    private final Item rowinfo;
+    //private final int popuptype;
+    //private final String[]textarray;
+    //private final Item rowinfo;
 
     //PRIVATE FIXED VARIABLES
     private static double addwidth = 600;
@@ -47,7 +47,7 @@ public class AddStage extends Stage{
     private static AnchorPane addbottom = new AnchorPane();
     private static HBox bottomBox = new HBox(10);
     private static Button cancelbtn = new Button();
-    private static Button addbtn = new Button();
+    private static Button createbtn = new Button();
     private static AnchorPane addtop = new AnchorPane();
     private static Text addtext = new Text();
     private static VBox wcenter = new VBox();
@@ -63,7 +63,6 @@ public class AddStage extends Stage{
     private static Tooltip helptip = new Tooltip();
     private static Button helpBtn = new Button();
     private static DatePicker datepicker = new DatePicker();
-    private static HBox iBox = new HBox(ianchor);
     private static AnchorPane qanchor = new AnchorPane();
     private static Text quantity = new Text("Quantity:");
     private static Text a2 = new Text("*");
@@ -81,15 +80,12 @@ public class AddStage extends Stage{
     private static TextField stext = new TextField();
     private static Text sdesc2 = new Text("Entry should be in the number of days (if bought in person, enter 0).");
     private static Text sdesc = new Text("An estimate of how long the item would take to deliver to your location.");
-    private static HBox mBox = new HBox(manchor);
     private static AnchorPane sanchor = new AnchorPane();
-    private static HBox sBox = new HBox(sanchor);
     private static AnchorPane danchor = new AnchorPane();
     private static Text describe = new Text("Description:");
     private static TextArea dtext = new TextArea();
     private static Text missing = new Text();
-    private static HBox dBox = new HBox(danchor);
-
+   
     //CHANGING VARIABLES
     private String prename;
     private String prequan;
@@ -97,16 +93,22 @@ public class AddStage extends Stage{
     private String predel;
     private String predesc;
     private String predate;
+
     private double xBounds = 0;
     private double yBounds = 0;
     private double w = 0;
     private double h = 0;
+    private double screenX = 0.0;
+    private double screenY = 0.0;
+
     private int presscount = 0; 
     private boolean duplicatefound = false;
 
     private static Kettlelog kettle = new Kettlelog();
 
     AddStage(){
+
+        System.out.println("========================= 1 =======");
 
         //0 --> ADD WINDOW
         //1 --> EDIT WINDOW
@@ -132,24 +134,11 @@ public class AddStage extends Stage{
         String topbottom = String.format("-fx-background-color: %s", tbcolour);
         String middle = String.format("-fx-background-color: %s", midcolour);
 
-        bottomBox.getChildren().addAll(cancelbtn, addbtn);
-        opaqueLayer.setVisible(true);
-        
+        bottomBox.getChildren().addAll(cancelbtn, createbtn);
         addtop.setStyle(topbottom);
         addtop.setPrefSize(60, 80); 
 
-        if (popuptype == 0) {
-            addtext.setText("Add New Item");
-            addbtn.setText("Create");
-            helptip.setText(addtip);
-            datepicker.setValue(LocalDate.now());
-        } else {
-            addtext.setText("Edit Item");
-            addbtn.setText("Edit");
-            helptip.setText(edittip);
-            LocalDate originaldate = LocalDate.parse(predate);
-            datepicker.setValue(originaldate);
-        }
+        System.out.println("========================= 2 =======");
 
         AnchorPane.setLeftAnchor(addtext, 42.0);
         AnchorPane.setBottomAnchor(addtext, 10.0);
@@ -159,9 +148,9 @@ public class AddStage extends Stage{
         addbottom.setStyle(topbottom);
         addbottom.setPrefSize(30, 40); 
 
-        addbtn.setId("createditem");  
-        addbtn.setStyle("-fx-background-color: #093d23;");
-        addbtn.setTextFill(Color.WHITE);
+        createbtn.setId("createbtn");  
+        createbtn.setStyle("-fx-background-color: #093d23;");
+        createbtn.setTextFill(Color.WHITE);
         cancelbtn.setText("Cancel");
         cancelbtn.setId("cancelBtn");
         cancelbtn.setStyle("-fx-background-color: #d5f0e2;");
@@ -212,6 +201,8 @@ public class AddStage extends Stage{
         quantity.setFill(Color.BLACK);
         AnchorPane.setRightAnchor(quantity, 460.0);
         AnchorPane.setBottomAnchor(quantity, 45.0);
+
+        HBox iBox = new HBox(ianchor);
 
         a2.setFont(new Font (15));
         a2.setFill(Color.RED);
@@ -294,6 +285,9 @@ public class AddStage extends Stage{
         AnchorPane.setRightAnchor(shipping, 460.0);
         AnchorPane.setBottomAnchor(shipping, 45.0);
 
+        HBox mBox = new HBox(manchor);
+        HBox sBox = new HBox(sanchor);
+
         a4.setFont(new Font (15));
         a4.setFill(Color.RED);
         AnchorPane.setRightAnchor(a4, 565.0);
@@ -350,6 +344,8 @@ public class AddStage extends Stage{
 
         danchor.setStyle(middle);
         danchor.getChildren().addAll(describe, dtext, missing);
+
+        HBox dBox = new HBox(danchor);
         
         wcenter.getChildren().addAll(iBox, qBox, mBox, sBox, dBox);
         abase.setCenter(wcenter);
@@ -357,22 +353,22 @@ public class AddStage extends Stage{
         cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
             public void handle(ActionEvent event) {
-                this.hide();
-                presscount = 0;
-                duplicatefound = false;
-                opaqueLayer.setVisible(false);
+                kettle.hideAddStage();
+                //presscount = 0;
+                //duplicatefound = false;
             }
-        }); 
-
+        });
+        
         this.setScene(new Scene(abase, addwidth, addheight));
         this.initStyle(StageStyle.UNDECORATED);
+        this.initOwner(kettle.getPrimaryStage());
         this.initModality(Modality.WINDOW_MODAL);
         this.setResizable(false);
         this.setTitle("Add New Item");
     }
 
 
-    public void updateAddStage(double xB, double yB, double wi, double hi, int popuptype, String[]textarray, TableView table, ObservableList data, Item rowinfo){
+    public void updateAddStage(double xB, double yB, double wi, double hi, int popuptype, String[] textarray){
 
         String prename = textarray[0];
         String prequan = textarray[1];
@@ -383,20 +379,31 @@ public class AddStage extends Stage{
 
         w = wi;
         h = hi;
-
         xBounds = xB;
         yBounds = yB;
+        screenX = (xBounds + w / 2 - addwidth / 2); 
+        screenY = (yBounds + h / 2 - addheight / 2);
 
-        screenX = (xBounds + w / 2 - infowidth / 2); 
-        screenY = (yBounds + h / 2 - infoheight / 2);
+        if (popuptype == 0) {
+            addtext.setText("Add New Item");
+            createbtn.setText("Create");
+            helptip.setText(addtip);
+            datepicker.setValue(LocalDate.now());
+        } else {
+            addtext.setText("Edit Item");
+            createbtn.setText("Edit");
+            helptip.setText(edittip);
+            LocalDate originaldate = LocalDate.parse(predate);
+            datepicker.setValue(originaldate);
+        }
 
-        addbtn.setOnAction(new EventHandler<ActionEvent>() {
+        createbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
             public void handle(ActionEvent event) {
 
-                if(duplicatefound){
+                /*if(duplicatefound){
                     presscount++;
-                }
+                }*/
 
                 boolean incomplete = false;
                 String itemStatus = "";
@@ -418,8 +425,9 @@ public class AddStage extends Stage{
                     missing.setText("* One or more required fields have not been filled out.");
                     missing.setVisible(true);
                 }
+
                 else {
-                    duplicatefound = false;
+                    /*duplicatefound = false;
                     for (int i = 0; i < data.size(); i++) {
                         if ((data.get(i)).getName().equals(iName)) {
                             duplicatefound = true;  
@@ -428,7 +436,7 @@ public class AddStage extends Stage{
 
                     if (!duplicatefound) {
                         presscount = 2;
-                    }
+                    }*/
 
                     //CellGenerator cellFactory = new CellGenerator();    
                     //columns[0].setCellFactory(cellFactory);     
@@ -455,30 +463,32 @@ public class AddStage extends Stage{
                     }
 
                     //user tries to add a duplicate for the first time, so we should display the message.
-                    if (popuptype == 0 && presscount == 1) {
+                    /*if (popuptype == 0 && presscount == 1) {
                         missing.setText("* Possible duplicate found. Are you sure you want to add this item?");
                         missing.setVisible(true);
-                    } 
+                    }*/
 
                     //if the type is to add, then add the row.
-                    else if (popuptype == 0 && presscount == 2) {
-                        String olddate = newdate;
-                        data.add(new Columns(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, id, false, false, newdate, olddate));
-                        presscount = 0;
-                        duplicatefound = false;
-                        data.remove(empty);
-                        itemsToDelete.remove(empty);
+                    if (popuptype == 0) { //& presscount == 2 should be inside as well.
 
-                        searchbar.clear();
-                        opaqueLayer.setVisible(false);
-                        addwindow.hide();
-                        table.setItems(data);
+                        String olddate = newdate;
+                        Item newitem = new Item(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate);
+                        ObservableList<Item> addthisitem = FXCollections.observableArrayList(newitem);
+                        kettle.setData(addthisitem, 0);
+                        //presscount = 0;
+                        //duplicatefound = false;
+                        //itemsToDelete.remove(empty);
+                        //searchbar.clear();
+                        //opaqueLayer.setVisible(false);
+                        kettle.hideAddStage();
                     }
 
                     //if the type is to edit, update the information at every field.
                     else {
 
-                        rowinfo.setName(iName);
+                        System.out.println("hi");
+
+                        /*rowinfo.setName(iName);
                         rowinfo.setQuantity(curQuan);
                         rowinfo.setMinimum(minQuan);
                         rowinfo.setDelivery(delTime);
@@ -488,18 +498,18 @@ public class AddStage extends Stage{
                         searchbar.clear();
                         opaqueLayer.setVisible(false);
                         table.setItems(data);
-                        kettle.hideAddStage();
+                        kettle.hideAddStage();*/
 
                     }
                 }
 
-                FilterComparators filterObject = new FilterComparators(data, table);
+                /*FilterComparators filterObject = new FilterComparators(data, table);
                 if(filterSel==1){
                     filterObject.sortByStarred();
                 }
                 else if(filterSel==2 || filterSel==3){
                     filterObject.sortByMostRecent(filterSel);
-                }
+                }*/
             }
         }); 
     }

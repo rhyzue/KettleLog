@@ -30,42 +30,43 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class PrimaryStage extends Stage{
 
-	//VARIABLES AND NODES -----------temp? Does this belong to main or here//if here, need get and possibly set methods
-    double w_to_h = 1.4;
-    double w = 1024;
-    double h = w / w_to_h;
-    double spacefromtable = 7.5;
+    private static double screenX = 0.0;
+    private static double screenY = 0.0;
 
-    double screenX = 0.0;
-    double screenY = 0.0; //----------uptohere
+    private static double w_to_h = 1.4;
+    private static double w = 1024;
+    private static double h = w / w_to_h;
+    private static double spacefromtable = 7.5;
 
-    ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
+    private static String[] emptyinfo = {"", "", "", "", "", ""};
+
+    private static ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
+	private static TextField searchbar = new TextField();
+	private static MenuBar kettlemenu = new MenuBar();
+    private static Region opaqueLayer = new Region();
+    private static TableView<Item> table = new TableView<Item>();
+    private static final String[] titles = {"", "Name","Status","Quantity","Minimum"};
+    private static TableColumn<Item, String>[] itemArray = (TableColumn<Item, String>[]) new TableColumn[titles.length];
+    private static BorderPane base = new BorderPane();
 
 
-	//Region opaqueLayer = new Region();
-	//BorderPane base = new BorderPane();
-	TextField searchbar = new TextField();
-	MenuBar kettlemenu = new MenuBar();
-    Kettlelog kettle = new Kettlelog();
     //Handler eventHandler = new Handler();
 
-    public TableView<Item> table = new TableView<Item>();
-    String[] titles = {"", "Name","Status","Quantity","Minimum"};
-    TableColumn<Item, String>[] itemArray = (TableColumn<Item, String>[]) new TableColumn[titles.length];
+    Kettlelog kettle = new Kettlelog();
 
 
-	PrimaryStage(BorderPane base, Region opaqueLayer){ //TEMP: opaque should belong to PS. make set method to access from main
+	PrimaryStage(){ //TEMP: opaque should belong to PS. make set method to access from main
+
 
 	 	this.setResizable(false);
         this.setTitle("KettleLog");
-        /*
+        
         opaqueLayer.setStyle("-fx-background-color: #001a34;");
         opaqueLayer.setOpacity(0.7);
-        opaqueLayer.setVisible(false); */
+        opaqueLayer.setVisible(false); 
 
         ////////////////////////////////////////////////////////////////Menu Bar
-        MenuBar kettlemenu = new MenuBar();
-      
+
         //FILE SUBMENU
         Menu file = new Menu("File");
             MenuItem newtable = new Menu("New");
@@ -117,11 +118,9 @@ public class PrimaryStage extends Stage{
         }
 
         table.getColumns().<Item, String>addAll(itemArray);
-/*
-        ColumnHandler columnChange = new ColumnHandler(); //---------------maybe move later
-        table.getColumns().addListener(columnChange);  */
 
-        //table.setItems(data);  ------------------------------setTable method later
+        ColumnHandler columnChange = new ColumnHandler();
+        table.getColumns().addListener(columnChange);  
 
         table.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() >= 1) {
@@ -155,9 +154,9 @@ public class PrimaryStage extends Stage{
         //================================================================================
         
 
-        /*Handler eventHandler = new Handler();  ----------------------add event handling later
+        Handler eventHandler = new Handler();  
         addBtn.setOnAction(eventHandler);
-        removeBtn.setOnAction(eventHandler);*/
+        removeBtn.setOnAction(eventHandler);
         
         //POSITIONS OF ADD AND REMOVE
         AnchorPane.setRightAnchor(addBtn, 135.0);
@@ -249,7 +248,31 @@ public class PrimaryStage extends Stage{
         this.setX(screenX); 
         this.setY(screenY);
     }
-/*
+
+    public void showOpaqueLayer(){
+        opaqueLayer.setVisible(true); 
+    }
+
+    public void hideOpaqueLayer(){
+        opaqueLayer.setVisible(false);
+    }
+
+    public double getXBounds(){
+        Bounds sb = base.localToScreen(base.getBoundsInLocal());
+        return sb.getMinX();
+    }
+
+    public double getYBounds(){
+        Bounds sb = base.localToScreen(base.getBoundsInLocal());
+        return sb.getMinY();
+    }
+
+    public void updatePrimaryStage(ObservableList data){
+        table.setItems(data);
+    }
+
+
+
     public class ColumnHandler implements ListChangeListener<TableColumn>{
         public boolean suspended;
 
@@ -258,13 +281,13 @@ public class PrimaryStage extends Stage{
                 change.next();
                 if (change.wasReplaced() && !suspended) {
                     this.suspended = true;
-                    table.getColumns().setAll(columns);
+                    table.getColumns().setAll(itemArray);
                     this.suspended = false;
                 }
             }
-    }*/
+    }
 
- /*   public class Handler implements EventHandler<ActionEvent>{
+    public class Handler implements EventHandler<ActionEvent>{
         @Override
         public void handle(ActionEvent e) {
 
@@ -272,24 +295,26 @@ public class PrimaryStage extends Stage{
 
             switch(itemClicked){
                 case "addBtn":
-                    presscount = 1;
-                    addItemPopup(0, emptyinfo, empty); 
+                    //presscount = 1;
+                    System.out.println("hello!");
+                    kettle.showAddStage(0, emptyinfo);
+                    //addItemPopup(0, emptyinfo, empty); 
                     break;
-                case "removeBtn":
+                /*case "removeBtn":
                     for(int i=0; i<data.size(); i++){
                         Columns curItem = data.get(i);
                         if(curItem.getChecked()==true){
                             System.out.println("Delete: "+ curItem.getName());
                             itemsToDelete.add(curItem);
                         }
-                    }
-                    displayAlert(itemsToDelete);
-                    break;    
+                    }*/
+                    //displayAlert(itemsToDelete);
+                    //break;    
                 default:
                     System.out.println("Otherstuff");
             }
         }
-    }*/
+    }
 
 
 }
