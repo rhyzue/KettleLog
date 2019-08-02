@@ -29,11 +29,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class AddStage extends Stage{
-
-    //private final int popuptype;
-    //private final String[]textarray;
-    //private final Item rowinfo;
-
+    
     //PRIVATE FIXED VARIABLES
     private static double addwidth = 600;
     private static double addw_to_h = 0.85;
@@ -85,6 +81,7 @@ public class AddStage extends Stage{
     private static Text describe = new Text("Description:");
     private static TextArea dtext = new TextArea();
     private static Text missing = new Text();
+    private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
    
     //CHANGING VARIABLES
     private String prename;
@@ -338,7 +335,7 @@ public class AddStage extends Stage{
     }
 
 
-    public void updateAddStage(int popuptype, String[] textarray){
+    public void updateAddStage(int popuptype, String[] textarray, Item rowinfo){
 
         String prename = textarray[0];
         String prequan = textarray[1];
@@ -405,10 +402,7 @@ public class AddStage extends Stage{
 
                     if (!duplicatefound) {
                         presscount = 2;
-                    }*/
-
-                    //CellGenerator cellFactory = new CellGenerator();    
-                    //columns[0].setCellFactory(cellFactory);     
+                    }*/    
 
                     missing.setVisible(false);
                     int intQuan = Integer.parseInt(curQuan);
@@ -452,28 +446,25 @@ public class AddStage extends Stage{
                         //AddButtonCell cellFactory = new AddButtonCell();    
                         //itemsArray[0].setCellFactory(cellFactory);
   
-
-
-
                         kettle.hideAddStage();
                     }
 
                     //if the type is to edit, update the information at every field.
                     else {
 
-                        System.out.println("hi");
-
-                        /*rowinfo.setName(iName);
+                        rowinfo.setName(iName);
                         rowinfo.setQuantity(curQuan);
                         rowinfo.setMinimum(minQuan);
                         rowinfo.setDelivery(delTime);
                         rowinfo.setDesc(itemDesc);
                         rowinfo.setDate(newdate);
 
-                        searchbar.clear();
-                        opaqueLayer.setVisible(false);
-                        table.setItems(data);
-                        kettle.hideAddStage();*/
+                        //searchbar.clear();
+                        //opaqueLayer.setVisible(false);
+                        
+                        //JUST PUTTING IN AN EMPTY OBSERVABLELIST FOR THE SETDATA FUNCTION
+                        kettle.setData(placeholder, 1);
+                        kettle.hideAddStage();
 
                     }
                 }

@@ -80,10 +80,10 @@ public class Kettlelog extends Application {
     
     }
 
-    public void showAddStage(int popuptype, String[] textarray){//int popuptype, String[]textarray, Item rowinfo){
+    public void showAddStage(int popuptype, String[] textarray, Item rowinfo){//int popuptype, String[]textarray, Item rowinfo){
 
         primaryStage.showOpaqueLayer();
-        addStage.updateAddStage(popuptype, textarray);
+        addStage.updateAddStage(popuptype, textarray, rowinfo);
 
         addStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 300);
         addStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 352.94) + extraheight);
@@ -98,15 +98,15 @@ public class Kettlelog extends Application {
 
     //takes in one item from AddStage and adds it to our data.
     public void setData(ObservableList<Item> items, int changetype){
-        //0 refers to adding data
-        //1 refers to DELETING data
+        //0 refers to actually adding data from addwindow
+        //1 refers to just updating the data from editwindow
+        //2 refers to DELETING data from alertstage
 
         if (changetype == 0){
             data.remove(empty);
             data.add(items.get(0)); //ITEMS WILL ONLY HAVE 1 ITEM, THE ONE THAT WE ARE ADDING.
         }
 
-        //System.out.println(data.size());
         primaryStage.updatePrimaryStage(data);
 
     }

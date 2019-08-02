@@ -48,6 +48,7 @@ public class PrimaryStage extends Stage{
     private static TableView<Item> table = new TableView<Item>();
     private static final String[] titles = {"Name","Status","Quantity","Minimum"};
     private static TableColumn<Item, String> buttoncolumn = new TableColumn<>("");
+    private static Item empty = new Item("", "", "", "", "", "", false, false, "", "");
 
     private static TableColumn<Item, String>[] itemArray = (TableColumn<Item, String>[]) new TableColumn[titles.length];
     private static BorderPane base = new BorderPane();
@@ -109,39 +110,14 @@ public class PrimaryStage extends Stage{
         table.setPrefSize(300, 508.0);
         table.setPlaceholder(new Label("Sorry, your search did not match any item names."));
 
-        //Here is our leftmost column, the one with the anchorpane full of buttons.
-
-        //ensuring that our cellfactory is only added for non-empty rows.
-        
-        /*buttoncolumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, Boolean>, ObservableValue<Boolean>>() {
-              @Override
-              public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Item, Boolean> features) {
-                return new SimpleBooleanProperty(features.getValue() != null);
-              }
-          });*/
-
-        System.out.println("HELLOWORLD");
-
-        System.out.println("object");
-
-        buttoncolumn.prefWidthProperty().bind(table.widthProperty().multiply(0.1977));
-
-        //AddButtonCell cell = new AddButtonCell();
-        //buttoncolumn.setCellFactory(cell);
-
-        /*buttoncolumn.setCellFactory(new Callback<TableColumn<Item, Boolean>, TableCell<Item, Boolean>>() {
-              @Override 
-              public TableCell<Item, Boolean> call(TableColumn<Item, Boolean> itemBooleanTableColumn) {
-                return cell;
-              }
-          });*/
+        buttoncolumn.prefWidthProperty().bind(table.widthProperty().multiply(0.1980));
 
         //COLUMN TITLES       
         for(int i=0; i<titles.length; i++)
         {
             TableColumn<Item, String> item = new TableColumn<Item, String>(titles[i]);
             item.setCellValueFactory(new PropertyValueFactory<>(titles[i].toLowerCase()));
-            item.prefWidthProperty().bind(table.widthProperty().multiply(0.1977));
+            item.prefWidthProperty().bind(table.widthProperty().multiply(0.1980));
             item.setStyle( "-fx-alignment: CENTER-LEFT;");
             item.setResizable(false);
             itemArray[i] = item;
@@ -315,7 +291,7 @@ public class PrimaryStage extends Stage{
                 change.next();
                 if (change.wasReplaced() && !suspended) {
                     this.suspended = true;
-                    table.getColumns().setAll(itemArray);
+                    table.getColumns().setAll(buttoncolumn, itemArray[0], itemArray[1], itemArray[2], itemArray[3]);
                     this.suspended = false;
                 }
             }
@@ -330,8 +306,9 @@ public class PrimaryStage extends Stage{
             switch(itemClicked){
                 case "addBtn":
                     //presscount = 1;
+
                     System.out.println("hello!");
-                    kettle.showAddStage(0, emptyinfo);
+                    kettle.showAddStage(0, emptyinfo, empty);
                     break;
                 /*case "removeBtn":
                     for(int i=0; i<data.size(); i++){

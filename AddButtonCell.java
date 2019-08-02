@@ -203,7 +203,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                     Item test = (Item) cell.getTableRow().getItem();      
                     System.out.println(test.getName());
                     String[] editinfo = {test.getName(), test.getQuantity(), test.getMinimum(), test.getDelivery(), test.getDesc(), test.getDate()};        
-                    kettle.showAddStage(1, editinfo);     
+                    kettle.showAddStage(1, editinfo, test);     
                 }       
             }); 
 
