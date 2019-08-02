@@ -502,5 +502,7 @@ public class AddStage extends Stage{
                 }
             }
         }); 
+    }
+}
 
  
