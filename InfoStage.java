@@ -1,34 +1,13 @@
-package application;
-
 import Item.*;
-import java.time.*; 
-import java.util.*;
-import javafx.util.*;
 import javafx.stage.*;
 import javafx.event.*;
 import javafx.geometry.*;
-import java.time.chrono.*; 
 import javafx.scene.Scene;
 import javafx.scene.text.*;
-import java.time.LocalDate;
-import javafx.collections.*;
-import javafx.scene.image.*;
 import javafx.beans.value.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
-import javafx.scene.chart.XYChart;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.chart.LineChart;
-import javafx.scene.image.ImageView;
-import javafx.scene.control.Alert.*;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.input.MouseEvent;
-import javafx.application.Application;
-import java.time.format.DateTimeFormatter;
-import javafx.collections.transformation.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.TableColumn.CellEditEvent;
 
 
 public class InfoStage extends Stage{
@@ -39,7 +18,7 @@ public class InfoStage extends Stage{
     When we want to show the stage, we need to use
     */
 
-    //Private Variables
+    //PRIVATE FIXED VARIABLES
     private static double infowidth = 500;
     private static double infoheight = 700;
     private static String infostriphex = "#004545;";
@@ -65,7 +44,7 @@ public class InfoStage extends Stage{
     private static BorderPane infoborderpane = new BorderPane();
 
 
-    //Variables whos values may change
+    //VARIABLES THAT MAY CHANGE
     private String infostripcolour;
     private String infomidcolour;
 
@@ -78,7 +57,7 @@ public class InfoStage extends Stage{
     
     //Constructor
     InfoStage(){
-        //Don't allow stage to be moved
+        //Positions the stage to be in the middle of the parent stage
         ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
             this.setX(screenX);
         };

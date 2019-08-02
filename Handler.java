@@ -1,5 +1,5 @@
-package application;
-import Item.*; 
+
+import Item.*;
 import java.time.*; 
 import java.util.*;
 import javafx.util.*;
@@ -48,7 +48,7 @@ public class Handler implements EventHandler<ActionEvent>{
                         itemsToDelete.add(curItem);
                     }
                 }
-                displayAlert(itemsToDelete);
+                //displayAlert(itemsToDelete);
                 break;    
             default:
                 System.out.println("Otherstuff");
