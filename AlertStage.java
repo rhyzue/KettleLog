@@ -1,41 +1,76 @@
-//Here is a method that will display the confirmation alert (stage) when a user wishes to delete an item.
-    public void displayAlert(ObservableList<Columns> itemsToDelete){//Columns rowinfo) {
+import Item.*; 
+import java.time.*; 
+import java.util.*;
+import javafx.util.*;
+import javafx.stage.*;
+import javafx.event.*;
+import javafx.geometry.*;
+import java.time.chrono.*; 
+import javafx.scene.Scene;
+import javafx.scene.text.*;
+import java.time.LocalDate;
+import javafx.collections.*;
+import javafx.scene.image.*;
+import javafx.beans.value.*;
+import javafx.scene.layout.*;
+import javafx.scene.control.*;
+import javafx.scene.paint.Color;
+import javafx.scene.chart.XYChart;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.chart.LineChart;
+import javafx.scene.image.ImageView;
+import javafx.scene.control.Alert.*;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.input.MouseEvent;
+import javafx.application.Application;
+import java.time.format.DateTimeFormatter;
+import javafx.collections.transformation.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.TableColumn.CellEditEvent;
 
-        Stage alert = new Stage();
-        opaqueLayer.setVisible(true);
 
-        String striphex = "#610031;";
-        String alertmidhex = "#dfccd5;";
-        String stripcolour = String.format("-fx-background-color: %s", striphex);
-        String alertmidcolour = String.format("-fx-background-color: %s", alertmidhex);
+public class AlertStage extends Stage{
 
-        double alertwidth = 500.0;
-        double alertw_to_h = 1.42857;
-        double alertheight = alertwidth / alertw_to_h;
+    private final String striphex = "#610031;";
+    private final String alertmidhex = "#dfccd5;";
+    private final double alertwidth = 500.0;
+    private final double alertw_to_h = 1.42857;
+    private final double alertheight = alertwidth / alertw_to_h;
 
-        Bounds sb = base.localToScreen(base.getBoundsInLocal());
 
-        screenX = (sb.getMinX() + w / 2 - alertwidth / 2); 
-        screenY = (sb.getMinY() + h / 2 - alertheight / 2);
+    private static String stripcolour; 
+    private static String alertmidcolour; 
 
-        alert.initStyle(StageStyle.UNDECORATED);
-        alert.initModality(Modality.WINDOW_MODAL);
-        alert.initOwner(Kettlelog.setup);
+    private static double screenX = 0.0;
+    private static double screenY = 0.0;
+
+    private double xBounds = 0;
+    private double yBounds = 0;
+    private double w = 0;
+    private double h = 0;
+
+    private static Kettlelog kettle = new Kettlelog();
+
+    //set opaquelayer to visible, alert.showandwait() in kettlelog.java
+    AlertStage(){
+
+        stripcolour = String.format("-fx-background-color: %s", striphex);
+        alertmidcolour = String.format("-fx-background-color: %s", alertmidhex);
 
         //Ensures that alert popup is centered relatively to its parent stage (setup).
         ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
-            alert.setX(screenX);
+            this.setX(screenX);
         };
         ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
-            alert.setY(screenY);
+            this.setY(screenY);
         };
 
-        alert.widthProperty().addListener(widthListener);
-        alert.heightProperty().addListener(heightListener);
+        this.widthProperty().addListener(widthListener);
+        this.heightProperty().addListener(heightListener);
 
-        alert.setOnShown(shown -> {
-            alert.widthProperty().removeListener(widthListener);
-            alert.heightProperty().removeListener(heightListener);
+        this.setOnShown(shown -> {
+            this.widthProperty().removeListener(widthListener);
+            this.heightProperty().removeListener(heightListener);
         });
 
         //Top part of the pane which says "Confirm Deletion.""
@@ -64,12 +99,6 @@
             kettle.setImage(kettleonlyimage);
 
         Label itemlabel = new Label();
-            if(itemsToDelete.size()==1){
-                itemlabel.setText(itemsToDelete.get(0).getName() + "?");
-            }
-            else{
-                itemlabel.setText("the selected items?");
-            }
             itemlabel.setFont(new Font(16));
             itemlabel.setPrefHeight(50.0);
             itemlabel.setPrefWidth(280.0);
@@ -78,12 +107,6 @@
             itemlabel.setStyle("-fx-background-color: #cbadc3;");
 
         Text delperm = new Text();
-            if(itemsToDelete.size()==1){
-                delperm.setText("This item will be deleted permanently.");
-            }
-            else{
-                delperm.setText("The items will be deleted permanently.");
-            }
             delperm.setFont(new Font(14));
 
         Text delundo = new Text();
@@ -109,50 +132,16 @@
         Button alertcancel = new Button();
             alertcancel.setText("Cancel");
             alertcancel.setPrefHeight(30);
+            alertcancel.setId("alertcancel");
 
-            alertcancel.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                    public void handle(ActionEvent event) {
-                        searchbar.clear();
-                        alert.hide();
-                        opaqueLayer.setVisible(false);
-                        itemsToDelete.clear();
-                    }
-                }); 
+            AlertHandler alertHandler = new AlertHandler(); //declare object for handler class
+            alertcancel.setOnAction(alertHandler); 
 
         Button alertdelete = new Button();
             alertdelete.setText("Delete Item");
             alertdelete.setPrefHeight(30);
-
-            alertdelete.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                    public void handle(ActionEvent event) {
-                        //System.out.println("Old size: "+ data.size());
-                        for(int i = 0; i<itemsToDelete.size(); i++){ //cycle thru itemsToDelete list and remove from data 
-                            data.remove(itemsToDelete.get(i));
-                            //System.out.println("Deleted: " +itemsToDelete.get(i).getName());
-                        }
-                        itemsToDelete.clear(); //clear itemsToDelete list
-                        removeBtn.setDisable(true);
-
-                        //System.out.println("New size: "+ data.size());
-                        for(int j = 0; j<data.size(); j++){//search items for checked property
-                            if((data.get(j)).getChecked()==true){
-                                removeBtn.setDisable(false);
-                            }
-                        }
-                        searchbar.clear();
-                        if(data.size()==0){
-                            data.add(empty);
-                        }
-                        CellGenerator cellFactory = new CellGenerator();    
-                        columns[0].setCellFactory(cellFactory);
-                        table.setItems(data);
-
-                        alert.hide();
-                        opaqueLayer.setVisible(false);
-                    }
-                }); 
+            alertdelete.setId("alertdelete");
+            alertdelete.setOnAction(alertHandler); 
 
         HBox alertbbx = new HBox(15);
             alertbbx.getChildren().addAll(alertcancel, alertdelete);
@@ -163,14 +152,88 @@
             alertbstrip.setStyle(stripcolour);
             alertbstrip.setPrefSize(alertwidth, 50); //(width, height)
             alertbstrip.getChildren().addAll(alertbbx);
-    
+
         BorderPane alertpane = new BorderPane();
+            alertpane.setTop(alerttstrip);
+            alertpane.setCenter(alertcenter);
+            alertpane.setBottom(alertbstrip);
 
-        alertpane.setTop(alerttstrip);
-        alertpane.setCenter(alertcenter);
-        alertpane.setBottom(alertbstrip);
+        this.setResizable(false);
+        this.setScene(new Scene(alertpane, alertwidth, alertheight));
 
-        alert.setResizable(false);
-        alert.setScene(new Scene(alertpane, alertwidth, alertheight));
-        alert.showAndWait();
+        this.initStyle(StageStyle.UNDECORATED);
+        this.initModality(Modality.WINDOW_MODAL);
+
     }
+
+    public void updateAlertStage(double xB, double yB, double wi, double hi, ObservableList<Columns> itemsToDelete){
+        xBounds = xB;
+        yBounds = yB;
+        w = wi;
+        h = hi;
+
+        screenX = (xBounds + w / 2 - alertwidth / 2); 
+        screenY = (yBounds + h / 2 - alertheight / 2);
+
+        if(itemsToDelete.size()==1){
+            itemlabel.setText(itemsToDelete.get(0).getName() + "?");
+            delperm.setText("This item will be deleted permanently.");
+        }
+        else{
+            itemlabel.setText("the selected items?");
+            delperm.setText("The items will be deleted permanently.");
+        }
+
+    }
+
+    public class AlertHandler implements EventHandler<ActionEvent>{
+        @Override
+        public void handle(ActionEvent e) {
+
+            String itemClicked = ((Control)e.getSource()).getId();
+
+            switch(itemClicked){
+                case "alertcancel":
+                    kettle.closeAlert();
+                    /*
+                    searchbar.clear();
+                    alert.hide();
+                    opaqueLayer.setVisible(false);
+                    itemsToDelete.clear();
+                    */
+                    break;  
+
+                case "alertdelete":
+                    kettle.deleteItem();
+                    /*
+                    for(int i = 0; i<itemsToDelete.size(); i++){ //cycle thru itemsToDelete list and remove from data 
+                        data.remove(itemsToDelete.get(i));
+                        //System.out.println("Deleted: " +itemsToDelete.get(i).getName());
+                    }
+                    itemsToDelete.clear(); //clear itemsToDelete list
+                    removeBtn.setDisable(true);
+
+                    //System.out.println("New size: "+ data.size());
+                    for(int j = 0; j<data.size(); j++){//search items for checked property
+                        if((data.get(j)).getChecked()==true){
+                            removeBtn.setDisable(false);
+                        }
+                    }
+                    searchbar.clear();
+                    if(data.size()==0){
+                        data.add(empty);
+                    }
+                    CellGenerator cellFactory = new CellGenerator();    
+                    columns[0].setCellFactory(cellFactory);
+                    table.setItems(data);
+
+                    alert.hide();
+                    opaqueLayer.setVisible(false); */
+                    break;  
+                default:
+                    System.out.println("Otherstuff");
+            }
+        }
+    }
+
+}
