@@ -46,28 +46,10 @@ public class Kettlelog extends Application {
 
     public static boolean starred = false;
     public static int expanded = 0;
-<<<<<<< HEAD
+
     public static int presscount = 0; 
     public static boolean duplicatefound = false;
-    public static int filterSel = 0; //1=starred,2=checked, 3=mostrecent, 4=none
 
-    double xBounds = 0.0;
-    double yBounds = 0.0;
-    double screenX = 0.0;
-    double screenY = 0.0;
-
-    public static Region opaqueLayer = new Region();
-
-    public InfoStage infoStage = new InfoStage();
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-||||||| merged common ancestors
-    public static int presscount = 0; 
-    public static boolean duplicatefound = false;
-    int filterSel = 0; //1=starred,2=checked, 3=mostrecent, 4=none
-=======
     public static int filterSel = 0; //1=starred,2=checked, 3=mostrecent, 4=none
 
     double xBounds = 0.0;
@@ -82,7 +64,6 @@ public class Kettlelog extends Application {
     public static void main(String[] args) {
         launch(args);
     }
->>>>>>> 4019a653959ebc6636c24a777af7b5d1f9292346
  
     @Override
     public void start(Stage setup) {
@@ -302,14 +283,9 @@ public class Kettlelog extends Application {
         Bounds sb = base.localToScreen(base.getBoundsInLocal());
         xBounds = sb.getMinX();
         yBounds = sb.getMinY();
-<<<<<<< HEAD
 
         //Here we pass in the row's information to updateinfostage.
-||||||| merged common ancestors
-        //Here we pass in the row's information to updateinfostage.
-=======
         infoStage.initOwner(Kettlelog.primary);
->>>>>>> 4019a653959ebc6636c24a777af7b5d1f9292346
         infoStage.updateInfoStage(xBounds, yBounds, w, h, rowInfo);
         infoStage.show();
     }
@@ -319,12 +295,6 @@ public class Kettlelog extends Application {
         infoStage.hide();
     }
 
-<<<<<<< HEAD
-||||||| merged common ancestors
-    public static void main(String[] args) {
-        launch(args);
-    }
-=======
     public void showAddStage(int popuptype, String[]textarray, Item rowinfo){
         opaqueLayer.setVisible(true); 
         Bounds sb = base.localToScreen(base.getBoundsInLocal());
@@ -339,7 +309,6 @@ public class Kettlelog extends Application {
         opaqueLayer.setVisible(false);
         addStage.hide();
     }
->>>>>>> 4019a653959ebc6636c24a777af7b5d1f9292346
 
     public class ColumnHandler implements ListChangeListener<TableColumn>{
         public boolean suspended;
