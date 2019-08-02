@@ -1,6 +1,4 @@
-package application;
-
-import Item.*; 
+import Item.*;
 import java.time.*; 
 import java.util.*;
 import javafx.util.*;
@@ -123,7 +121,7 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
                 @Override       
                 public void handle(ActionEvent event) {   
                     Columns test = (Columns) cell.getTableRow().getItem();
-                    displayInfo(test);  
+                    showInfoStage(test); 
                 }       
             });
 
@@ -147,7 +145,7 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
                 public void handle(ActionEvent event) {         
                     Columns test = (Columns) cell.getTableRow().getItem();      
                     String[] editinfo = {test.getName(), test.getQuantity(), test.getMinimum(), test.getDelivery(), test.getDesc(), test.getDate()};        
-                    addItemPopup(1, editinfo, test);        
+                    showAddStage(1, editinfo, test);        
                 }       
             });  
 
@@ -166,14 +164,14 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
             delImg.setCache(true); 
             delBtn.setGraphic(delImg); 
 
-            delBtn.setOnAction(new EventHandler<ActionEvent>() {       
+            /*delBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) { 
                     Columns test = (Columns) cell.getTableRow().getItem();
                     itemsToDelete.add(test);
-                    displayAlert(itemsToDelete);
+                    //displayAlert(itemsToDelete);
                 }
-            });    
+            });*/ 
 
             AnchorPane iconPane = new AnchorPane();
             iconPane.setPrefSize(200, 30);
@@ -195,9 +193,9 @@ private class AddButtonCell extends TableCell<Item, Boolean>{
     }   
 
         @Override
-        public TableCell call(final TableColumn<Item, Boolean> param) {
+        public TableCell call(final TableColumn<Columns, Boolean> param) {
 
-            return new TableCell<Item, Boolean>() {
+            return new TableCell<Columns, Boolean>() {
 
                 @Override
                 public void updateItem(String item, boolean empty) {

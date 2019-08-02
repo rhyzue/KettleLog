@@ -14,7 +14,11 @@ public class Item {
         private String dateadded = null;
         private boolean checked = false;
 
-        public Items(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred, boolean checked, String date, String dateadded) {
+        public Item(){
+            
+        }
+
+        public Item(String name, String status, String quantity, String minimum, String delivery, String desc, String id, boolean starred, boolean checked, String date, String dateadded) {
 
             this.name = name;
             this.status = status;

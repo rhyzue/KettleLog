@@ -1,4 +1,4 @@
-import Columns.*;
+import Item.*;
 import javafx.stage.*;
 import javafx.event.*;
 import javafx.geometry.*;
@@ -12,22 +12,20 @@ import javafx.scene.paint.Color;
 
 public class InfoStage extends Stage{
 
-	/*
-	In kettlelog.java, before the program even starts, we initialize an object of this class.
-	The constructor will execute and we will have a "blank" infoStage without any data info. 
-    Since this object is a Stage, we can use any stage methods like .show(), .hide() inside kettlelog.java
-	When we want to show the stage, we need to use the method updateInfoStage() with its respective parameters.
-	*/
+    /*
+    In kettlelog.java, before the program even starts, we initialize an object of this class
+    The constructor will execute and we will have a "blank" infoStage without any data info
+    When we want to show the stage, we need to use
+    */
 
-	//Private Variables
-	private static double infowidth = 500;
+    //PRIVATE FIXED VARIABLES
+    private static double infowidth = 500;
     private static double infoheight = 700;
     private static String infostriphex = "#004545;";
     private static String infomidhex = "#b8d6d6;";
-	private static double distancedown = 40.0;
-
-	private static double screenX = 0.0;
-	private static double screenY = 0.0;
+    private static double distancedown = 40.0;
+    private static double screenX = 0.0;
+    private static double screenY = 0.0;
 
     //Objects
     private static Text infotitle = new Text();
@@ -46,7 +44,7 @@ public class InfoStage extends Stage{
     private static BorderPane infoborderpane = new BorderPane();
 
 
-    //Variables whos values may change
+    //VARIABLES THAT MAY CHANGE
     private String infostripcolour;
     private String infomidcolour;
 
@@ -55,12 +53,11 @@ public class InfoStage extends Stage{
     private double w = 0;
     private double h = 0;
 
-    //kettlelog object
     private static Kettlelog kettle = new Kettlelog();
     
-	//Constructor
-	InfoStage(){
-        //Don't allow stage to be moved
+    //Constructor
+    InfoStage(){
+        //Positions the stage to be in the middle of the parent stage
         ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
             this.setX(screenX);
         };
@@ -78,9 +75,9 @@ public class InfoStage extends Stage{
 
         System.out.println("Info1");
 
-		//Assign values to variables
-		infostripcolour = String.format("-fx-background-color: %s", infostriphex);
-    	infomidcolour = String.format("-fx-background-color: %s", infomidhex);
+        //Assign values to variables
+        infostripcolour = String.format("-fx-background-color: %s", infostriphex);
+        infomidcolour = String.format("-fx-background-color: %s", infomidhex);
 
         //Top strip of info panel which has text saying "Item Information"      
         infotitle.setText("Item Information");
@@ -121,12 +118,12 @@ public class InfoStage extends Stage{
         datelabel.setStyle("-fx-background-color: #95bfbf");
         System.out.println("Info2");
 
-		//Seperator
+        //Seperator
         AnchorPane.setTopAnchor(line1, 110.0);
         AnchorPane.setRightAnchor(line1, 160.0);
         line1.setPrefWidth(220.0);
 
-       	//average daily consumption text
+        //average daily consumption text
         AnchorPane.setLeftAnchor(adc, 25.0);
         AnchorPane.setTopAnchor(adc, 102.0 + distancedown); // we're moving the other parts down
         adc.setText("Average Daily Consumption");
@@ -171,7 +168,7 @@ public class InfoStage extends Stage{
         AnchorPane.setTopAnchor(infocancel, 5.0);
         infobstrip.setStyle(infostripcolour);
         infobstrip.setPrefSize(infowidth, 37.5);
-       	infobstrip.getChildren().addAll(infocancel);  
+        infobstrip.getChildren().addAll(infocancel);  
         
         infoborderpane.setTop(infotstrip);
         infoborderpane.setCenter(infocenter);
@@ -181,21 +178,18 @@ public class InfoStage extends Stage{
         this.initStyle(StageStyle.UNDECORATED);
         this.initModality(Modality.WINDOW_MODAL);
         this.setScene(new Scene(infoborderpane, infowidth, infoheight));
-	}
+    }
 
-	public void updateInfoStage(double xB, double yB, double wi, double hi, Columns rowinfo){
+    public void updateInfoStage(double xB, double yB, double wi, double hi, Item rowinfo){
+        w = wi;
+        h = hi;
 
-        //Update position when click info
-		w = wi;
-		h = hi;
+        xBounds = xB;
+        yBounds = yB;
 
-		xBounds = xB;
-		yBounds = yB;
-
-		screenX = (xBounds + w / 2 - infowidth / 2); 
+        screenX = (xBounds + w / 2 - infowidth / 2); 
         screenY = (yBounds + h / 2 - infoheight / 2);
 
-        //Set text to correct item
         infolabel.setText(rowinfo.getName());
         datelabel.setText(rowinfo.getDateAdded());
 
@@ -205,9 +199,9 @@ public class InfoStage extends Stage{
             infodesc.setText("Item Description: " + rowinfo.getDesc());
         }
 
-	}
+    }
 
-	public class InfoHandler implements EventHandler<ActionEvent>{
+    public class InfoHandler implements EventHandler<ActionEvent>{
         @Override
         public void handle(ActionEvent e) {
 
@@ -215,8 +209,8 @@ public class InfoStage extends Stage{
 
             switch(itemClicked){
                 case "infocancel":
-                	kettle.hideInfoStage();
-                	break;    
+                    kettle.hideInfoStage();
+                    break;    
                 default:
                     System.out.println("Otherstuff");
             }
