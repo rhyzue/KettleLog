@@ -1,3 +1,10 @@
+Compiling and running
+
+javac --module-path ./jfx/lib --add-modules javafx.controls Kettlelog.java
+java --module-path ./jfx/lib --add-modules javafx.controls Kettlelog
+find . -type f -iname \*.class -delete
+
+
 PUSHING LOCAL CHANGES TO MASTER
 To be safe, update your local master to be exactly the same as the remote one. 
   git checkout master

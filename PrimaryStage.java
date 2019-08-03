@@ -39,16 +39,20 @@ public class PrimaryStage extends Stage{
     private static double h = w / w_to_h;
     private static double spacefromtable = 7.5;
 
-    private static String[] emptyinfo = {"", "", "", "", "", ""};
-
-    private static ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
+    //UI Items
 	private static TextField searchbar = new TextField();
 	private static MenuBar kettlemenu = new MenuBar();
     private static Region opaqueLayer = new Region();
+    private static Button removeBtn = new Button();
     private static TableView<Item> table = new TableView<Item>();
+
+
     private static final String[] titles = {"Name","Status","Quantity","Minimum"};
     private static TableColumn<Item, String> buttoncolumn = new TableColumn<>("");
     private static Item empty = new Item("", "", "", "", "", "", false, false, "", "");
+    private static ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
+    private static String[] emptyinfo = {"", "", "", "", "", ""};
+
 
     private static TableColumn<Item, String>[] itemArray = (TableColumn<Item, String>[]) new TableColumn[titles.length];
     private static BorderPane base = new BorderPane();
@@ -149,7 +153,6 @@ public class PrimaryStage extends Stage{
         addBtn.setId("addBtn");
 
         //REMOVE BUTTON
-        Button removeBtn = new Button();
         removeBtn = new Button();
         removeBtn.setText("REMOVE");
         removeBtn.setId("removeBtn"); 
@@ -281,6 +284,15 @@ public class PrimaryStage extends Stage{
             buttoncolumn.setCellFactory(cell);
         }
         table.setItems(data);
+    }
+
+    public void enableRemoveBtn(){
+        removeBtn.setDisable(false);
+    }
+
+    public void disableRemoveBtn(){
+        removeBtn.setDisable(true);
+
     }
 
     public class ColumnHandler implements ListChangeListener<TableColumn>{

@@ -94,6 +94,7 @@ public class Kettlelog extends Application {
         addStage.show();
     }
 
+
     public void hideAddStage(){
         primaryStage.hideOpaqueLayer();
         addStage.hide();
@@ -114,6 +115,24 @@ public class Kettlelog extends Application {
         primaryStage.hideOpaqueLayer();
         infoStage.hide();
     } 
+
+    public boolean isItemChecked(){
+        for(int i = 0; i<data.size(); i++){
+            if(data.get(i).getChecked()==true){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void enableRemoveBtn(){
+        primaryStage.enableRemoveBtn();
+    }
+
+    public void disableRemoveBtn(){
+        primaryStage.disableRemoveBtn();
+
+    }
 
     public void setData(ObservableList<Item> items, int changetype){
         //0 refers to actually adding data from addwindow
