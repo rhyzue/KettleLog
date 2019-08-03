@@ -1,4 +1,4 @@
-import Items.*; 
+import Item.*; 
 import java.time.*; 
 import java.util.*;
 import javafx.util.*;
@@ -30,32 +30,40 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class FilterHandler implements ChangeListener<String>{
 
+    private static Kettlelog kettle = new Kettlelog();
+    private static FilterComparators filterObject = new FilterComparators(); //class will get data and table itself
+    private static int filterSel = 0;
+
     @Override
     public void changed(ObservableValue ov, String oldValue, String newValue){
-        FilterComparators filterObject = new FilterComparators(data, table);
 
         switch(newValue){
             case "Starred":
                 filterSel = 1;
                 filterObject.sortByStarred();
-                searchbar.clear();
+                kettle.clearSearchBar();
                 break;
             case "Most Recent":
                 filterSel = 2;
                 filterObject.sortByMostRecent(2);
-                searchbar.clear();
+                kettle.clearSearchBar();
                 break;
             case "Oldest Added":
                 filterSel = 3;
                 filterObject.sortByMostRecent(3);
-                searchbar.clear();
+                kettle.clearSearchBar();
                 break;
             case "None":
-                searchbar.clear();
+                kettle.clearSearchBar();
                 filterSel = 0;
             default:
                 filterSel = 0;
         }
 
     }
+    
+    public int getFilterSel(){
+        return filterSel;
+    }
+
 }

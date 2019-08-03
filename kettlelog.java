@@ -124,15 +124,26 @@ public class Kettlelog extends Application {
         return data;
     }
 
+    public void clearSearchBar(){
+        primaryStage.clearSearchBar();
+    }
+
     public void setData(ObservableList<Item> items, int changetype){
         //0 refers to ADDING data from addwindow
         //1 refers to UPDATING data editwindow
         //2 refers to DELETING data from alertstage
 
-        if (changetype == 0){
-            data.remove(empty);
-            data.add(items.get(0));
-        }
+         switch(changetype){
+            case 0:
+                data.remove(empty);
+                data.add(items.get(0)); //ITEMS WILL ONLY HAVE 1 ITEM, THE ONE THAT WE ARE ADDING.
+                break;
+            case 3:
+                data = items;
+                break;
+            default:
+                System.out.println("other option");
+            }
 
         primaryStage.updatePrimaryStage(data);
 

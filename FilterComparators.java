@@ -31,37 +31,40 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class FilterComparators extends Kettlelog{ 
 
-    public ObservableList<Columns> data;
-    public TableView<Columns> table;
+    private static ObservableList<Item> filterData;
+    private Kettlelog kettle = new Kettlelog();
 
-    public FilterComparators(ObservableList<Columns> data, TableView<Columns> table){
-        this.data = data;
-        this.table = table;
+    public FilterComparators(){
+        filterData = kettle.getData();
     }
 
     //Methods
     public void sortByMostRecent(int order){
         DateComparator comp = new DateComparator();
+
+        //sort by most recent
         if(order==2){
-            data.sort(comp.reversed());
+            filterData.sort(comp.reversed());
         }
+        //sort by oldest
         else if (order==3){
-            data.sort(comp);
+            filterData.sort(comp);
         }
-        table.setItems(data);
+
+        kettle.setData(filterData, 3); //in kettle, update data value
     }
 
     public void sortByStarred(){
         StarComparator comp = new StarComparator();
-        data.sort(comp.reversed());
-        table.setItems(data);
+        filterData.sort(comp.reversed());
+        kettle.setData(filterData, 3);
     }
 
 
     //Classes
-    public class DateComparator implements Comparator<Columns>{
+    public class DateComparator implements Comparator<Item>{
         @Override
-        public int compare(Columns c1, Columns c2){
+        public int compare(Item c1, Item c2){
 
             String c1Date = c1.getDateAdded();
             String c2Date = c2.getDateAdded();
@@ -97,11 +100,10 @@ public class FilterComparators extends Kettlelog{
         }
     }
 
-    public class StarComparator implements Comparator<Columns> {
+    public class StarComparator implements Comparator<Item> {
         @Override
-        public int compare(Columns c1, Columns c2) {
+        public int compare(Item c1, Item c2) {
             return Boolean.valueOf(c1.getStarred()).compareTo(Boolean.valueOf(c2.getStarred()));
         }
     }
 }
-

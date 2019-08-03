@@ -211,9 +211,9 @@ public class PrimaryStage extends Stage{
         ComboBox<String> filter= new ComboBox<String>(filterOptions);
             filter.setPromptText("Filter By");
             filter.setPrefWidth(150.0);
-        /*
-            FilterHandler filterListener = new FilterHandler();
-            filter.valueProperty().addListener(filterListener);*/
+    
+        FilterHandler filterListener = new FilterHandler();
+        filter.valueProperty().addListener(filterListener);
 
         AnchorPane.setLeftAnchor(filter, 52.0);
         AnchorPane.setBottomAnchor(filter, spacefromtable);
@@ -285,6 +285,10 @@ public class PrimaryStage extends Stage{
     public void disableRemoveBtn(){
         removeBtn.setDisable(true);
 
+    }
+
+    public void clearSearchBar(){
+        searchbar.clear();
     }
 
     public class ColumnHandler implements ListChangeListener<TableColumn>{
