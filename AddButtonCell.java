@@ -28,14 +28,11 @@ import javafx.collections.transformation.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
-//Possibility: Make anchorPaneItem class with get, set methods for buttons (kinda like Item class)?
 
 public class AddButtonCell extends TableCell<Item, String> implements Callback<TableColumn<Item, String>, TableCell<Item, String>> {
 
-
         private final Image starImgClr = new Image("./Misc/starBtnClr.png");   
         private final Image starImgSel = new Image("./Misc/starBtnSel.png");
-
         private static boolean starred = false;
 
         private static Kettlelog kettle = new Kettlelog();
@@ -69,22 +66,24 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                         //Check if the current item is starred; set appropriate image
                         Item curItem = (Item) this.getTableRow().getItem();
                         starred = curItem.getStarred();  
-                        if(starred==true){   
-                            starImg.setImage(starImgSel);    
-                        }       
-                        else{ 
-                            starImg.setImage(starImgClr);           
-                        }
-                        starBtn.setGraphic(starImg);
 
-                        //If current item is checked, display the checkbox as so
-                        if(curItem.getChecked()==true){
-                            checkBtn.setSelected(true);
-                        }
-                        else{
-                            checkBtn.setSelected(false);
-                        }
-                    }
+                        if(curItem!=null){
+                            if(starred==true){   
+                                starImg.setImage(starImgSel);    
+                            }       
+                            else{ 
+                                starImg.setImage(starImgClr);           
+                            }
+                            starBtn.setGraphic(starImg);
+
+                            //If current item is checked, display the checkbox as so
+                            if(curItem.getChecked()==true){
+                                checkBtn.setSelected(true);
+                            }
+                            else{
+                                checkBtn.setSelected(false);
+                            }
+                    }}
                 }
                 
         };
@@ -226,10 +225,9 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
             delBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) { 
-                    System.out.println("DELETING.");
-                    //Columns test = (Columns) cell.getTableRow().getItem();
+                    Item rowinfo = (Item) cell.getTableRow().getItem();
                     //itemsToDelete.add(test);
-                    //displayAlert(itemsToDelete);
+                    kettle.showAlertStage(rowinfo);
                 }
             }); 
 

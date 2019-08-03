@@ -59,6 +59,7 @@ public class Kettlelog extends Application {
     private static PrimaryStage primaryStage = new PrimaryStage();
     private static InfoStage infoStage = new InfoStage();
     private static AddStage addStage = new AddStage();
+    private static AlertStage alertStage = new AlertStage();
 
     //FilteredList<Item> filteredData = new FilteredList<>(data, p -> true);
 
@@ -111,6 +112,22 @@ public class Kettlelog extends Application {
     public void hideInfoStage(){
         primaryStage.hideOpaqueLayer();
         infoStage.hide();
+    } 
+
+    public void showAlertStage(Item rowinfo) {
+
+        primaryStage.showOpaqueLayer();
+        alertStage.updateAlertStage(rowinfo);
+
+        alertStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250);
+        alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 175) + extraheight);
+
+        alertStage.show();
+    }
+
+    public void hideAlertStage(){
+        primaryStage.hideOpaqueLayer();
+        alertStage.hide();
     } 
 
     public boolean isItemChecked(){

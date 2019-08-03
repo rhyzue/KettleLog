@@ -36,127 +36,102 @@ public class AlertStage extends Stage{
     private final double alertwidth = 500.0;
     private final double alertw_to_h = 1.42857;
     private final double alertheight = alertwidth / alertw_to_h;
-
-
     private static String stripcolour; 
     private static String alertmidcolour; 
 
-    private static double screenX = 0.0;
-    private static double screenY = 0.0;
+    private static Text deltext = new Text();
+    private static Image kettleonlyimage = new Image("./Misc/kettle.png");
+    private static ImageView kettle = new ImageView();
+    private static Text delconfirm = new Text();
+    private static AnchorPane alerttstrip = new AnchorPane();
+    private static VBox alertcentervbox = new VBox(10);
+    private static Text delundo = new Text();
+    private static Text delperm = new Text();
+    private static Label itemlabel = new Label();
+    private static AnchorPane alertcenter = new AnchorPane();
+    private static Button alertcancel = new Button();
+    private static Button alertdelete = new Button();
+    private static HBox alertbbx = new HBox(15);
+    private static AnchorPane alertbstrip = new AnchorPane();
+    private static BorderPane alertpane = new BorderPane();
 
-    private double xBounds = 0;
-    private double yBounds = 0;
-    private double w = 0;
-    private double h = 0;
+    private static Kettlelog kettleclass = new Kettlelog();
 
-    private static Kettlelog kettle = new Kettlelog();
-
-    //set opaquelayer to visible, alert.showandwait() in kettlelog.java
     AlertStage(){
 
         stripcolour = String.format("-fx-background-color: %s", striphex);
         alertmidcolour = String.format("-fx-background-color: %s", alertmidhex);
 
-        //Ensures that alert popup is centered relatively to its parent stage (setup).
-        ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
-            this.setX(screenX);
-        };
-        ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
-            this.setY(screenY);
-        };
-
-        this.widthProperty().addListener(widthListener);
-        this.heightProperty().addListener(heightListener);
-
-        this.setOnShown(shown -> {
-            this.widthProperty().removeListener(widthListener);
-            this.heightProperty().removeListener(heightListener);
-        });
-
         //Top part of the pane which says "Confirm Deletion.""
-        Text deltext = new Text();
-            deltext.setText("Confirm Deletion");
-            deltext.setFont(new Font(18));
-            deltext.setFill(Color.WHITE);
+        
+        deltext.setText("Confirm Deletion");
+        deltext.setFont(new Font(18));
+        deltext.setFill(Color.WHITE);
 
-        AnchorPane alerttstrip = new AnchorPane();
-            AnchorPane.setLeftAnchor(deltext, 30.0);
-            AnchorPane.setBottomAnchor(deltext, 10.0);
-            alerttstrip.setStyle(stripcolour);
-            alerttstrip.setPrefSize(alertwidth, 75); //(width, height)
-            alerttstrip.getChildren().addAll(deltext);
+        AnchorPane.setLeftAnchor(deltext, 30.0);
+        AnchorPane.setBottomAnchor(deltext, 10.0);
+        alerttstrip.setStyle(stripcolour);
+        alerttstrip.setPrefSize(alertwidth, 75); //(width, height)
+        alerttstrip.getChildren().addAll(deltext);
 
         //Center part of the pane which contains the Kettlelog logo and some text labels.
 
-        Text delconfirm = new Text();
-            delconfirm.setText("Are you sure you want to delete");
-            delconfirm.setFont(new Font(16));
+        delconfirm.setText("Are you sure you want to delete");
+        delconfirm.setFont(new Font(16));
 
-        Image kettleonlyimage = new Image("./Misc/kettle.png");
-        ImageView kettle = new ImageView();
-            kettle.setFitHeight(150);
-            kettle.setFitWidth(150);
-            kettle.setImage(kettleonlyimage);
+        kettle.setFitHeight(150);
+        kettle.setFitWidth(150);
+        kettle.setImage(kettleonlyimage);
 
-        Label itemlabel = new Label();
-            itemlabel.setFont(new Font(16));
-            itemlabel.setPrefHeight(50.0);
-            itemlabel.setPrefWidth(280.0);
-            itemlabel.setAlignment(Pos.CENTER);
-            itemlabel.setTextOverrun(OverrunStyle.ELLIPSIS);
-            itemlabel.setStyle("-fx-background-color: #cbadc3;");
+        itemlabel.setFont(new Font(16));
+        itemlabel.setPrefHeight(50.0);
+        itemlabel.setPrefWidth(280.0);
+        itemlabel.setAlignment(Pos.CENTER);
+        itemlabel.setTextOverrun(OverrunStyle.ELLIPSIS);
+        itemlabel.setStyle("-fx-background-color: #cbadc3;");
 
-        Text delperm = new Text();
-            delperm.setFont(new Font(14));
+        delperm.setFont(new Font(14));
 
-        Text delundo = new Text();
-            delundo.setText("You can't undo this action.");
-            delundo.setFont(new Font(14));
+        delundo.setText("You can't undo this action.");
+        delundo.setFont(new Font(14));
 
-        VBox alertcentervbox = new VBox(10);
-            alertcentervbox.setPrefSize(220.0, 230.0);
-            alertcentervbox.getChildren().addAll(delconfirm, itemlabel, delperm, delundo);
-            alertcentervbox.setPadding(new Insets(50.0, 0.0, 0.0, 0.0));
-            //alertcentervbox.setStyle("-fx-background-color: #cf1020;");
- 
-        AnchorPane alertcenter = new AnchorPane();
-            AnchorPane.setTopAnchor(alertcentervbox, 0.0);
-            AnchorPane.setRightAnchor(alertcentervbox, 30.0);
-            AnchorPane.setLeftAnchor(kettle, 10.0);
-            AnchorPane.setTopAnchor(kettle, 40.0);
+        alertcentervbox.setPrefSize(220.0, 230.0);
+        alertcentervbox.getChildren().addAll(delconfirm, itemlabel, delperm, delundo);
+        alertcentervbox.setPadding(new Insets(50.0, 0.0, 0.0, 0.0));
+        //alertcentervbox.setStyle("-fx-background-color: #cf1020;");
 
-            alertcenter.setStyle(alertmidcolour);
-            alertcenter.getChildren().addAll(kettle, alertcentervbox);
+        AnchorPane.setTopAnchor(alertcentervbox, 0.0);
+        AnchorPane.setRightAnchor(alertcentervbox, 30.0);
+        AnchorPane.setLeftAnchor(kettle, 10.0);
+        AnchorPane.setTopAnchor(kettle, 40.0);
 
-        //Bottom part of the pane which has the two buttons "Cancel" and "Delete".  
-        Button alertcancel = new Button();
-            alertcancel.setText("Cancel");
-            alertcancel.setPrefHeight(30);
-            alertcancel.setId("alertcancel");
+        alertcenter.setStyle(alertmidcolour);
+        alertcenter.getChildren().addAll(kettle, alertcentervbox);
 
-            AlertHandler alertHandler = new AlertHandler(); //declare object for handler class
-            alertcancel.setOnAction(alertHandler); 
+        //Bottom part of the pane which has the two buttons "Cancel" and "Delete". 
 
-        Button alertdelete = new Button();
-            alertdelete.setText("Delete Item");
-            alertdelete.setPrefHeight(30);
-            alertdelete.setId("alertdelete");
-            alertdelete.setOnAction(alertHandler); 
+        alertcancel.setText("Cancel");
+        alertcancel.setPrefHeight(30);
+        alertcancel.setId("alertcancel");
 
-        HBox alertbbx = new HBox(15);
-            alertbbx.getChildren().addAll(alertcancel, alertdelete);
+        AlertHandler alertHandler = new AlertHandler(); //declare object for handler class
+        alertcancel.setOnAction(alertHandler); 
 
-        AnchorPane alertbstrip = new AnchorPane();
-            AnchorPane.setRightAnchor(alertbbx, 7.5);
-            AnchorPane.setTopAnchor(alertbbx, 7.5);
-            alertbstrip.setStyle(stripcolour);
-            alertbstrip.setPrefSize(alertwidth, 50); //(width, height)
-            alertbstrip.getChildren().addAll(alertbbx);
+        alertdelete.setText("Delete Item");
+        alertdelete.setPrefHeight(30);
+        alertdelete.setId("alertdelete");
+        alertdelete.setOnAction(alertHandler); 
+        alertbbx.getChildren().addAll(alertcancel, alertdelete);
 
-        BorderPane alertpane = new BorderPane();
-            alertpane.setTop(alerttstrip);
-            alertpane.setCenter(alertcenter);
-            alertpane.setBottom(alertbstrip);
+        AnchorPane.setRightAnchor(alertbbx, 7.5);
+        AnchorPane.setTopAnchor(alertbbx, 7.5);
+        alertbstrip.setStyle(stripcolour);
+        alertbstrip.setPrefSize(alertwidth, 50); //(width, height)
+        alertbstrip.getChildren().addAll(alertbbx);
+
+        alertpane.setTop(alerttstrip);
+        alertpane.setCenter(alertcenter);
+        alertpane.setBottom(alertbstrip);
 
         this.setResizable(false);
         this.setScene(new Scene(alertpane, alertwidth, alertheight));
@@ -166,15 +141,13 @@ public class AlertStage extends Stage{
 
     }
 
-    public void updateAlertStage(double xB, double yB, double wi, double hi, ObservableList<Columns> itemsToDelete){
-        xBounds = xB;
-        yBounds = yB;
-        w = wi;
-        h = hi;
+    public void updateAlertStage(Item rowinfo){//itemstodelete should be a parameter too potentially
 
-        screenX = (xBounds + w / 2 - alertwidth / 2); 
-        screenY = (yBounds + h / 2 - alertheight / 2);
 
+        itemlabel.setText(rowinfo.getName() + "?");
+        delperm.setText("This item will be deleted permanently.");
+
+        /*
         if(itemsToDelete.size()==1){
             itemlabel.setText(itemsToDelete.get(0).getName() + "?");
             delperm.setText("This item will be deleted permanently.");
@@ -182,7 +155,7 @@ public class AlertStage extends Stage{
         else{
             itemlabel.setText("the selected items?");
             delperm.setText("The items will be deleted permanently.");
-        }
+        }*/
 
     }
 
@@ -194,7 +167,7 @@ public class AlertStage extends Stage{
 
             switch(itemClicked){
                 case "alertcancel":
-                    kettle.closeAlert();
+                    kettleclass.hideAlertStage();
                     /*
                     searchbar.clear();
                     alert.hide();
@@ -204,7 +177,7 @@ public class AlertStage extends Stage{
                     break;  
 
                 case "alertdelete":
-                    kettle.deleteItem();
+                    //kettle.deleteItem();
                     /*
                     for(int i = 0; i<itemsToDelete.size(); i++){ //cycle thru itemsToDelete list and remove from data 
                         data.remove(itemsToDelete.get(i));
