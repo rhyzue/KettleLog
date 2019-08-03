@@ -1,11 +1,7 @@
 import Item.*; 
 import java.time.*; 
-import java.util.*;
-import javafx.util.*;
 import javafx.stage.*;
 import javafx.event.*;
-import javafx.geometry.*;
-import java.time.chrono.*; 
 import javafx.scene.Scene;
 import javafx.scene.text.*;
 import java.time.LocalDate;
@@ -15,22 +11,15 @@ import javafx.beans.value.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
-import javafx.scene.chart.XYChart;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.chart.LineChart;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.Alert.*;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.input.MouseEvent;
 import javafx.application.Application;
 import java.time.format.DateTimeFormatter;
-import javafx.collections.transformation.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class AddStage extends Stage{
 
-    //PRIVATE FIXED VARIABLES
+    //================================================================================
+    // INITIALIZATION
+    //================================================================================
     private static double addwidth = 600;
     private static double addw_to_h = 0.85;
     private static double addheight = addwidth / addw_to_h;
@@ -39,50 +28,51 @@ public class AddStage extends Stage{
     private static String midcolour = "#d5f0e2;";
 
     //OBJECTS 
-    private static BorderPane abase = new BorderPane();
-    private static AnchorPane addbottom = new AnchorPane();
-    private static HBox bottomBox = new HBox(10);
-    private static Button cancelbtn = new Button();
-    private static Button createbtn = new Button();
-    private static AnchorPane addtop = new AnchorPane();
-    private static Text addtext = new Text();
-    private static VBox wcenter = new VBox();
-    private static AnchorPane ianchor = new AnchorPane();
-    private static Text itemname = new Text("Item Name:");
     private static Font f = new Font(15);
     private static Text a = new Text("*");
+    private static Text a2 = new Text("*");
+    private static Text a3 = new Text("*");
+    private static Text a4 = new Text("*");
+    private static Text itemname = new Text("Item Name:");
+    private static Text quantity = new Text("Quantity:");
+    private static Text minimum = new Text("Minimum:");
+    private static Text shipping = new Text("Delivery Time:");
+    private static Text describe = new Text("Description:");
+    private static Text missing = new Text();
+    private static Text addtext = new Text();
     private static TextField itemtext = new TextField();
-    private static Image helpBtnImg = new Image("./Misc/help.png");
-    private static ImageView helpImg = new ImageView(); 
+    private static TextField qtext = new TextField();
+    private static TextField mtext = new TextField();
+    private static TextField stext = new TextField();
+    private static TextArea dtext = new TextArea();
+    private static AnchorPane ianchor = new AnchorPane();
+    private static AnchorPane qanchor = new AnchorPane();
+    private static AnchorPane manchor = new AnchorPane();
+    private static AnchorPane sanchor = new AnchorPane();
+    private static AnchorPane danchor = new AnchorPane();
+    private static Text qdesc = new Text("How much of this item do you currently have on hand?");
+    private static Text qdesc2 = new Text("Entry should be in singular units (eg. 3 boxes of 50 gloves = 150).");
+    private static Text mdesc = new Text("What is the minimum number of this item you want in your office?");
+    private static Text mdesc2 = new Text("Entry should be in singular units (eg. 3 boxes of 50 gloves = 150).");
+    private static Text sdesc = new Text("An estimate of how long the item would take to deliver to your location.");
+    private static Text sdesc2 = new Text("Entry should be in the number of days (if bought in person, enter 0).");
+    private static Button cancelbtn = new Button();
+    private static Button createbtn = new Button();
     private static String addtip = "add";
     private static String edittip = "edit";
     private static Tooltip helptip = new Tooltip();
     private static Button helpBtn = new Button();
+    private static BorderPane abase = new BorderPane();
+    private static AnchorPane addtop = new AnchorPane();
+    private static AnchorPane addbottom = new AnchorPane();
+    private static HBox bottomBox = new HBox(10);
+    private static VBox wcenter = new VBox();
+    private static Image helpBtnImg = new Image("./Misc/help.png");
+    private static ImageView helpImg = new ImageView(); 
     private static DatePicker datepicker = new DatePicker();
-    private static AnchorPane qanchor = new AnchorPane();
-    private static Text quantity = new Text("Quantity:");
-    private static Text a2 = new Text("*");
-    private static TextField qtext = new TextField();
-    private static Text qdesc = new Text("How much of this item do you currently have on hand?");
-    private static Text qdesc2 = new Text("Entry should be in singular units (eg. 3 boxes of 50 gloves = 150).");
-    private static AnchorPane manchor = new AnchorPane();
-    private static Text minimum = new Text("Minimum:");
-    private static Text a3 = new Text("*");
-    private static TextField mtext = new TextField();
-    private static Text mdesc = new Text("What is the minimum number of this item you want in your office?");
-    private static Text mdesc2 = new Text("Entry should be in singular units (eg. 3 boxes of 50 gloves = 150).");
-    private static Text shipping = new Text("Delivery Time:");
-    private static Text a4 = new Text("*");
-    private static TextField stext = new TextField();
-    private static Text sdesc2 = new Text("Entry should be in the number of days (if bought in person, enter 0).");
-    private static Text sdesc = new Text("An estimate of how long the item would take to deliver to your location.");
-    private static AnchorPane sanchor = new AnchorPane();
-    private static AnchorPane danchor = new AnchorPane();
-    private static Text describe = new Text("Description:");
-    private static TextArea dtext = new TextArea();
-    private static Text missing = new Text();
     private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
-   
+    private static Kettlelog kettle = new Kettlelog();
+
     //CHANGING VARIABLES
     private String prename;
     private String prequan;
@@ -94,17 +84,10 @@ public class AddStage extends Stage{
     private int presscount = 0; 
     private boolean duplicatefound = false;
 
-    private static Kettlelog kettle = new Kettlelog();
-
     AddStage(){
 
         //0 --> ADD WINDOW
         //1 --> EDIT WINDOW
-        System.out.println("IN CONSTRUCTOR.");
-
-        //PRE-SET TEXT FIELDS TAKEN FROM 5-ELEMENT ARRAY
-        //This array takes the name, quantity, minimum, shipping time, description and date of the column.
-        //The purpose of this is to save the information so that it can be displayed when the edit button is clicked.
 
         String topbottom = String.format("-fx-background-color: %s", tbcolour);
         String middle = String.format("-fx-background-color: %s", midcolour);
@@ -337,6 +320,10 @@ public class AddStage extends Stage{
 
     public void updateAddStage(int popuptype, String[] textarray, Item rowinfo){
 
+        //PRE-SET TEXT FIELDS TAKEN FROM 5-ELEMENT ARRAY
+        //This array takes the name, quantity, minimum, shipping time, description and date of the column.
+        //The purpose of this is to save the information so that it can be displayed when the edit button is clicked.
+        
         String prename = textarray[0];
         String prequan = textarray[1];
         String premin = textarray[2];

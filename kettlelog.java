@@ -1,68 +1,40 @@
 import Item.*;
-import java.time.*; 
-import java.util.*;
-import javafx.util.*;
 import javafx.stage.*;
-import javafx.event.*;
-import javafx.geometry.*;
-import java.time.chrono.*; 
 import javafx.scene.Scene;
-import javafx.scene.text.*;
-import java.time.LocalDate;
 import javafx.collections.*;
-import javafx.scene.image.*;
-import javafx.beans.value.*;
-import javafx.scene.layout.*;
-import javafx.scene.control.*;
-import javafx.scene.paint.Color;
-import javafx.scene.chart.XYChart;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.chart.LineChart;
-import javafx.scene.image.ImageView;
-import javafx.scene.control.Alert.*;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.input.MouseEvent;
 import javafx.application.Application;
-import java.time.format.DateTimeFormatter;
-import javafx.collections.transformation.*;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class Kettlelog extends Application {
-    //================================================================================
-    // GLOBAL VARIABLES
-    //================================================================================
     @SuppressWarnings("unchecked")
 
-    private static ObservableList<Item> data = FXCollections.observableArrayList();
-    private ObservableList<Item> itemsToDelete;
-    private static Item empty = new Item("", "", "", "", "", "", false, false, "", "");
-    public static boolean starred = false;
+    //================================================================================
+    // INITIALIZATION
+    //================================================================================
     public static int expanded = 0;
     public static int presscount = 0; 
-    public static boolean duplicatefound = false;
-    public static int filterSel = 0; //1=starred,2=checked, 3=mostrecent, 4=none
+    public static int filterSel = 0; //1:starred, 2:checked, 3:mostrecent, 4:none
+    private static double w = 1024;
+    private static double w_to_h = 1.4;
+    private static double h = w / w_to_h;
+    private static double spacefromtable = 7.5;
     private static double xBounds = 0.0;
     private static double yBounds = 0.0;
+    private static double extraheight = 5.0;
+    public static boolean starred = false;
+    public static boolean duplicatefound = false;
 
-    double screenX = 0.0;
-    double screenY = 0.0;
-
-    double w_to_h = 1.4;
-    double w = 1024;
-    double h = w / w_to_h;
-    double spacefromtable = 7.5;
-
-    double extraheight = 5.0;
+    private static ObservableList<Item> data = FXCollections.observableArrayList();
+    private static ObservableList<Item> itemsToDelete;
+    private static Item empty = new Item("", "", "", "", "", "", false, false, "", "");
 
     private static PrimaryStage primaryStage = new PrimaryStage();
     private static InfoStage infoStage = new InfoStage();
     private static AddStage addStage = new AddStage();
     private static AlertStage alertStage = new AlertStage();
 
-    //FilteredList<Item> filteredData = new FilteredList<>(data, p -> true);
-
+    //================================================================================
+    // METHODS
+    //================================================================================
     public static void main(String[] args) {
         launch(args);
     }
@@ -153,13 +125,13 @@ public class Kettlelog extends Application {
     }
 
     public void setData(ObservableList<Item> items, int changetype){
-        //0 refers to actually adding data from addwindow
-        //1 refers to just updating the data from editwindow
+        //0 refers to ADDING data from addwindow
+        //1 refers to UPDATING data editwindow
         //2 refers to DELETING data from alertstage
 
         if (changetype == 0){
             data.remove(empty);
-            data.add(items.get(0)); //ITEMS WILL ONLY HAVE 1 ITEM, THE ONE THAT WE ARE ADDING.
+            data.add(items.get(0));
         }
 
         primaryStage.updatePrimaryStage(data);
