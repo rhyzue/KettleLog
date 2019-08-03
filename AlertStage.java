@@ -135,14 +135,13 @@ public class AlertStage extends Stage{
 
         this.setResizable(false);
         this.setScene(new Scene(alertpane, alertwidth, alertheight));
-
+        this.initOwner(kettleclass.getPrimaryStage());
         this.initStyle(StageStyle.UNDECORATED);
         this.initModality(Modality.WINDOW_MODAL);
 
     }
 
     public void updateAlertStage(Item rowinfo){//itemstodelete should be a parameter too potentially
-
 
         itemlabel.setText(rowinfo.getName() + "?");
         delperm.setText("This item will be deleted permanently.");

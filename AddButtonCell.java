@@ -65,9 +65,9 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
 
                         //Check if the current item is starred; set appropriate image
                         Item curItem = (Item) this.getTableRow().getItem();
-                        starred = curItem.getStarred();  
 
                         if(curItem!=null){
+                            starred = curItem.getStarred();  
                             if(starred==true){   
                                 starImg.setImage(starImgSel);    
                             }       
@@ -83,7 +83,8 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                             else{
                                 checkBtn.setSelected(false);
                             }
-                    }}
+                        }
+                    }
                 }
                 
         };
