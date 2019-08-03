@@ -38,17 +38,14 @@ public class Kettlelog extends Application {
     private static ObservableList<Item> data = FXCollections.observableArrayList();
     private ObservableList<Item> itemsToDelete;
     private static Item empty = new Item("", "", "", "", "", "", false, false, "", "");
-
     public static boolean starred = false;
     public static int expanded = 0;
-
     public static int presscount = 0; 
     public static boolean duplicatefound = false;
-
     public static int filterSel = 0; //1=starred,2=checked, 3=mostrecent, 4=none
-
     private static double xBounds = 0.0;
     private static double yBounds = 0.0;
+
     double screenX = 0.0;
     double screenY = 0.0;
 
@@ -134,6 +131,10 @@ public class Kettlelog extends Application {
 
     }
 
+    public ObservableList<Item> getData(){
+        return data;
+    }
+
     public void setData(ObservableList<Item> items, int changetype){
         //0 refers to actually adding data from addwindow
         //1 refers to just updating the data from editwindow
@@ -147,26 +148,5 @@ public class Kettlelog extends Application {
         primaryStage.updatePrimaryStage(data);
 
     }
-   
-/*
-    public void showInfoStage(Item rowInfo){
-        opaqueLayer.setVisible(true); 
-        Bounds sb = base.localToScreen(base.getBoundsInLocal());
-        xBounds = sb.getMinX();
-        yBounds = sb.getMinY();
-
-        //Here we pass in the row's information to updateinfostage.
-        infoStage.initOwner(primaryStage);
-        infoStage.updateInfoStage(xBounds, yBounds, w, h, rowInfo);
-        infoStage.show();
-    }
-
-    public void hideInfoStage(){
-        opaqueLayer.setVisible(false);
-        infoStage.hide();
-    }*/
-
-
-
 
 }

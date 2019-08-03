@@ -179,36 +179,39 @@ public class PrimaryStage extends Stage{
         AnchorPane.setLeftAnchor(searchbar, 305.0); 
         AnchorPane.setBottomAnchor(searchbar, spacefromtable);
 
-        /*
-        FilteredList<Columns> filteredData = new FilteredList<>(data, p -> true);  //---------------later
+        
+        FilteredList<Item> filteredData = new FilteredList<>(kettle.getData(), p -> true);  
 
-        searchbar.textProperty().addListener((observable, oldValue, newValue) -> { //----------------move into class
-            filteredData.setPredicate(Columns -> {
+        //SEARCHBAR FUNCTIONALITY
+        searchbar.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(Item -> {
+
                 // If there is nothing in the search bar, we want to display all the items. 
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
                 // lowercasesearch is referring to what the user is searching in the search bar
                 String lowercasesearch = newValue.toLowerCase();
-                if (String.valueOf(Columns.getName()).toLowerCase().contains(lowercasesearch)) {
+                if (String.valueOf(Item.getName()).toLowerCase().contains(lowercasesearch)) {
                     return true;
                 } else {
                     return false;
                 }
             });
-            SortedList<Columns> sortedData = new SortedList<>(filteredData);
-            sortedData.comparatorProperty().bind(table.comparatorProperty());
-            CellGenerator cellFactory = new CellGenerator();    
-            columns[0].setCellFactory(cellFactory);     
+
+            SortedList<Item> sortedData = new SortedList<>(filteredData);
+            sortedData.comparatorProperty().bind(table.comparatorProperty());   
             table.setItems(sortedData);
-        }); */
-        
+
+        }); 
+
+  
         //FILTER COMBOBOX
         ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
         ComboBox<String> filter= new ComboBox<String>(filterOptions);
             filter.setPromptText("Filter By");
             filter.setPrefWidth(150.0);
-/*
+        /*
             FilterHandler filterListener = new FilterHandler();
             filter.valueProperty().addListener(filterListener);*/
 
@@ -266,17 +269,6 @@ public class PrimaryStage extends Stage{
         opaqueLayer.setVisible(false);
     }
 
-    public double getXBounds(){
-        Bounds sb = base.localToScreen(base.getBoundsInLocal());
-        System.out.println(sb.getMinX());
-        return sb.getMinX();
-    }
-
-    public double getYBounds(){
-        Bounds sb = base.localToScreen(base.getBoundsInLocal());
-        return sb.getMinY();
-    }
-
     public void updatePrimaryStage(ObservableList<Item> data){
 
         if (!data.get(0).getName().equals("")) {
@@ -318,8 +310,6 @@ public class PrimaryStage extends Stage{
             switch(itemClicked){
                 case "addBtn":
                     //presscount = 1;
-
-                    System.out.println("hello!");
                     kettle.showAddStage(0, emptyinfo, empty);
                     break;
                 /*case "removeBtn":
@@ -333,7 +323,7 @@ public class PrimaryStage extends Stage{
                     //displayAlert(itemsToDelete);
                     //break;    
                 default:
-                    System.out.println("Otherstuff");
+                    System.out.println("Default.");
             }
         }
     }

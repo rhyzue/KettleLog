@@ -24,8 +24,6 @@ public class InfoStage extends Stage{
     private static String infostriphex = "#004545;";
     private static String infomidhex = "#b8d6d6;";
     private static double distancedown = 40.0;
-    private static double screenX = 0.0;
-    private static double screenY = 0.0;
 
     //Objects
     private static Text infotitle = new Text();
@@ -47,11 +45,6 @@ public class InfoStage extends Stage{
     //VARIABLES THAT MAY CHANGE
     private String infostripcolour;
     private String infomidcolour;
-
-    private double xBounds = 0;
-    private double yBounds = 0;
-    private double w = 0;
-    private double h = 0;
 
     private static Kettlelog kettle = new Kettlelog();
     
