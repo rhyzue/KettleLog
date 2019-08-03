@@ -91,8 +91,26 @@ public class Kettlelog extends Application {
         addStage.show();
     }
 
+    public boolean isItemChecked(){
+        for(int i = 0; i<data.size(); i++){
+            if(data.get(i).getChecked()==true){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public PrimaryStage getPrimaryStage(){
         return primaryStage;
+    }
+
+    public void enableRemoveBtn(){
+        primaryStage.enableRemoveBtn();
+    }
+
+    public void disableRemoveBtn(){
+        primaryStage.disableRemoveBtn();
+
     }
 
 
