@@ -57,23 +57,6 @@ public class InfoStage extends Stage{
     
     //Constructor
     InfoStage(){
-        //Positions the stage to be in the middle of the parent stage
-        ChangeListener<Number> widthListener = (observable, oldValue, newValue) -> {
-            this.setX(screenX);
-        };
-        ChangeListener<Number> heightListener = (observable, oldValue, newValue) -> {
-            this.setY(screenY);
-        };
-
-        this.widthProperty().addListener(widthListener);
-        this.heightProperty().addListener(heightListener);
-
-        this.setOnShown(shown -> {
-            this.widthProperty().removeListener(widthListener);
-            this.heightProperty().removeListener(heightListener);
-        });
-
-        System.out.println("Info1");
 
         //Assign values to variables
         infostripcolour = String.format("-fx-background-color: %s", infostriphex);
@@ -175,20 +158,13 @@ public class InfoStage extends Stage{
         infoborderpane.setBottom(infobstrip);
 
         this.setResizable(false);
+        this.initOwner(kettle.getPrimaryStage());
         this.initStyle(StageStyle.UNDECORATED);
         this.initModality(Modality.WINDOW_MODAL);
         this.setScene(new Scene(infoborderpane, infowidth, infoheight));
     }
 
-    public void updateInfoStage(double xB, double yB, double wi, double hi, Item rowinfo){
-        w = wi;
-        h = hi;
-
-        xBounds = xB;
-        yBounds = yB;
-
-        screenX = (xBounds + w / 2 - infowidth / 2); 
-        screenY = (yBounds + h / 2 - infoheight / 2);
+    public void updateInfoStage(Item rowinfo){
 
         infolabel.setText(rowinfo.getName());
         datelabel.setText(rowinfo.getDateAdded());

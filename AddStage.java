@@ -29,7 +29,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class AddStage extends Stage{
-    
+
     //PRIVATE FIXED VARIABLES
     private static double addwidth = 600;
     private static double addw_to_h = 0.85;
@@ -440,11 +440,7 @@ public class AddStage extends Stage{
                         kettle.setData(addthisitem, 0);
                         //presscount = 0;
                         //duplicatefound = false;
-                        //itemsToDelete.remove(empty);
                         //searchbar.clear();
-                        //opaqueLayer.setVisible(false);
-                        //AddButtonCell cellFactory = new AddButtonCell();    
-                        //itemsArray[0].setCellFactory(cellFactory);
   
                         kettle.hideAddStage();
                     }
@@ -453,6 +449,7 @@ public class AddStage extends Stage{
                     else {
 
                         rowinfo.setName(iName);
+                        rowinfo.setStatus(itemStatus);
                         rowinfo.setQuantity(curQuan);
                         rowinfo.setMinimum(minQuan);
                         rowinfo.setDelivery(delTime);

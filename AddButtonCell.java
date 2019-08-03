@@ -68,7 +68,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                         setGraphic(buttonanchor);
                         setText(null);
 
-                        Item curItem = (Item) this.getTableRow().getItem();
+                        //Item curItem = (Item) this.getTableRow().getItem();
                         /*starred = curItem.getStarred();  
                         if(starred==true){   
                             starImg.setImage(starImgSel);    
@@ -97,7 +97,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
 
             double dfromtop = 1.0;
             //CheckBox checkBtn = new CheckBox();
-            Button triangleBtn = new Button();
+            Button infoBtn = new Button();
             Button penBtn = new Button(); 
             Button delBtn = new Button();  
 
@@ -161,24 +161,24 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                 }
             });   */    
 
-            triangleBtn.setId("triangleBtn");
-            triangleBtn.setStyle("-fx-background-color: transparent;");                  
-            Image triangleBtnImg = new Image("./Misc/info.png");
+            infoBtn.setId("infoBtn");
+            infoBtn.setStyle("-fx-background-color: transparent;");                  
+            Image infoBtnImg = new Image("./Misc/info.png");
 
-            ImageView triangleImg = new ImageView();          
-            triangleImg.setStyle("-fx-background-color: transparent;");             
-            triangleImg.setImage(triangleBtnImg);     
-            triangleImg.setFitWidth(20);
-            triangleImg.setPreserveRatio(true);
-            triangleImg.setSmooth(true);
-            triangleImg.setCache(true); 
-            triangleBtn.setGraphic(triangleImg);    
+            ImageView infoImg = new ImageView();          
+            infoImg.setStyle("-fx-background-color: transparent;");             
+            infoImg.setImage(infoBtnImg);     
+            infoImg.setFitWidth(20);
+            infoImg.setPreserveRatio(true);
+            infoImg.setSmooth(true);
+            infoImg.setCache(true); 
+            infoBtn.setGraphic(infoImg);   
 
-            triangleBtn.setOnAction(new EventHandler<ActionEvent>() {       
+            infoBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) {   
-                    Item test = (Item) cell.getTableRow().getItem();
-                    //displayInfo(test);  
+                    Item rowinfo = (Item) cell.getTableRow().getItem();
+                    kettle.showInfoStage(rowinfo);
                 }       
             });
 
@@ -199,7 +199,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
 
             penBtn.setOnAction(new EventHandler<ActionEvent>() {            
                 @Override               
-                public void handle(ActionEvent event) {         
+                public void handle(ActionEvent event) {       
                     Item test = (Item) cell.getTableRow().getItem();      
                     System.out.println(test.getName());
                     String[] editinfo = {test.getName(), test.getQuantity(), test.getMinimum(), test.getDelivery(), test.getDesc(), test.getDate()};        
@@ -222,14 +222,15 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
             delImg.setCache(true); 
             delBtn.setGraphic(delImg); 
 
-            /*delBtn.setOnAction(new EventHandler<ActionEvent>() {       
+            delBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) { 
-                    Columns test = (Columns) cell.getTableRow().getItem();
-                    itemsToDelete.add(test);
-                    displayAlert(itemsToDelete);
+                    System.out.println("DELETING.");
+                    //Columns test = (Columns) cell.getTableRow().getItem();
+                    //itemsToDelete.add(test);
+                    //displayAlert(itemsToDelete);
                 }
-            });*/   
+            }); 
 
             AnchorPane iconPane = new AnchorPane();
             iconPane.setPrefSize(200, 30);
@@ -237,14 +238,14 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
             iconPane.setTopAnchor(checkBtn, 8.0);
             iconPane.setLeftAnchor(starBtn, 33.0);
             iconPane.setTopAnchor(starBtn, dfromtop);
-            iconPane.setLeftAnchor(triangleBtn, 68.0);
-            iconPane.setTopAnchor(triangleBtn, dfromtop);
+            iconPane.setLeftAnchor(infoBtn, 68.0);
+            iconPane.setTopAnchor(infoBtn, dfromtop);
             iconPane.setLeftAnchor(penBtn, 103.0);
             iconPane.setTopAnchor(penBtn, dfromtop);
             iconPane.setLeftAnchor(delBtn, 138.0);
             iconPane.setTopAnchor(delBtn, dfromtop);
 
-            iconPane.getChildren().addAll(checkBtn, starBtn, triangleBtn, penBtn, delBtn);
+            iconPane.getChildren().addAll(checkBtn, starBtn, infoBtn, penBtn, delBtn);
 
             return iconPane;
 

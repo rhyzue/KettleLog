@@ -60,8 +60,7 @@ public class Kettlelog extends Application {
     double extraheight = 5.0;
 
     private static PrimaryStage primaryStage = new PrimaryStage();
-
-    //public InfoStage infoStage = new InfoStage();
+    private static InfoStage infoStage = new InfoStage();
     private static AddStage addStage = new AddStage();
 
     //FilteredList<Item> filteredData = new FilteredList<>(data, p -> true);
@@ -80,7 +79,11 @@ public class Kettlelog extends Application {
     
     }
 
-    public void showAddStage(int popuptype, String[] textarray, Item rowinfo){//int popuptype, String[]textarray, Item rowinfo){
+    public PrimaryStage getPrimaryStage(){
+        return primaryStage;
+    }
+
+    public void showAddStage(int popuptype, String[] textarray, Item rowinfo){
 
         primaryStage.showOpaqueLayer();
         addStage.updateAddStage(popuptype, textarray, rowinfo);
@@ -91,12 +94,27 @@ public class Kettlelog extends Application {
         addStage.show();
     }
 
-    public PrimaryStage getPrimaryStage(){
-        return primaryStage;
+    public void hideAddStage(){
+        primaryStage.hideOpaqueLayer();
+        addStage.hide();
     }
 
+    public void showInfoStage(Item rowinfo) {
 
-    //takes in one item from AddStage and adds it to our data.
+        primaryStage.showOpaqueLayer();
+        infoStage.updateInfoStage(rowinfo);
+
+        infoStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250);
+        infoStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 350) + extraheight);
+
+        infoStage.show();
+    }
+
+    public void hideInfoStage(){
+        primaryStage.hideOpaqueLayer();
+        infoStage.hide();
+    } 
+
     public void setData(ObservableList<Item> items, int changetype){
         //0 refers to actually adding data from addwindow
         //1 refers to just updating the data from editwindow
@@ -130,9 +148,6 @@ public class Kettlelog extends Application {
     }*/
 
 
-    public void hideAddStage(){
-        primaryStage.hideOpaqueLayer();
-        addStage.hide();
-    } 
+
 
 }
