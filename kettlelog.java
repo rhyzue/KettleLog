@@ -149,4 +149,17 @@ public class Kettlelog extends Application {
 
     }
 
+    //This is a method that takes in an item name and checks if there is a duplicate in the existing data.
+    public boolean duplicatefound(String itemname) {
+        String lowername = itemname.toLowerCase();
+        int length = data.size();
+        for (int i = 0; i < length; i++) {
+            String lowercasedata = (data.get(i)).getName().toLowerCase();
+            if (lowercasedata.equals(lowername)) {
+                return true; 
+            } 
+        }
+        return false;
+    }
+
 }

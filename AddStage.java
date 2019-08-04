@@ -22,6 +22,8 @@ public class AddStage extends Stage{
     //================================================================================
     // INITIALIZATION
     //================================================================================
+    private static int addpresscount = 0;
+    private static int editpresscount = 0;
     private static double addwidth = 600;
     private static double addw_to_h = 0.85;
     private static double addheight = addwidth / addw_to_h;
@@ -35,11 +37,13 @@ public class AddStage extends Stage{
     private static Text a2 = new Text("*");
     private static Text a3 = new Text("*");
     private static Text a4 = new Text("*");
+    private static Text a5 = new Text("*");
     private static Text itemname = new Text("Item Name:");
     private static Text quantity = new Text("Quantity:");
     private static Text minimum = new Text("Minimum:");
     private static Text shipping = new Text("Delivery Time:");
     private static Text describe = new Text("Description:");
+    private static Text logitem = new Text("Log Item?");
     private static Text missing = new Text();
     private static Text addtext = new Text();
     private static TextField itemtext = new TextField();
@@ -60,6 +64,11 @@ public class AddStage extends Stage{
     private static Text sdesc2 = new Text("Entry should be in the number of days (if bought in person, enter 0).");
     private static Button cancelbtn = new Button();
     private static Button createbtn = new Button();
+    private static HBox checkhbox = new HBox(10);
+    private static Label yeslabel = new Label("Yes");
+    private static RadioButton yesbox = new RadioButton();
+    private static Label nolabel = new Label("No");
+    private static RadioButton nobox = new RadioButton();
     private static String addtip = "The date that you want logging to begin on. This date cannot be changed later.";
     private static String edittip = "The date you wish this log to correspond to.";
     private static Tooltip helptip = new Tooltip();
@@ -82,9 +91,6 @@ public class AddStage extends Stage{
     private String predel;
     private String predesc;
     private String predate;
-
-    private int presscount = 0; 
-    private boolean duplicatefound = false;
 
     AddStage(){
 
@@ -308,10 +314,41 @@ public class AddStage extends Stage{
         @Override
             public void handle(ActionEvent event) {
                 kettle.hideAddStage();
-                //presscount = 0;
-                //duplicatefound = false;
+                missing.setVisible(false);
+                addpresscount = 0;
+                editpresscount = 0;
+                checkhbox.setVisible(false);
+                logitem.setVisible(false);
+                a5.setVisible(false);
             }
         });
+
+            //A togglegroup allows only one of the radiobuttons to be selected.
+            ToggleGroup radioGroup = new ToggleGroup();
+            yesbox.setToggleGroup(radioGroup);
+            nobox.setToggleGroup(radioGroup);
+            //Logging Label & RadioButtons
+            yeslabel.setGraphic(yesbox);
+            yeslabel.setContentDisplay(ContentDisplay.RIGHT); 
+            nolabel.setGraphic(nobox);
+            nolabel.setContentDisplay(ContentDisplay.RIGHT); 
+            checkhbox.getChildren().addAll(yeslabel, nolabel);
+            checkhbox.setVisible(false);
+            AnchorPane.setRightAnchor(checkhbox, 50.0);
+            AnchorPane.setBottomAnchor(checkhbox, 45.0);
+            //Log Item Text & Asterisk
+            logitem.setFont(f);
+            logitem.setFill(Color.BLACK);
+            logitem.setVisible(false);
+            double logdistance = 160.0;
+            AnchorPane.setRightAnchor(logitem, logdistance);
+            AnchorPane.setBottomAnchor(logitem, 45.0);
+            a5.setFont(new Font (15));
+            a5.setFill(Color.RED);
+            a5.setVisible(false);
+            AnchorPane.setRightAnchor(a5, logdistance + 75.0); 
+            AnchorPane.setBottomAnchor(a5, 46.0);
+            qanchor.getChildren().addAll(logitem, a5, checkhbox);
 
         this.setScene(new Scene(abase, addwidth, addheight));
         this.initStyle(StageStyle.UNDECORATED);
@@ -347,20 +384,20 @@ public class AddStage extends Stage{
             helptip.setText(addtip);
             datepicker.setValue(LocalDate.now());
         } else {
-            addtext.setText("Edit Item");
+            addtext.setText("Log/Edit Item");
             createbtn.setText("Edit");
             helptip.setText(edittip);
             LocalDate originaldate = LocalDate.parse(predate);
             datepicker.setValue(originaldate);
+            checkhbox.setVisible(true);
+            logitem.setVisible(true);
+            a5.setVisible(true);
+
         }
 
         createbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override
             public void handle(ActionEvent event) {
-
-                /*if(duplicatefound){
-                    presscount++;
-                }*/
 
                 boolean incomplete = false;
                 String itemStatus = "";
@@ -384,18 +421,15 @@ public class AddStage extends Stage{
                 }
 
                 else {
-                    /*duplicatefound = false;
-                    for (int i = 0; i < data.size(); i++) {
-                        if ((data.get(i)).getName().equals(iName)) {
-                            duplicatefound = true;  
-                        } 
+                    missing.setVisible(false);
+
+                    //Checking if the item name is already in the list of data.
+                    if (kettle.duplicatefound(iName)) {
+                        addpresscount++;
+                    } else {
+                        addpresscount = 2; 
                     }
 
-                    if (!duplicatefound) {
-                        presscount = 2;
-                    }*/    
-
-                    missing.setVisible(false);
                     int intQuan = Integer.parseInt(curQuan);
                     int intMin = Integer.parseInt(minQuan);
                     int total = intQuan + intMin;
@@ -417,42 +451,70 @@ public class AddStage extends Stage{
                     }
 
                     //user tries to add a duplicate for the first time, so we should display the message.
-                    /*if (popuptype == 0 && presscount == 1) {
+                    if (popuptype == 0 && addpresscount == 1) {
                         missing.setText("* Possible duplicate found. Are you sure you want to add this item?");
                         missing.setVisible(true);
-                    }*/
+                    }
 
-                    //if the type is to add, then add the row.
-                    if (popuptype == 0) { //& presscount == 2 should be inside as well.
-
+                    //The user either reached a presscount of 2 from adding a non-duplicate item or pressing "Create" twice with a duplicate item.
+                    else if (popuptype == 0 & addpresscount == 2) { 
                         String olddate = newdate;
                         Item newitem = new Item(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate);
                         ObservableList<Item> addthisitem = FXCollections.observableArrayList(newitem);
                         kettle.setData(addthisitem, 0);
-                        //presscount = 0;
-                        //duplicatefound = false;
-                        //searchbar.clear();
-  
+                        kettle.clearSearchBar();
                         kettle.hideAddStage();
+                        addpresscount = 0;
+                        editpresscount = 0;
+                        checkhbox.setVisible(false);
+                        logitem.setVisible(false);
+                        a5.setVisible(false);
                     }
 
                     //if the type is to edit, update the information at every field.
                     else {
+                        //We don't want to display the warning if the name is not changed. 
+                        String currentname = rowinfo.getName().toLowerCase();
+                        String editedname = iName.toLowerCase();
+                        if (currentname.equals(editedname)) {
+                            editpresscount = 2;
+                        } 
+                        else {
+                            if (kettle.duplicatefound(iName)) {
+                                editpresscount++;
+                            } 
+                            else {
+                                editpresscount = 2; 
+                            }
+                        }
 
-                        rowinfo.setName(iName);
-                        rowinfo.setStatus(itemStatus);
-                        rowinfo.setQuantity(curQuan);
-                        rowinfo.setMinimum(minQuan);
-                        rowinfo.setDelivery(delTime);
-                        rowinfo.setDesc(itemDesc);
-                        rowinfo.setDate(newdate);
+                        //If a user edits an item name to be the same as an existing one, we display the warning again.
+                        if (popuptype == 1 && editpresscount == 1) {
+                            missing.setText("* An item with this name already exists. Are you sure you want to continue?");
+                            missing.setVisible(true);
+                        }
 
-                        //searchbar.clear();
-                        //opaqueLayer.setVisible(false);
-                        
-                        //JUST PUTTING IN AN EMPTY OBSERVABLELIST FOR THE SETDATA FUNCTION
-                        kettle.setData(placeholder, 1);
-                        kettle.hideAddStage();
+                        //THe user has reached this stage by either pressing Edit twice or editing the item name to a non-duplicate.
+                        else if (popuptype == 1 && editpresscount == 2) {
+                            rowinfo.setName(iName);
+                            rowinfo.setStatus(itemStatus);
+                            rowinfo.setQuantity(curQuan);
+                            rowinfo.setMinimum(minQuan);
+                            rowinfo.setDelivery(delTime);
+                            rowinfo.setDesc(itemDesc);
+                            rowinfo.setDate(newdate);
+                            kettle.clearSearchBar();
+
+                            checkhbox.setVisible(false);
+                            logitem.setVisible(false);
+                            a5.setVisible(false);
+
+                            //JUST PUTTING IN AN EMPTY OBSERVABLELIST FOR THE SETDATA FUNCTION
+                            kettle.setData(placeholder, 1);
+                            kettle.hideAddStage();
+                            addpresscount = 0;
+                            editpresscount = 0;
+                        }
 
                     }
                 }

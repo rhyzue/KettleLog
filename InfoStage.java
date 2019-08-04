@@ -245,6 +245,7 @@ public class InfoStage extends Stage{
         LineChart linechart = new LineChart(xAxis, yAxis);
         XYChart.Series series = new XYChart.Series();
 
+        //Placeholder data for now.
         series.getData().add(new XYChart.Data("8/4", 4));
         series.getData().add(new XYChart.Data("8/3", 7));
         series.getData().add(new XYChart.Data("8/2", 8));
