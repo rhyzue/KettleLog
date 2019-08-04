@@ -1,5 +1,6 @@
 import Item.*; 
 import java.time.*; 
+import java.util.Date;
 import javafx.stage.*;
 import javafx.event.*;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ import javafx.beans.value.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+import java.text.SimpleDateFormat;
 import javafx.scene.image.ImageView;
 import javafx.application.Application;
 import java.time.format.DateTimeFormatter;
@@ -58,8 +60,8 @@ public class AddStage extends Stage{
     private static Text sdesc2 = new Text("Entry should be in the number of days (if bought in person, enter 0).");
     private static Button cancelbtn = new Button();
     private static Button createbtn = new Button();
-    private static String addtip = "add";
-    private static String edittip = "edit";
+    private static String addtip = "The date that you want logging to begin on. This date cannot be changed later.";
+    private static String edittip = "The date you wish this log to correspond to.";
     private static Tooltip helptip = new Tooltip();
     private static Button helpBtn = new Button();
     private static BorderPane abase = new BorderPane();
@@ -139,7 +141,9 @@ public class AddStage extends Stage{
         helpImg.setSmooth(true);
         helpImg.setCache(true);  
         helpBtn.setGraphic(helpImg);    
-        helpBtn.setStyle("-fx-background-color: transparent;");    
+        helpBtn.setStyle("-fx-background-color: transparent;");  
+        helptip.setPrefWidth(150);
+        helptip.setWrapText(true);  
         helpBtn.setTooltip(helptip);     
         AnchorPane.setRightAnchor(helpBtn, 175.0);
         AnchorPane.setBottomAnchor(helpBtn, 8.0);

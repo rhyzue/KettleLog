@@ -1,15 +1,22 @@
 import Item.*;
+import java.time.*; 
+import java.util.*;
 import javafx.stage.*;
 import javafx.event.*;
 import javafx.geometry.*;
 import javafx.scene.Scene;
+import java.time.LocalDate;
 import javafx.scene.text.*;
 import javafx.scene.chart.*; 
+import javafx.scene.image.*;
+import javafx.collections.*;
 import javafx.beans.value.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+import java.text.SimpleDateFormat;
 import javafx.scene.control.ScrollPane.*;
+import java.time.format.DateTimeFormatter;
 
 public class InfoStage extends Stage{
 
@@ -24,6 +31,10 @@ public class InfoStage extends Stage{
     private static double distancedown = 40.0;
     private static String infostriphex = "#004545;";
     private static String infomidhex = "#b8d6d6;";
+    private static Button help1 = new Button();
+    private static Button help2 = new Button();
+    private static Tooltip helptip1 = new Tooltip("When the current quantity of this item reaches this estimated number, a reorder must be placed.");
+    private static Tooltip helptip2 = new Tooltip("The approximate date you should place a reorder.");
     private static Separator line1 = new Separator();
     private static Separator line2 = new Separator();
     private static Separator line3 = new Separator();
@@ -45,6 +56,10 @@ public class InfoStage extends Stage{
     private static AnchorPane infocenter = new AnchorPane();
     private static AnchorPane infobstrip = new AnchorPane();
     private static BorderPane infoborderpane = new BorderPane();
+    private static Image helpBtnImg = new Image("./Misc/help.png");
+    private static Image helpBtnImg2 = new Image("./Misc/help.png");
+    private static ImageView helpImg = new ImageView(); 
+    private static ImageView helpImg2 = new ImageView();
     private static VBox infobox = new VBox();
     private static Kettlelog kettle = new Kettlelog();
     
@@ -131,10 +146,24 @@ public class InfoStage extends Stage{
         erplabel.setAlignment(Pos.CENTER);
         erplabel.setStyle("-fx-background-color: #95bfbf");
 
+        //Help Button for Estimated Reorder Point
+        helptip1.setPrefWidth(150);
+        helptip1.setWrapText(true);
+        helpImg.setImage(helpBtnImg);
+        helpImg.setFitWidth(20);
+        helpImg.setPreserveRatio(true);
+        helpImg.setSmooth(true);
+        helpImg.setCache(true);  
+        help1.setTooltip(helptip1);  
+        help1.setGraphic(helpImg);    
+        help1.setStyle("-fx-background-color: transparent;");    
+        AnchorPane.setLeftAnchor(help1, 205.0);
+        AnchorPane.setTopAnchor(help1, 97.0 + (distancedown * 2)); 
+
         //Third Separator
         AnchorPane.setTopAnchor(line3, 110.0 + (distancedown * 2));
         AnchorPane.setRightAnchor(line3, 160.0);
-        line3.setPrefWidth(125.0);
+        line3.setPrefWidth(100.0);
 
         //Estimated Reorder Date Text
         AnchorPane.setLeftAnchor(erd, 25.0);
@@ -151,10 +180,24 @@ public class InfoStage extends Stage{
         erdlabel.setAlignment(Pos.CENTER);
         erdlabel.setStyle("-fx-background-color: #95bfbf");
 
-        //Third Separator
+        //Help Button for Estimated Reorder Date
+        helptip2.setPrefWidth(150);
+        helptip2.setWrapText(true);
+        helpImg2.setImage(helpBtnImg2);
+        helpImg2.setFitWidth(20);
+        helpImg2.setPreserveRatio(true);
+        helpImg2.setSmooth(true);
+        helpImg2.setCache(true);  
+        help2.setTooltip(helptip2);  
+        help2.setGraphic(helpImg2);    
+        help2.setStyle("-fx-background-color: transparent;");    
+        AnchorPane.setLeftAnchor(help2, 200.0);
+        AnchorPane.setTopAnchor(help2, 97.0 + (distancedown * 3));
+
+        //Fourth Separator
         AnchorPane.setTopAnchor(line4, 110.0 + (distancedown * 3));
         AnchorPane.setRightAnchor(line4, 160.0);
-        line4.setPrefWidth(130.0);
+        line4.setPrefWidth(105.0);
 
         //Uneditable Description Box
         AnchorPane.setLeftAnchor(infodesc, 25.0);
@@ -168,30 +211,49 @@ public class InfoStage extends Stage{
         //Consumption Graph Text
         AnchorPane.setLeftAnchor(graphtext, 25.0);
         AnchorPane.setTopAnchor(graphtext, 95.0 + (distancedown * 8)); 
-        graphtext.setText("Consumption Graph");
+        graphtext.setText("Weekly Consumption Graph");
         graphtext.setFont(new Font(16));
 
         //================================================================================
         // CONSUMPTION GRAPH
         //================================================================================
 
-        NumberAxis xAxis = new NumberAxis();
+        CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Date");
 
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Quantity");
 
+        //Initialization of our arraylist which will eventually turn into the labels of our x-axis.
+        ArrayList<String> datearraylist = new ArrayList<String>(7); 
+
+        //Appending 7 dates to the arraylist (today + the 6 prior days).
+        for (int i = 0; i > -7; i--) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, i);
+            Date date = cal.getTime();
+            String datetick = new SimpleDateFormat("M/d").format(date);
+            datearraylist.add(datetick);
+        }
+
+        //The dates are appended from most recent -> oldest, so we need to reverse the list.
+        Collections.reverse(datearraylist);
+
+        ObservableList<String> dateaxis = FXCollections.observableArrayList(datearraylist);
+        xAxis.setCategories(dateaxis);
+
         LineChart linechart = new LineChart(xAxis, yAxis);
-        XYChart.Series dataSeries1 = new XYChart.Series();
+        XYChart.Series series = new XYChart.Series();
 
-        dataSeries1.getData().add(new XYChart.Data( 1, 567));
-        dataSeries1.getData().add(new XYChart.Data( 5, 612));
-        dataSeries1.getData().add(new XYChart.Data(10, 800));
-        dataSeries1.getData().add(new XYChart.Data(20, 780));
-        dataSeries1.getData().add(new XYChart.Data(40, 810));
-        dataSeries1.getData().add(new XYChart.Data(80, 850));
+        series.getData().add(new XYChart.Data("8/4", 4));
+        series.getData().add(new XYChart.Data("8/3", 7));
+        series.getData().add(new XYChart.Data("8/2", 8));
+        series.getData().add(new XYChart.Data("8/1", 10));
+        series.getData().add(new XYChart.Data("7/31", 15));
+        series.getData().add(new XYChart.Data("7/30", 20));
+        series.getData().add(new XYChart.Data("7/29", 22));
 
-        linechart.getData().add(dataSeries1);
+        linechart.getData().add(series);
         linechart.setLegendVisible(false);
 
         //Adding the graph to the anchorpane.
@@ -200,11 +262,15 @@ public class InfoStage extends Stage{
         linechart.setPrefWidth(450.0);
         linechart.setPrefHeight(350.0);
 
+        //================================================================================
+        // END OF GRAPHING
+        //================================================================================
+
         //SETTING THE ANCHORPANE
         infocenter.setStyle(infomidcolour);     
         infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel);
         infocenter.getChildren().addAll(line2, erp, erplabel, line3, erd, erdlabel, line4, infodesc);
-        infocenter.getChildren().addAll(graphtext, linechart);
+        infocenter.getChildren().addAll(graphtext, linechart, help1, help2);
 
         //SCROLLPANE CONFIGURATION
         infobox.getChildren().add(infocenter);
