@@ -149,6 +149,13 @@ public class Kettlelog extends Application {
 
     }
 
+    public void uncheckAllItems(){
+        for(int i = 0; i<data.size(); i++){
+            Item curItem = data.get(i);
+            curItem.setChecked(false);
+        } 
+    }
+
     //This is a method that takes in an item name and checks if there is a duplicate in the existing data.
     public boolean duplicatefound(String itemname) {
         String lowername = itemname.toLowerCase();

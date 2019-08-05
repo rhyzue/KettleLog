@@ -34,8 +34,11 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
         private final Image starImgClr = new Image("./Misc/starBtnClr.png");   
         private final Image starImgSel = new Image("./Misc/starBtnSel.png");
         private static boolean starred = false;
+        private static int filterSel = 0;
 
         private static Kettlelog kettle = new Kettlelog();
+        private static FilterHandler filterHandler = new FilterHandler();
+        private static FilterComparators filterObject = new FilterComparators();
 
         @Override
         public TableCell call(final TableColumn<Item, String> param) {
@@ -113,7 +116,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
             starBtn.setGraphic(starImg); 
             starBtn.setId("starBtn");
                 
-            starBtn.setOnAction(new EventHandler<ActionEvent>() {       
+            starBtn.setOnAction(new EventHandler<ActionEvent>() {    ////////////////////////////////////    
                 @Override       
                 public void handle(ActionEvent event) { 
                     //deselect all checkboxes
@@ -129,17 +132,12 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                         item.setStarred(true);  
                     }
 
-                    /*
+                    filterSel = filterHandler.getFilterSel();
                     if(filterSel==1){
-                        for(int i = 0; i<data.size(); i++){
-                            Columns curItem = data.get(i);
-                            curItem.setChecked(false);
-                            CellGenerator cellFactory = new CellGenerator();    
-                            columns[0].setCellFactory(cellFactory);
-                        } 
-                        removeBtn.setDisable(true);
-                        sortByStarred();
-                    }*/     
+                        kettle.uncheckAllItems();
+                        kettle.disableRemoveBtn();
+                        filterObject.sortByStarred();
+                    }     
                 }       
             });         
 

@@ -82,7 +82,12 @@ public class AddStage extends Stage{
     private static ImageView helpImg = new ImageView(); 
     private static DatePicker datepicker = new DatePicker();
     private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
+    private static int filterSel = 0;
+
+    //objects from kettlelog app
     private static Kettlelog kettle = new Kettlelog();
+    private static FilterComparators filterObject = new FilterComparators();
+    private static FilterHandler filterHandler = new FilterHandler();
 
     //CHANGING VARIABLES
     private String prename;
@@ -519,13 +524,14 @@ public class AddStage extends Stage{
                     }
                 }
 
-                /*FilterComparators filterObject = new FilterComparators(data, table);
+                filterSel = filterHandler.getFilterSel();
+
                 if(filterSel==1){
                     filterObject.sortByStarred();
                 }
                 else if(filterSel==2 || filterSel==3){
                     filterObject.sortByMostRecent(filterSel);
-                }*/
+                }
             }
         }); 
     }

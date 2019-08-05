@@ -63,6 +63,7 @@ public class FilterHandler implements ChangeListener<String>{
     }
     
     public int getFilterSel(){
+        //System.out.println("FilterSel is: "+filterSel);
         return filterSel;
     }
 
