@@ -22,8 +22,11 @@ public class AddStage extends Stage{
     //================================================================================
     // INITIALIZATION
     //================================================================================
+    private static int filterSel = 0;
     private static int addpresscount = 0;
     private static int editpresscount = 0;
+    private static int logger = 0;
+    private static int changequantity = 0;
     private static double addwidth = 600;
     private static double addw_to_h = 0.85;
     private static double addheight = addwidth / addw_to_h;
@@ -68,6 +71,7 @@ public class AddStage extends Stage{
     private static Label yeslabel = new Label("Yes");
     private static RadioButton yesbox = new RadioButton();
     private static Label nolabel = new Label("No");
+    private static ToggleGroup radioGroup = new ToggleGroup();
     private static RadioButton nobox = new RadioButton();
     private static String addtip = "The date that you want logging to begin on. This date cannot be changed later.";
     private static String edittip = "The date you wish this log to correspond to.";
@@ -82,7 +86,6 @@ public class AddStage extends Stage{
     private static ImageView helpImg = new ImageView(); 
     private static DatePicker datepicker = new DatePicker();
     private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
-    private static int filterSel = 0;
 
     //objects from kettlelog app
     private static Kettlelog kettle = new Kettlelog();
@@ -322,14 +325,19 @@ public class AddStage extends Stage{
                 missing.setVisible(false);
                 addpresscount = 0;
                 editpresscount = 0;
+                logger = 0;
+                changequantity = 0;
                 checkhbox.setVisible(false);
                 logitem.setVisible(false);
                 a5.setVisible(false);
+                if (radioGroup.getSelectedToggle()!=null){
+                    radioGroup.getSelectedToggle().setSelected(false);
+                }
+                
             }
         });
 
             //A togglegroup allows only one of the radiobuttons to be selected.
-            ToggleGroup radioGroup = new ToggleGroup();
             yesbox.setToggleGroup(radioGroup);
             nobox.setToggleGroup(radioGroup);
             //Logging Label & RadioButtons
@@ -369,7 +377,7 @@ public class AddStage extends Stage{
         //PRE-SET TEXT FIELDS TAKEN FROM 5-ELEMENT ARRAY
         //This array takes the name, quantity, minimum, shipping time, description and date of the column.
         //The purpose of this is to save the information so that it can be displayed when the edit button is clicked.
-        
+
         String prename = textarray[0];
         String prequan = textarray[1];
         String premin = textarray[2];
@@ -471,13 +479,39 @@ public class AddStage extends Stage{
                         kettle.hideAddStage();
                         addpresscount = 0;
                         editpresscount = 0;
+                        logger = 0;
+                        changequantity = 0;
                         checkhbox.setVisible(false);
                         logitem.setVisible(false);
                         a5.setVisible(false);
+                        if (radioGroup.getSelectedToggle()!=null){
+                            radioGroup.getSelectedToggle().setSelected(false);
+                        }
                     }
 
                     //if the type is to edit, update the information at every field.
                     else {
+
+                        //Even though the text fields are filled, the user needs to specify YES or NO for the log. 
+                        if (!yesbox.isSelected() && !nobox.isSelected()){
+                            logger--;
+                            missing.setText("* You must specify whether or not this action is a log.");
+                            missing.setVisible(true);
+                        } else {
+                            logger = 1;
+                        }
+
+                        //THe user should not be allowed to change the quantity of the item and select "No."
+                        String prelogquan = rowinfo.getQuantity();
+                        String postlogquan = qtext.getText();
+                        if ((!prelogquan.equals(postlogquan)) && (nobox.isSelected())) {
+                            changequantity--;
+                            missing.setText("* A change in quantity must be logged. Select 'Yes' and try again.");
+                            missing.setVisible(true);
+                        } else {
+                            changequantity = 1;
+                        }
+
                         //We don't want to display the warning if the name is not changed. 
                         String currentname = rowinfo.getName().toLowerCase();
                         String editedname = iName.toLowerCase();
@@ -500,7 +534,8 @@ public class AddStage extends Stage{
                         }
 
                         //THe user has reached this stage by either pressing Edit twice or editing the item name to a non-duplicate.
-                        else if (popuptype == 1 && editpresscount == 2) {
+                        else if (popuptype == 1 && editpresscount == 2 && logger == 1 && changequantity == 1) {
+
                             rowinfo.setName(iName);
                             rowinfo.setStatus(itemStatus);
                             rowinfo.setQuantity(curQuan);
@@ -519,6 +554,11 @@ public class AddStage extends Stage{
                             kettle.hideAddStage();
                             addpresscount = 0;
                             editpresscount = 0;
+                            logger = 0;
+                            changequantity = 0;
+                            if (radioGroup.getSelectedToggle()!=null){
+                                radioGroup.getSelectedToggle().setSelected(false);
+                            }
                         }
 
                     }
