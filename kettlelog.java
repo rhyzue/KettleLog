@@ -41,11 +41,12 @@ public class Kettlelog extends Application {
  
     @Override
     public void start(Stage setup) {
-        
+        //System.out.println("===============here1");
         data.add(empty);
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.show();
         primaryStage.updatePrimaryStage(data);
+        //System.out.println("===============here2");
     
     }
 
@@ -86,10 +87,10 @@ public class Kettlelog extends Application {
         infoStage.hide();
     } 
 
-    public void showAlertStage(Item rowinfo) {
+    public void showAlertStage(ObservableList<Item> itemsToDelete) {
 
         primaryStage.showOpaqueLayer();
-        alertStage.updateAlertStage(rowinfo);
+        alertStage.updateAlertStage(itemsToDelete);
 
         alertStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250);
         alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 175) + extraheight);
@@ -100,6 +101,7 @@ public class Kettlelog extends Application {
     public void hideAlertStage(){
         primaryStage.hideOpaqueLayer();
         alertStage.hide();
+        itemsToDelete.clear();
     } 
 
     public boolean isItemChecked(){
@@ -109,6 +111,16 @@ public class Kettlelog extends Application {
             }
         }
         return false;
+    }
+
+    public ObservableList<Item> getCheckedItems(){
+        for(int i=0; i<data.size(); i++){
+            Item curItem = data.get(i);
+            if(curItem.getChecked()==true){
+                itemsToDelete.add(curItem);
+            }
+        }
+        return itemsToDelete;
     }
 
     public void enableRemoveBtn(){
@@ -132,11 +144,29 @@ public class Kettlelog extends Application {
         //0 refers to ADDING data from addwindow
         //1 refers to UPDATING data editwindow
         //2 refers to DELETING data from alertstage
+        //3 is smth for filtering 
 
          switch(changetype){
             case 0:
                 data.remove(empty);
                 data.add(items.get(0)); //ITEMS WILL ONLY HAVE 1 ITEM, THE ONE THAT WE ARE ADDING.
+                break;
+            case 2:
+                for(int i = 0; i<items.size(); i++){ //cycle thru itemsToDelete list and remove from data 
+                    data.remove(items.get(i));
+                }
+
+                disableRemoveBtn();
+                for(int j = 0; j<data.size(); j++){//search items for checked property
+                    if((data.get(j)).getChecked()==true){
+                        enableRemoveBtn();
+                    }
+                }
+                //searchbar.clear();
+                if(data.size()==0){
+                    data.add(empty);
+                }
+                hideAlertStage();
                 break;
             case 3:
                 data = items;
@@ -144,8 +174,7 @@ public class Kettlelog extends Application {
             default:
                 System.out.println("other option");
             }
-
-        primaryStage.updatePrimaryStage(data);
+            primaryStage.updatePrimaryStage(data);
 
     }
 

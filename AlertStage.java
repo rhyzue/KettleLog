@@ -55,9 +55,12 @@ public class AlertStage extends Stage{
     private static AnchorPane alertbstrip = new AnchorPane();
     private static BorderPane alertpane = new BorderPane();
 
+    private static ObservableList<Item> itemsToDelete = FXCollections.observableArrayList();
+
     private static Kettlelog kettleclass = new Kettlelog();
 
     AlertStage(){
+        //System.out.println("===============hereAlert");
 
         stripcolour = String.format("-fx-background-color: %s", striphex);
         alertmidcolour = String.format("-fx-background-color: %s", alertmidhex);
@@ -141,12 +144,12 @@ public class AlertStage extends Stage{
 
     }
 
-    public void updateAlertStage(Item rowinfo){//itemstodelete should be a parameter too potentially
+    public void updateAlertStage(ObservableList<Item> items){//itemstodelete should be a parameter too potentially
 
-        itemlabel.setText(rowinfo.getName() + "?");
-        delperm.setText("This item will be deleted permanently.");
-
-        /*
+        //itemlabel.setText(rowinfo.getName() + "?");
+        //delperm.setText("This item will be deleted permanently.");
+        itemsToDelete.addAll(items);
+        
         if(itemsToDelete.size()==1){
             itemlabel.setText(itemsToDelete.get(0).getName() + "?");
             delperm.setText("This item will be deleted permanently.");
@@ -154,7 +157,7 @@ public class AlertStage extends Stage{
         else{
             itemlabel.setText("the selected items?");
             delperm.setText("The items will be deleted permanently.");
-        }*/
+        }
 
     }
 
@@ -166,41 +169,13 @@ public class AlertStage extends Stage{
 
             switch(itemClicked){
                 case "alertcancel":
-                    kettleclass.hideAlertStage();
-                    /*
-                    searchbar.clear();
-                    alert.hide();
-                    opaqueLayer.setVisible(false);
                     itemsToDelete.clear();
-                    */
+                    kettleclass.hideAlertStage();
                     break;  
 
                 case "alertdelete":
-                    //kettle.deleteItem();
-                    /*
-                    for(int i = 0; i<itemsToDelete.size(); i++){ //cycle thru itemsToDelete list and remove from data 
-                        data.remove(itemsToDelete.get(i));
-                        //System.out.println("Deleted: " +itemsToDelete.get(i).getName());
-                    }
-                    itemsToDelete.clear(); //clear itemsToDelete list
-                    removeBtn.setDisable(true);
-
-                    //System.out.println("New size: "+ data.size());
-                    for(int j = 0; j<data.size(); j++){//search items for checked property
-                        if((data.get(j)).getChecked()==true){
-                            removeBtn.setDisable(false);
-                        }
-                    }
-                    searchbar.clear();
-                    if(data.size()==0){
-                        data.add(empty);
-                    }
-                    CellGenerator cellFactory = new CellGenerator();    
-                    columns[0].setCellFactory(cellFactory);
-                    table.setItems(data);
-
-                    alert.hide();
-                    opaqueLayer.setVisible(false); */
+                    kettleclass.setData(itemsToDelete, 2);
+                    itemsToDelete.clear();
                     break;  
                 default:
                     System.out.println("Otherstuff");

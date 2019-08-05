@@ -52,6 +52,7 @@ public class PrimaryStage extends Stage{
     private static Item empty = new Item("", "", "", "", "", "", false, false, "", "");
     private static ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
     private static String[] emptyinfo = {"", "", "", "", "", ""};
+    private static ObservableList<Item> itemsToDelete;
 
 
     private static TableColumn<Item, String>[] itemArray = (TableColumn<Item, String>[]) new TableColumn[titles.length];
@@ -59,12 +60,11 @@ public class PrimaryStage extends Stage{
 
 
     //Handler eventHandler = new Handler();
-
     Kettlelog kettle = new Kettlelog();
 
 
 	PrimaryStage(){ //TEMP: opaque should belong to PS. make set method to access from main
-
+        //System.out.println("===============herePri");
 
 	 	this.setResizable(false);
         this.setTitle("KettleLog");
@@ -271,9 +271,13 @@ public class PrimaryStage extends Stage{
 
     public void updatePrimaryStage(ObservableList<Item> data){
 
-        if (!data.get(0).getName().equals("")) {
+        if(!data.get(0).getName().equals("")){ //if empty
             AddButtonCell cell = new AddButtonCell(); 
             buttoncolumn.setCellFactory(cell);
+        }
+        else{
+            BlankCell blankCell = new BlankCell();
+            buttoncolumn.setCellFactory(blankCell);
         }
         table.setItems(data);
     }
@@ -316,16 +320,14 @@ public class PrimaryStage extends Stage{
                     //presscount = 1;
                     kettle.showAddStage(0, emptyinfo, empty);
                     break;
-                /*case "removeBtn":
-                    for(int i=0; i<data.size(); i++){
-                        Columns curItem = data.get(i);
-                        if(curItem.getChecked()==true){
-                            System.out.println("Delete: "+ curItem.getName());
-                            itemsToDelete.add(curItem);
-                        }
-                    }*/
-                    //displayAlert(itemsToDelete);
-                    //break;    
+                case "removeBtn":
+                    //pass to kettlelog to see which items are checked
+                    //pass into alert stage for confirmation
+                    //if yes, alert stage passes back into kettlelog to set data
+                    itemsToDelete=kettle.getCheckedItems();
+                    kettle.showAlertStage(itemsToDelete);
+                    itemsToDelete.clear();
+                    break;    
                 default:
                     System.out.println("Default.");
             }

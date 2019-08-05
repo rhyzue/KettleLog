@@ -35,6 +35,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
         private final Image starImgSel = new Image("./Misc/starBtnSel.png");
         private static boolean starred = false;
         private static int filterSel = 0;
+        private static ObservableList<Item> rowinfo = FXCollections.observableArrayList();
 
         private static Kettlelog kettle = new Kettlelog();
         private static FilterHandler filterHandler = new FilterHandler();
@@ -42,6 +43,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
 
         @Override
         public TableCell call(final TableColumn<Item, String> param) {
+            //System.out.println("===============hereCell");
 
             return new TableCell<Item, String>() {
 
@@ -90,7 +92,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                     }
                 }
                 
-        };
+            };
 
     }
 
@@ -224,9 +226,10 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
             delBtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) { 
-                    Item rowinfo = (Item) cell.getTableRow().getItem();
-                    //itemsToDelete.add(test);
+                    Item curItem = (Item) cell.getTableRow().getItem();
+                    rowinfo.add(curItem);
                     kettle.showAlertStage(rowinfo);
+                    rowinfo.remove(curItem);
                 }
             }); 
 
