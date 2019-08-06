@@ -1,3 +1,4 @@
+import Log.*;
 import Item.*; 
 import java.time.*; 
 import java.util.Date;
@@ -423,6 +424,9 @@ public class AddStage extends Stage{
                 //we need to get the value that the user sets as the date and convert it to a string
                 String newdate = datepicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
+                //oldate is referring to the date created, which can never be changed.
+                String olddate = newdate;
+
                 //CHECKS IF THERE ARE ANY REQUIRED FIELDS THAT ARE LEFT EMPTY
                 if ((iName.trim().length() <= 0) || curQuan.isEmpty() || minQuan.isEmpty() || delTime.isEmpty()) {
                     incomplete = true;
@@ -470,9 +474,17 @@ public class AddStage extends Stage{
                     }
 
                     //The user either reached a presscount of 2 from adding a non-duplicate item or pressing "Create" twice with a duplicate item.
+                    //================================================================================
+                    // ADDING
+                    //================================================================================
                     else if (popuptype == 0 & addpresscount == 2) { 
-                        String olddate = newdate;
-                        Item newitem = new Item(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate);
+
+                        ObservableList<Log> loglist = FXCollections.observableArrayList();
+                        Log firstlog = new Log(olddate, curQuan);
+                        loglist.add(firstlog);
+
+                        Item newitem = new Item(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate, loglist);
+
                         ObservableList<Item> addthisitem = FXCollections.observableArrayList(newitem);
                         kettle.setData(addthisitem, 0);
                         kettle.clearSearchBar();
@@ -489,8 +501,14 @@ public class AddStage extends Stage{
                         }
                     }
 
-                    //if the type is to edit, update the information at every field.
+                    //================================================================================
+                    // EDITING
+                    //================================================================================
                     else {
+                        ObservableList<Log> loglist = rowinfo.getLogData();
+                        Log newlog = new Log(newdate, curQuan);
+                        //Adding the newlog to be the most recent one, index[0].
+                        loglist.add(0, newlog);
 
                         //Even though the text fields are filled, the user needs to specify YES or NO for the log. 
                         if (!yesbox.isSelected() && !nobox.isSelected()){
@@ -543,6 +561,7 @@ public class AddStage extends Stage{
                             rowinfo.setDelivery(delTime);
                             rowinfo.setDesc(itemDesc);
                             rowinfo.setDate(newdate);
+                            rowinfo.setLogData(loglist);
                             kettle.clearSearchBar();
 
                             checkhbox.setVisible(false);

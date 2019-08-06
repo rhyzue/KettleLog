@@ -1,3 +1,4 @@
+import Log.*;
 import Item.*;
 import javafx.stage.*;
 import javafx.scene.Scene;
@@ -24,8 +25,9 @@ public class Kettlelog extends Application {
     public static boolean duplicatefound = false;
 
     private static ObservableList<Item> data = FXCollections.observableArrayList();
+    private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
     private static ObservableList<Item> itemsToDelete;
-    private static Item empty = new Item("", "", "", "", "", "", false, false, "", "");
+    private static Item empty = new Item("", "", "", "", "", "", false, false, "", "", emptylist);
 
     private static PrimaryStage primaryStage = new PrimaryStage();
     private static InfoStage infoStage = new InfoStage();
@@ -41,12 +43,10 @@ public class Kettlelog extends Application {
  
     @Override
     public void start(Stage setup) {
-        //System.out.println("===============here1");
         data.add(empty);
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.show();
         primaryStage.updatePrimaryStage(data);
-        //System.out.println("===============here2");
     
     }
 

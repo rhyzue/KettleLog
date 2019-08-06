@@ -1,3 +1,4 @@
+import Log.*;
 import Item.*;
 import java.time.*; 
 import java.util.*;
@@ -7,6 +8,7 @@ import javafx.geometry.*;
 import javafx.scene.Scene;
 import java.time.LocalDate;
 import javafx.scene.text.*;
+import javafx.collections.*;
 import javafx.scene.chart.*; 
 import javafx.scene.image.*;
 import javafx.collections.*;
@@ -17,6 +19,9 @@ import javafx.scene.paint.Color;
 import java.text.SimpleDateFormat;
 import javafx.scene.control.ScrollPane.*;
 import java.time.format.DateTimeFormatter;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class InfoStage extends Stage{
 
@@ -27,7 +32,7 @@ public class InfoStage extends Stage{
     private String infomidcolour;
     private static double infowidth = 500;
     private static double infoheight = 700;
-    private static double scrollheight = 1000;
+    private static double scrollheight = 2000;
     private static double distancedown = 40.0;
     private static String infostriphex = "#004545;";
     private static String infomidhex = "#b8d6d6;";
@@ -44,6 +49,7 @@ public class InfoStage extends Stage{
     private static Text adc = new Text();
     private static Text erp = new Text();
     private static Text erd = new Text();
+    private static Text logmonitortext = new Text();
     private static Text graphtext = new Text(); //consumption graph
     private static Label infolabel = new Label(); //item name 
     private static Label datelabel = new Label(); //date added
@@ -62,7 +68,11 @@ public class InfoStage extends Stage{
     private static ImageView helpImg2 = new ImageView();
     private static VBox infobox = new VBox();
     private static Kettlelog kettle = new Kettlelog();
-    
+    private static TableView<Log> logtable = new TableView<Log>();
+    private static TableColumn<Log, String> dateloggedcol = new TableColumn<Log, String>("Date Logged");
+    private static TableColumn<Log, String> quanloggedcol = new TableColumn<Log, String>("Quantity");
+    private static BorderPane bottomborder = new BorderPane();
+
     //Constructor
     InfoStage(){
 
@@ -258,20 +268,57 @@ public class InfoStage extends Stage{
         linechart.setLegendVisible(false);
 
         //Adding the graph to the anchorpane.
-        AnchorPane.setLeftAnchor(linechart, 20.0);
+        AnchorPane.setLeftAnchor(linechart, 7.5);
         AnchorPane.setTopAnchor(linechart, 80.0 + (distancedown * 9));
-        linechart.setPrefWidth(450.0);
+        linechart.setPrefWidth(475.0);
         linechart.setPrefHeight(350.0);
 
+        //Log Monitor Table
+        AnchorPane.setLeftAnchor(logmonitortext, 25.0);
+        AnchorPane.setTopAnchor(logmonitortext, 100.0 + (distancedown * 17)); 
+        logmonitortext.setText("Log Table");
+        logmonitortext.setFont(new Font(16));
+
         //================================================================================
-        // END OF GRAPHING
+        // LOG TABLE
         //================================================================================
 
-        //SETTING THE ANCHORPANE
+        dateloggedcol.setCellValueFactory(new PropertyValueFactory<>("dateLogged"));
+        dateloggedcol.prefWidthProperty().bind(logtable.widthProperty().multiply(0.495));
+        dateloggedcol.setStyle( "-fx-alignment: CENTER-LEFT;");
+        dateloggedcol.setResizable(false);
+
+        quanloggedcol.setCellValueFactory(new PropertyValueFactory<>("quanLogged"));
+        quanloggedcol.prefWidthProperty().bind(logtable.widthProperty().multiply(0.495));
+        quanloggedcol.setStyle( "-fx-alignment: CENTER-LEFT;");
+        quanloggedcol.setResizable(false);
+
+        logtable.getColumns().<Log, String>addAll(dateloggedcol, quanloggedcol);
+        VBox logbox = new VBox(logtable);
+
+        double tableheight = 350.0;
+        double bottomgap = 25.0; 
+
+        AnchorPane.setLeftAnchor(logbox, 25.0);
+        AnchorPane.setTopAnchor(logbox, 90.0 + (distancedown * 18));
+        logbox.setPrefWidth(450.0);
+        logbox.setPrefHeight(tableheight);
+
+        AnchorPane.setTopAnchor(bottomborder, 90.0 + (distancedown * 18));
+        bottomborder.setPrefHeight(tableheight + bottomgap);
+        bottomborder.setCenter(logbox);
+
+        //Making the columns of the table undraggable.
+        ColumnHandler columnChange = new ColumnHandler();
+        logtable.getColumns().addListener(columnChange);  
+
+        //================================================================================
+        // Anchorpane
+        //================================================================================
         infocenter.setStyle(infomidcolour);     
         infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel);
         infocenter.getChildren().addAll(line2, erp, erplabel, line3, erd, erdlabel, line4, infodesc);
-        infocenter.getChildren().addAll(graphtext, linechart, help1, help2);
+        infocenter.getChildren().addAll(graphtext, linechart, help1, help2, logmonitortext, logbox, bottomborder);
 
         //SCROLLPANE CONFIGURATION
         infobox.getChildren().add(infocenter);
@@ -311,12 +358,15 @@ public class InfoStage extends Stage{
         infolabel.setText(rowinfo.getName());
         datelabel.setText(rowinfo.getDateAdded());
 
+        //Setting the description to the be the same. 
         if (rowinfo.getDesc().trim().length() <= 0) {
             infodesc.setText("There is no description for this item.");
         } else {
             infodesc.setText("Item Description: " + rowinfo.getDesc());
         }
 
+        //Setting the data for the log table. 
+        logtable.setItems(rowinfo.getLogData());
     }
 
     public class InfoHandler implements EventHandler<ActionEvent>{
@@ -333,6 +383,20 @@ public class InfoStage extends Stage{
                     System.out.println("Otherstuff");
             }
         }
+    }
+
+    public class ColumnHandler implements ListChangeListener<TableColumn>{
+        public boolean suspended;
+
+            @Override
+            public void onChanged(Change change) {
+                change.next();
+                if (change.wasReplaced() && !suspended) {
+                    this.suspended = true;
+                    logtable.getColumns().setAll(dateloggedcol, quanloggedcol);
+                    this.suspended = false;
+                }
+            }
     }
 
 }

@@ -1,3 +1,4 @@
+import Log.*;
 import Item.*;
 import java.time.*; 
 import java.util.*;
@@ -44,20 +45,18 @@ public class PrimaryStage extends Stage{
 	private static MenuBar kettlemenu = new MenuBar();
     private static Region opaqueLayer = new Region();
     private static Button removeBtn = new Button();
+
     private static TableView<Item> table = new TableView<Item>();
-
-
     private static final String[] titles = {"Name","Status","Quantity","Minimum"};
     private static TableColumn<Item, String> buttoncolumn = new TableColumn<>("");
-    private static Item empty = new Item("", "", "", "", "", "", false, false, "", "");
+    private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
+    private static Item empty = new Item("", "", "", "", "", "", false, false, "", "", emptylist);
     private static ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
     private static String[] emptyinfo = {"", "", "", "", "", ""};
     private static ObservableList<Item> itemsToDelete;
 
-
     private static TableColumn<Item, String>[] itemArray = (TableColumn<Item, String>[]) new TableColumn[titles.length];
     private static BorderPane base = new BorderPane();
-
 
     //Handler eventHandler = new Handler();
     Kettlelog kettle = new Kettlelog();

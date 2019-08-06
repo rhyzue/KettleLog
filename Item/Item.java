@@ -1,4 +1,6 @@
 package Item;
+import Log.*;
+import javafx.collections.*;
 
 public class Item {
 
@@ -12,12 +14,13 @@ public class Item {
         private String date = null;
         private String dateadded = null;
         private boolean checked = false;
+        private static ObservableList<Log> logdata = FXCollections.observableArrayList();
 
         public Item(){
             
         }
 
-        public Item(String name, String status, String quantity, String minimum, String delivery, String desc, boolean starred, boolean checked, String date, String dateadded) {
+        public Item(String name, String status, String quantity, String minimum, String delivery, String desc, boolean starred, boolean checked, String date, String dateadded, ObservableList<Log> logdata) {
 
             this.name = name;
             this.status = status;
@@ -29,6 +32,7 @@ public class Item {
             this.checked = checked;
             this.date = date;
             this.dateadded = dateadded;
+            this.logdata = logdata;
  
         }
 
@@ -88,7 +92,6 @@ public class Item {
             this.starred = starred;
         }
 
-
         public String getDate() {
             return date;
         }
@@ -111,6 +114,14 @@ public class Item {
 
         public void setChecked(boolean checked) {
             this.checked = checked;
+        }
+
+        public ObservableList<Log> getLogData(){
+            return logdata;
+        }
+
+        public void setLogData(ObservableList<Log> logdata){
+            this.logdata = logdata;
         }
 
 
