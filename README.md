@@ -22,3 +22,9 @@ Welcome to KettleLog, an easy-to-use inventory manager written in Java, using Ja
 <br>• Triangle (when expanded, reveals more information and any personal notes the user made about that item)
 <br>• Pencil (allows the user to edit information about the item)
 <br>• Trash (Remove item)
+
+https://stackoverflow.com/questions/25651641/javafx-mysql-connection-example-please
+https://bitbucket.org/xerial/sqlite-jdbc/downloads/
+http://www.sqlitetutorial.net/sqlite-java/sqlite-jdbc-driver/
+https://www.quackit.com/sqlite/tutorial/select_data.cfm
+java -cp C:\Users\QA\Desktop\Code\sqlitejar.jar testconnect.java
