@@ -14,10 +14,9 @@ public class Item {
         private String date = null;
         private String dateadded = null;
         private boolean checked = false;
-        private static ObservableList<Log> logdata = FXCollections.observableArrayList();
+        private ObservableList<Log> logdata = FXCollections.observableArrayList();
 
         public Item(){
-            
         }
 
         public Item(String name, String status, String quantity, String minimum, String delivery, String desc, boolean starred, boolean checked, String date, String dateadded, ObservableList<Log> logdata) {

@@ -427,6 +427,10 @@ public class AddStage extends Stage{
                 //oldate is referring to the date created, which can never be changed.
                 String olddate = newdate;
 
+                ObservableList<Log> loglist = FXCollections.observableArrayList();
+                Log firstlog = new Log(olddate, curQuan);
+                loglist.add(0, firstlog);
+
                 //CHECKS IF THERE ARE ANY REQUIRED FIELDS THAT ARE LEFT EMPTY
                 if ((iName.trim().length() <= 0) || curQuan.isEmpty() || minQuan.isEmpty() || delTime.isEmpty()) {
                     incomplete = true;
@@ -479,10 +483,6 @@ public class AddStage extends Stage{
                     //================================================================================
                     else if (popuptype == 0 & addpresscount == 2) { 
 
-                        ObservableList<Log> loglist = FXCollections.observableArrayList();
-                        Log firstlog = new Log(olddate, curQuan);
-                        loglist.add(firstlog);
-
                         Item newitem = new Item(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate, loglist);
 
                         ObservableList<Item> addthisitem = FXCollections.observableArrayList(newitem);
@@ -505,10 +505,6 @@ public class AddStage extends Stage{
                     // EDITING
                     //================================================================================
                     else {
-                        ObservableList<Log> loglist = rowinfo.getLogData();
-                        Log newlog = new Log(newdate, curQuan);
-                        //Adding the newlog to be the most recent one, index[0].
-                        loglist.add(0, newlog);
 
                         //Even though the text fields are filled, the user needs to specify YES or NO for the log. 
                         if (!yesbox.isSelected() && !nobox.isSelected()){
@@ -554,6 +550,15 @@ public class AddStage extends Stage{
                         //THe user has reached this stage by either pressing Edit twice or editing the item name to a non-duplicate.
                         else if (popuptype == 1 && editpresscount == 2 && logger == 1 && changequantity == 1) {
 
+                            //Only consider it a log if the yes box is selected.
+                            if (yesbox.isSelected()){
+                                 ObservableList<Log> editloglist = rowinfo.getLogData();
+                                Log newlog = new Log(newdate, curQuan);
+                                //Adding the newlog to be the most recent one, index[0].
+                                editloglist.add(0, newlog);
+                                rowinfo.setLogData(editloglist);
+                            }
+
                             rowinfo.setName(iName);
                             rowinfo.setStatus(itemStatus);
                             rowinfo.setQuantity(curQuan);
@@ -561,7 +566,7 @@ public class AddStage extends Stage{
                             rowinfo.setDelivery(delTime);
                             rowinfo.setDesc(itemDesc);
                             rowinfo.setDate(newdate);
-                            rowinfo.setLogData(loglist);
+
                             kettle.clearSearchBar();
 
                             checkhbox.setVisible(false);
