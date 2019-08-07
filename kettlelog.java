@@ -1,7 +1,11 @@
 import Log.*;
 import Item.*;
+import java.io.*;
 import javafx.stage.*;
 import javafx.scene.Scene;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import javafx.collections.*;
 import javafx.application.Application;
 
@@ -43,6 +47,7 @@ public class Kettlelog extends Application {
  
     @Override
     public void start(Stage setup) {
+        createDataBase("test.db");
         data.add(empty);
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.show();
@@ -197,5 +202,29 @@ public class Kettlelog extends Application {
         }
         return false;
     }
+
+    //================================================================================
+    // DATABASE
+    //================================================================================
+
+    //The purpose of this method will be to take an ObservableList<Item> and convert each Item into its own .db file. 
+
+
+    //createDataBase takes in a filename and creates a new database with that filename in the db folder of Kettlelog.
+    public static void createDataBase(String filename){
+
+        String url = "jdbc:sqlite:/Users/franky/Desktop/Kettlelog/db/" + filename;
+ 
+        try (Connection conn = DriverManager.getConnection(url)) {
+            //Class.forName("com.mysql.jdbc.Driver");
+            if (conn != null) {
+                System.out.println("A new database has been created.");
+            }
+ 
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 
 }
