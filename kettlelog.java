@@ -47,7 +47,7 @@ public class Kettlelog extends Application {
  
     @Override
     public void start(Stage setup) {
-        createDataBase("test.db");
+        createDataBase();
         data.add(empty);
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.show();
@@ -77,7 +77,6 @@ public class Kettlelog extends Application {
     }
 
     public void showInfoStage(Item rowinfo) {
-
         primaryStage.showOpaqueLayer();
         infoStage.updateInfoStage(rowinfo);
 
@@ -155,6 +154,7 @@ public class Kettlelog extends Application {
             case 0:
                 data.remove(empty);
                 data.add(items.get(0)); //ITEMS WILL ONLY HAVE 1 ITEM, THE ONE THAT WE ARE ADDING.
+                
                 break;
             case 2:
                 for(int i = 0; i<items.size(); i++){ //cycle thru itemsToDelete list and remove from data 
@@ -208,11 +208,18 @@ public class Kettlelog extends Application {
     //================================================================================
 
     //The purpose of this method will be to take an ObservableList<Item> and convert each Item into its own .db file. 
+    public static void createDataBase(ObservableList<Item> datalist){
+        int length = datalist.size();
+        for (int i = 0; i < length; i++) {
+            Item currentitem = datalist.get(i);
+            //getName should eventually be changed to getID, which is a unique timestamp. 
+            String filename = currentitem.getName().toLowerCase() + ".db";
+            createDataBaseHelper(filename);
+    }
 
 
-    //createDataBase takes in a filename and creates a new database with that filename in the db folder of Kettlelog.
-    public static void createDataBase(String filename){
-
+    //takes in a filename and creates a new database with that filename in the db folder of Kettlelog.
+    public static void createDataBaseHelper(String filename){
         String url = "jdbc:sqlite:./db/kettledb/" + filename;
  
         try (Connection conn = DriverManager.getConnection(url)) {
