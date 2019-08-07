@@ -213,7 +213,7 @@ public class Kettlelog extends Application {
     //createDataBase takes in a filename and creates a new database with that filename in the db folder of Kettlelog.
     public static void createDataBase(String filename){
 
-        String url = "jdbc:sqlite:/Users/franky/Desktop/Kettlelog/db/" + filename;
+        String url = "jdbc:sqlite:./db/kettledb/" + filename;
  
         try (Connection conn = DriverManager.getConnection(url)) {
             //Class.forName("com.mysql.jdbc.Driver");
