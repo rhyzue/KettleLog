@@ -560,8 +560,10 @@ public class AddStage extends Stage{
                                 rowinfo.setLogData(editloglist);
                                 //Adding the log to our SQL Database.
                                 kettle.addLog(rowinfo.getID(), newdate, curQuan);
+                                System.out.println("addlog worked");
                                 //Even though the yes checkbox is selected, the user can still edit the item, so we need to change our SQL database again.
                                 kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
+                                System.out.println("editableworked.");
                             }
 
                             //If the no box is selected, we don't need to add a log to the item's database. 

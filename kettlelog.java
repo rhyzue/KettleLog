@@ -63,8 +63,12 @@ public class Kettlelog extends Application {
 
     public void showAddStage(int popuptype, String[] textarray, Item rowinfo){
 
+        System.out.println("about to show add stage...");
+
         primaryStage.showOpaqueLayer();
         addStage.updateAddStage(popuptype, textarray, rowinfo);
+
+        System.out.println("if this line shows, updateaddstage worked.");
 
         addStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 300);
         addStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 352.94) + extraheight);
@@ -326,7 +330,7 @@ public class Kettlelog extends Application {
             System.out.println(e.getMessage());
         }
     }
-
+/*
     public void deleteDB(String id){
         try {
             Files.delete("./db/kettledb/id"+".db");
@@ -338,7 +342,7 @@ public class Kettlelog extends Application {
             // File permission problems are caught here.
             System.err.println(x);
         }
-    }
+    } */
 
     //the purpose of this method is to take data from a .db database and load it into our code. 
     //two observablelists need to be created from the two tables in the database (ObservableList<Item>, ObservableList<Log>)
@@ -370,7 +374,7 @@ public class Kettlelog extends Application {
                 Item it = new Item();
 
 	            while (mainData.next()) { //only one row in mainData
-                    it.setId(mainData.getString("id"));
+                    it.setID(mainData.getString("id"));
 	                it.setName(mainData.getString("name"));
                     it.setStatus(mainData.getString("status"));
                     it.setMinimum(mainData.getString("minimumstock"));
@@ -378,6 +382,7 @@ public class Kettlelog extends Application {
                     it.setDesc(mainData.getString("description"));
                     it.setStarred(mainData.getInt("starred")==1); //1=1, true, 0=1, false
                     it.setDateAdded(mainData.getString("dateadded"));
+                    it.setChecked(false);
                 }
 
                 String getLogData = "SELECT * FROM log";
@@ -389,12 +394,15 @@ public class Kettlelog extends Application {
                     Log itLog = new Log();
                     itLog.setDateLogged(logData.getString("logdate"));
                     itLog.setQuanLogged(logData.getString("logquan"));
-                    logInfo.add(itLog);
+                    logInfo.add(0, itLog);
                 }
 
                 //give main item a quantity from the last log
                 String lastQuanLogged = logInfo.get(logInfo.size()-1).getQuanLogged();
                 it.setQuantity(lastQuanLogged);
+
+                String lastDateLogged = logInfo.get(logInfo.size()-1).getDateLogged();
+                it.setDate(lastDateLogged);
 
                 //add observable list to item
                 it.setLogData(logInfo);
