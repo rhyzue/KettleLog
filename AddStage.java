@@ -483,7 +483,8 @@ public class AddStage extends Stage{
                     //================================================================================
                     else if (popuptype == 0 & addpresscount == 2) { 
 
-                        Item newitem = new Item(iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate, loglist);
+                        String id = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
+                        Item newitem = new Item(id, iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate, loglist);
 
                         ObservableList<Item> addthisitem = FXCollections.observableArrayList(newitem);
                         kettle.setData(addthisitem, 0);
@@ -552,12 +553,20 @@ public class AddStage extends Stage{
 
                             //Only consider it a log if the yes box is selected.
                             if (yesbox.isSelected()){
-                                 ObservableList<Log> editloglist = rowinfo.getLogData();
+                                ObservableList<Log> editloglist = rowinfo.getLogData();
                                 Log newlog = new Log(newdate, curQuan);
-                                //Adding the newlog to be the most recent one, index[0].
+                                //Adding the log to our observablelist. 
                                 editloglist.add(0, newlog);
                                 rowinfo.setLogData(editloglist);
+                                //Adding the log to our SQL Database.
+                                kettle.addLog(rowinfo.getID(), newdate, curQuan);
+                                //Even though the yes checkbox is selected, the user can still edit the item, so we need to change our SQL database again.
+                                kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
                             }
+
+                            //If the no box is selected, we don't need to add a log to the item's database. 
+                            //However, we need to edit the InfoTable in its database. 
+                            kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
 
                             rowinfo.setName(iName);
                             rowinfo.setStatus(itemStatus);
