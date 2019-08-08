@@ -33,7 +33,7 @@ public class Kettlelog extends Application {
     private static ObservableList<Item> data = FXCollections.observableArrayList();
     private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
     private static ObservableList<Item> itemsToDelete;
-    private static Item empty = new Item("", "", "", "", "", "", false, false, "", "", emptylist);
+    private static Item empty = new Item("emptyID", "", "", "", "", "", "", false, false, "", "", emptylist);
 
     private static PrimaryStage primaryStage = new PrimaryStage();
     private static InfoStage infoStage = new InfoStage();
@@ -147,6 +147,7 @@ public class Kettlelog extends Application {
     }
 
     public void setData(ObservableList<Item> items, int changetype){
+        //===CHANGETYPE PARAMETER===//
         //0 refers to ADDING data from addwindow
         //1 refers to UPDATING data editwindow
         //2 refers to DELETING data from alertstage
@@ -161,7 +162,7 @@ public class Kettlelog extends Application {
                 //We then need to do FOUR things with this item. 
 
                 //1. Create a database(.db) file for it. 
-                String dbname = added.getName() + ".db";
+                String dbname = added.getID() + ".db";
                 createDataBase(dbname);
 
                 //2. Create two tables for this item's database: one for info, one for log. 
@@ -170,8 +171,8 @@ public class Kettlelog extends Application {
                 //3. Then, we need to populate the database tables with the information. 
                 // The zero is referring to the starred. When a brand new item is added, the item is obviously not starred so it will be 0. 
                 // 0 -> Not Starred, 1 -> Starred
-                app.insertinfo(added.getName(), added.getStatus(), added.getMinimum(), added.getDelivery(), added.getDesc(), 0, added.getDateAdded());
-                app.insertlogs(added.getName(), added.getDate(), added.getQuantity());
+                app.insertinfo(added.getID(), added.getName(), added.getStatus(), added.getMinimum(), added.getDelivery(), added.getDesc(), 0, added.getDateAdded());
+                app.insertlogs(added.getID(), added.getDate(), added.getQuantity());
 
                 //4.Add it our data's observablelist so that we can display it in the table. 
                 data.add(added); 
@@ -246,8 +247,8 @@ public class Kettlelog extends Application {
 
 
     public static Connection getDataBase(String dbName){
-    	//initialize connection
-    	Connection conn = null;
+        //initialize connection
+        Connection conn = null;
         try {
             String url = "jdbc:sqlite:./db/kettledb/" + dbName;
             conn = DriverManager.getConnection(url);
@@ -268,7 +269,7 @@ public class Kettlelog extends Application {
         // Notes: Checked is left out because if the user closes the program with something checked we don't need to save that check.
         //        Starred is represented as an integer, although it is a boolean. 
         String infotableSQL = "CREATE TABLE IF NOT EXISTS info ("
-            + "id integer primary key,"
+            + "id text primary key,"
             + "name text not null,"
             + "status text not null,"
             + "minimumstock text not null,"
@@ -300,14 +301,23 @@ public class Kettlelog extends Application {
 
     }
 
-    //public static void addItem()
+    //This method will add a log to certain database's Log Table, specified by the Name parameter. 
+    public static void addLog(String id, String date, String quantity) {
+        app.insertlogs(id, date, quantity); 
+    }
+
+    //Method that edits the information table for a specific database. 
+    public static void editInfoTable(String id, String name, String status, String minimum, String delivery, String desc, int starbool, String dateadded) {
+        app.editinfo(id, name, status, minimum, delivery, desc, starbool, dateadded);
+    }
 
     //the purpose of this method is to take data from a .db database and load it into our code. 
     //two observablelists need to be created from the two tables in the database (ObservableList<Item>, ObservableList<Log>)
+
     public void loadData(){//ObservableList<Item> loadData(){
-    	//one database for each item
-    	File dir = new File("./db/kettledb");
-		File[] dblist = dir.listFiles(); //store all databases in an array
+        //one database for each item
+        File dir = new File("./db/kettledb");
+        File[] dblist = dir.listFiles(); //store all databases in an array
 
         //if no files, exit function
         if (dblist.length==0){
@@ -315,42 +325,42 @@ public class Kettlelog extends Application {
             return;
         }
 
-		for (int i = 0; i < dblist.length; i++) { //loop through all dbs
-			String dbName = dblist[i].getName();
+        for (int i = 0; i < dblist.length; i++) { //loop through all dbs
+            String dbName = dblist[i].getName();
 
             System.out.println("Loading data");
 
-			try{
-				//connect to the db
-				Connection conn = getDataBase(dbName);
-				Statement stmt = conn.createStatement();
+            try{
+                //connect to the db
+                Connection conn = getDataBase(dbName);
+                Statement stmt = conn.createStatement();
 
-				String getMainData = "SELECT * FROM info"; //Call one table "Data", 2nd table "Log"
-	            ResultSet mainData = stmt.executeQuery(getMainData);
+                String getMainData = "SELECT * FROM info"; //Call one table "Data", 2nd table "Log"
+                ResultSet mainData = stmt.executeQuery(getMainData);
 
                 Item it = new Item();
-	            while (mainData.next()) { //only one row in mainData
-                    //it.setId(mainData.getString("id"));
-	                it.setName(mainData.getString("name"));
+                while (mainData.next()) { //only one row in mainData
+                    it.setId(mainData.getString("id"));
+                    it.setName(mainData.getString("name"));
                     it.setStatus(mainData.getString("status"));
                     it.setMinimum(mainData.getString("minimumstock"));
                     it.setDelivery(mainData.getString("deliverytime"));
                     it.setDesc(mainData.getString("description"));
                     it.setStarred(mainData.getInt("starred")==1); //1=1, true, 0=1, false
                     it.setDateAdded(mainData.getString("dateadded"));
-	            }
+                }
 
-	            String getLogData = "SELECT * FROM log";
-	            ResultSet logData = stmt.executeQuery(getLogData);
+                String getLogData = "SELECT * FROM log";
+                ResultSet logData = stmt.executeQuery(getLogData);
 
                 ObservableList<Log> logInfo = FXCollections.observableArrayList();
                 //get all info from log table, stick it in new Item
-	            while (logData.next()) {
+                while (logData.next()) {
                     Log itLog = new Log();
-	                itLog.setDateLogged(logData.getString("logdate"));
+                    itLog.setDateLogged(logData.getString("logdate"));
                     itLog.setQuanLogged(logData.getString("logquan"));
                     logInfo.add(itLog);
-	            }
+                }
 
                 //give main item a quantity from the last log
                 String lastQuanLogged = logInfo.get(logInfo.size()-1).getQuanLogged();
@@ -362,13 +372,12 @@ public class Kettlelog extends Application {
                 //add item to data
                 data.add(it);
 
-        	}
-        	catch (SQLException e) {
-            	System.out.println(e.getMessage());
-        	}
-		}
+            }
+            catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
-
 
 
 }

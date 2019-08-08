@@ -4,6 +4,7 @@ import javafx.collections.*;
 
 public class Item {
 
+        private String id = null;
         private String name= null;
         private String status = null;
         private String quantity= null;
@@ -19,8 +20,9 @@ public class Item {
         public Item(){
         }
 
-        public Item(String name, String status, String quantity, String minimum, String delivery, String desc, boolean starred, boolean checked, String date, String dateadded, ObservableList<Log> logdata) {
+        public Item(String id, String name, String status, String quantity, String minimum, String delivery, String desc, boolean starred, boolean checked, String date, String dateadded, ObservableList<Log> logdata) {
 
+            this.id = id;
             this.name = name;
             this.status = status;
             this.quantity = quantity;
@@ -33,6 +35,14 @@ public class Item {
             this.dateadded = dateadded;
             this.logdata = logdata;
  
+        }
+
+        public String getID() {
+            return id;
+        }
+
+        public void setID(String id) {
+            this.id = id;
         }
 
         public String getName() {
