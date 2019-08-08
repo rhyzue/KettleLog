@@ -359,20 +359,26 @@ public class Kettlelog extends Application {
     //two observablelists need to be created from the two tables in the database (ObservableList<Item>, ObservableList<Log>)
 
     public void loadData(){//ObservableList<Item> loadData(){
-        //one database for each item
+        //if .DS_Store exists, we're going to remove it completely. 
+        File store = new File("./db/kettledb/.DS_Store");
+        if (store.delete()) {
+            System.out.println(".DS_Store has been deleted.");
+        }
+
         File dir = new File("./db/kettledb");
         File[] dblist = dir.listFiles(); //store all databases in an array
 
         //if no files, exit function
         if (dblist.length==0){
+            System.out.println("no files!");
             data.add(empty); //if there's no files, add empty
             return;
         }
 
         for (int i = 0; i < dblist.length; i++) { //loop through all dbs
             String dbName = dblist[i].getName();
-
             System.out.println("Loading data");
+            System.out.println(dbName);
 
             try{
                 //connect to the db
@@ -426,6 +432,7 @@ public class Kettlelog extends Application {
             }
             catch (SQLException e) {
                 System.out.println(e.getMessage());
+                System.out.println("not working.");
             }
         }
     }

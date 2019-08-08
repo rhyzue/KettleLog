@@ -72,6 +72,10 @@ public class InfoStage extends Stage{
     private static TableColumn<Log, String> dateloggedcol = new TableColumn<Log, String>("Date Logged");
     private static TableColumn<Log, String> quanloggedcol = new TableColumn<Log, String>("Quantity");
     private static BorderPane bottomborder = new BorderPane();
+    private static CategoryAxis xAxis = new CategoryAxis();
+    private static NumberAxis yAxis = new NumberAxis();
+    private static LineChart linechart = new LineChart(xAxis, yAxis);
+
 
     //Constructor
     InfoStage(){
@@ -227,11 +231,7 @@ public class InfoStage extends Stage{
         //================================================================================
         // CONSUMPTION GRAPH
         //================================================================================
-
-        CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Date");
-
-        NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Quantity");
 
         //Initialization of our arraylist which will eventually turn into the labels of our x-axis.
@@ -242,36 +242,21 @@ public class InfoStage extends Stage{
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DATE, i);
             Date date = cal.getTime();
-            String datetick = new SimpleDateFormat("M/d").format(date);
+            String datetick = new SimpleDateFormat("MM/dd").format(date);
             datearraylist.add(datetick);
         }
 
         //The dates are appended from most recent -> oldest, so we need to reverse the list.
         Collections.reverse(datearraylist);
-
         ObservableList<String> dateaxis = FXCollections.observableArrayList(datearraylist);
         xAxis.setCategories(dateaxis);
-
-        LineChart linechart = new LineChart(xAxis, yAxis);
-        XYChart.Series series = new XYChart.Series();
-
-        //Placeholder data for now.
-        series.getData().add(new XYChart.Data("8/4", 4));
-        series.getData().add(new XYChart.Data("8/3", 7));
-        series.getData().add(new XYChart.Data("8/2", 8));
-        series.getData().add(new XYChart.Data("8/1", 10));
-        series.getData().add(new XYChart.Data("7/31", 15));
-        series.getData().add(new XYChart.Data("7/30", 20));
-        series.getData().add(new XYChart.Data("7/29", 22));
-
-        linechart.getData().add(series);
-        linechart.setLegendVisible(false);
 
         //Adding the graph to the anchorpane.
         AnchorPane.setLeftAnchor(linechart, 7.5);
         AnchorPane.setTopAnchor(linechart, 80.0 + (distancedown * 9));
         linechart.setPrefWidth(475.0);
         linechart.setPrefHeight(350.0);
+        linechart.setLegendVisible(false);
 
         //Log Monitor Table
         AnchorPane.setLeftAnchor(logmonitortext, 25.0);
@@ -364,6 +349,22 @@ public class InfoStage extends Stage{
         } else {
             infodesc.setText("Item Description: " + rowinfo.getDesc());
         }
+
+        //Synchronizing the chart to the log table.
+        XYChart.Series series = new XYChart.Series();
+        ObservableList<Log> chartinfo = rowinfo.getLogData();
+        int length = chartinfo.size();
+        
+        for (int i = 0; i < length; i++) {
+            String datewithyear = (chartinfo.get(i)).getDateLogged();
+            //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
+            String date = (datewithyear.substring(5)).replace("-", "/");
+            String quanstring = (chartinfo.get(i)).getQuanLogged();
+            int quantity = Integer.parseInt(quanstring);
+            series.getData().add(new XYChart.Data(date, quantity));
+        }
+
+        linechart.getData().add(series);
 
         //Setting the data for the log table. 
         logtable.setItems(rowinfo.getLogData());

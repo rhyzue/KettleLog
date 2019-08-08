@@ -1,7 +1,7 @@
 import Log.*;
 import Item.*; 
 import java.time.*; 
-import java.util.Date;
+import java.util.*;
 import javafx.stage.*;
 import javafx.event.*;
 import javafx.scene.Scene;
@@ -28,6 +28,7 @@ public class AddStage extends Stage{
     private static int editpresscount = 0;
     private static int logger = 0;
     private static int changequantity = 0;
+    private static int logdateunique = 0; 
     private static double addwidth = 600;
     private static double addw_to_h = 0.85;
     private static double addheight = addwidth / addw_to_h;
@@ -328,6 +329,7 @@ public class AddStage extends Stage{
                 editpresscount = 0;
                 logger = 0;
                 changequantity = 0;
+                logdateunique = 0;
                 checkhbox.setVisible(false);
                 logitem.setVisible(false);
                 a5.setVisible(false);
@@ -494,6 +496,7 @@ public class AddStage extends Stage{
                         editpresscount = 0;
                         logger = 0;
                         changequantity = 0;
+                        logdateunique = 0;
                         checkhbox.setVisible(false);
                         logitem.setVisible(false);
                         a5.setVisible(false);
@@ -516,15 +519,38 @@ public class AddStage extends Stage{
                             logger = 1;
                         }
 
-                        //THe user should not be allowed to change the quantity of the item and select "No."
+                        //The user should not be allowed to change the quantity of the item and select "No."
                         String prelogquan = rowinfo.getQuantity();
                         String postlogquan = qtext.getText();
                         if ((!prelogquan.equals(postlogquan)) && (nobox.isSelected())) {
                             changequantity--;
-                            missing.setText("* A change in quantity must be logged. Select 'Yes' and try again.");
+                            missing.setText("* A change in quantity must be logged with a unique date.");
                             missing.setVisible(true);
                         } else {
                             changequantity = 1;
+                        }
+
+                        //User should not be able to create a log with a date that has already been logged for. 
+                        ObservableList<Log> loginfo = rowinfo.getLogData();
+                        int loglength = loginfo.size();
+                        ArrayList<String> logdates = new ArrayList<String>();
+
+                        for (int i = 0; i < loglength; i++){
+                            System.out.println((loginfo.get(i)).getDateLogged());
+                            logdates.add((loginfo.get(i)).getDateLogged());
+                        }
+
+                        if (yesbox.isSelected()) {
+                            if (logdates.contains(newdate)) {
+                                System.out.println("This date has been logged before.");
+                                logdateunique--; 
+                                missing.setText("* A log for this date already exists. Select a new date or edit your existing log.");
+                                missing.setVisible(true);
+                            } else {
+                                logdateunique = 1;
+                            }
+                        } else {
+                            logdateunique = 1;
                         }
 
                         //We don't want to display the warning if the name is not changed. 
@@ -549,10 +575,11 @@ public class AddStage extends Stage{
                         }
 
                         //THe user has reached this stage by either pressing Edit twice or editing the item name to a non-duplicate.
-                        else if (popuptype == 1 && editpresscount == 2 && logger == 1 && changequantity == 1) {
+                        else if (popuptype == 1 && editpresscount == 2 && logger == 1 && changequantity == 1 && logdateunique == 1) {
 
                             //Only consider it a log if the yes box is selected.
                             if (yesbox.isSelected()){
+
                                 ObservableList<Log> editloglist = rowinfo.getLogData();
                                 Log newlog = new Log(newdate, curQuan);
                                 //Adding the log to our observablelist. 
@@ -560,10 +587,10 @@ public class AddStage extends Stage{
                                 rowinfo.setLogData(editloglist);
                                 //Adding the log to our SQL Database.
                                 kettle.addLog(rowinfo.getID(), newdate, curQuan);
-                                System.out.println("addlog worked");
                                 //Even though the yes checkbox is selected, the user can still edit the item, so we need to change our SQL database again.
                                 kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
-                                System.out.println("editableworked.");
+                                logdateunique = 0;
+                                
                             }
 
                             //If the no box is selected, we don't need to add a log to the item's database. 
@@ -591,6 +618,7 @@ public class AddStage extends Stage{
                             editpresscount = 0;
                             logger = 0;
                             changequantity = 0;
+                            logdateunique = 0;
                             if (radioGroup.getSelectedToggle()!=null){
                                 radioGroup.getSelectedToggle().setSelected(false);
                             }
