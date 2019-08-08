@@ -1,6 +1,7 @@
 import Log.*;
 import Item.*;
 import java.io.*;
+import java.sql.*;
 import javafx.stage.*;
 import javafx.scene.Scene;
 import java.sql.Connection;
@@ -215,7 +216,8 @@ public class Kettlelog extends Application {
             //getName should eventually be changed to getID, which is a unique timestamp. 
             String filename = currentitem.getName().toLowerCase() + ".db";
             createDataBaseHelper(filename);
-    }
+    	}
+	}
 
 
     //takes in a filename and creates a new database with that filename in the db folder of Kettlelog.
@@ -231,6 +233,58 @@ public class Kettlelog extends Application {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public static Connection getDataBase(String dbName){
+    	//initialize connection
+    	Connection conn = null;
+        try {
+            String url = "jdbc:sqlite:./db/kettledb/" + dbName;
+            conn = DriverManager.getConnection(url);
+            System.out.println("Connection to SQLite has been established.");
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return conn;
+    }
+
+    //method to load in all items and logs from database
+    public static void loadData(){//ObservableList<Item> loadData(){
+    	//one database for each item
+    	File dir = new File("./db/kettledb");
+		File[] dblist = dir.listFiles(); //store all databases in an array
+
+		for (int i = 0; i < dblist.length; i++) { //loop through all dbs
+			//String dbName = dblist[i].getName();
+			String dbName = "renTest.db";
+
+			try{
+				//connect to the db
+				Connection conn = getDataBase(dbName);
+				Statement stmt = conn.createStatement();
+
+				String getMainData = "SELECT * FROM data"; //Call one table "Data", 2nd table "Log"
+	            ResultSet mainData = stmt.executeQuery(getMainData);
+
+	            while (mainData.next()) {
+	                System.out.println(mainData.getString("name"));
+	            }
+
+	            String getLogData = "SELECT * FROM log";
+	            ResultSet logData    = stmt.executeQuery(getLogData);
+	            while (logData.next()) {
+	                System.out.println(mainData.getString("quantity"));
+	            }
+        	}
+        	catch (SQLException e) {
+            	System.out.println(e.getMessage());
+        	}
+
+
+		}
+
     }
 
 
