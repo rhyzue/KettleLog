@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javafx.collections.*;
 import javafx.application.Application;
 
@@ -48,7 +49,9 @@ public class Kettlelog extends Application {
  
     @Override
     public void start(Stage setup) {
-        createDataBase();
+        createDataBase("test2.db");
+        createTables("test2.db");
+
         data.add(empty);
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.show();
@@ -205,11 +208,11 @@ public class Kettlelog extends Application {
     }
 
     //================================================================================
-    // DATABASE
+    // DATABASE[SQL]
     //================================================================================
 
     //The purpose of this method will be to take an ObservableList<Item> and convert each Item into its own .db file. 
-    public static void createDataBase(ObservableList<Item> datalist){
+    /*public static void createDataBase(ObservableList<Item> datalist){
         int length = datalist.size();
         for (int i = 0; i < length; i++) {
             Item currentitem = datalist.get(i);
@@ -217,15 +220,16 @@ public class Kettlelog extends Application {
             String filename = currentitem.getName().toLowerCase() + ".db";
             createDataBaseHelper(filename);
     	}
-	}
+	}*/
 
 
     //takes in a filename and creates a new database with that filename in the db folder of Kettlelog.
-    public static void createDataBaseHelper(String filename){
+    //filename needs to be UNIQUE in order to create the database. otherwise, we're just connecting to an existing database. 
+    public static void createDataBase(String filename){
+
         String url = "jdbc:sqlite:./db/kettledb/" + filename;
  
         try (Connection conn = DriverManager.getConnection(url)) {
-            //Class.forName("com.mysql.jdbc.Driver");
             if (conn != null) {
                 System.out.println("A new database has been created.");
             }
@@ -234,6 +238,7 @@ public class Kettlelog extends Application {
             System.out.println(e.getMessage());
         }
     }
+
 
     public static Connection getDataBase(String dbName){
     	//initialize connection
@@ -284,6 +289,47 @@ public class Kettlelog extends Application {
 
 
 		}
+    }
+
+
+    //whenever an item is created, we need to create two tables in its database. 
+    //the parameter will specify which database we attach the tables to. 
+    public static void createTables(String filename) {
+
+        //getting the url for the connection
+        String url = "jdbc:sqlite:./db/kettledb/" + filename;
+        String infotablename = filename + "info";
+        String logtablename = filename + "log";
+
+        // SQL statement that creates the table representing the info of the item (name, shipping time, minimum, etc.)
+        // Notes: Checked is left out because if the user closes the program with something checked we don't need to save that check.
+        //        Starred is represented as an integer, although it is a boolean. 
+        String infotableSQL = "CREATE TABLE IF NOT EXISTS " + infotablename + "("
+            + "id integer primary key,"
+            + "name text not null,"
+            + "status text not null,"
+            + "minimumstock text not null,"
+            + "deliverytime text not null,"
+            + "description text not null,"
+            + "starred int not null,"
+            + "dateadded text not null,"
+            + ");";
+
+        //Creating the log table in the same database. 
+        String logtableSQL = "CREATE TABLE IF NOT EXISTS " + logtablename + "("
+            + "id text primary key,"
+            + "logdate text not null,"
+            + "logquan text not null"
+            + ");";
+
+        try (Connection conn = DriverManager.getConnection(url);
+            Statement stmt = conn.createStatement()) {
+            stmt.execute(infotableSQL);
+            stmt.execute(logtableSQL);
+        } catch (SQLException e) {
+            System.out.println("HELLO HELLO");
+            System.out.println(e.getMessage());
+        }
 
     }
 
