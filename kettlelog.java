@@ -39,13 +39,12 @@ public class Kettlelog extends Application {
     private static InfoStage infoStage = new InfoStage();
     private static AddStage addStage = new AddStage();
     private static AlertStage alertStage = new AlertStage();
+    private static InsertData app = new InsertData();
 
     //================================================================================
     // METHODS
     //================================================================================
     public static void main(String[] args) {
-        createDataBase("test2.db");
-        createTables("test2.db");
         launch(args);
     }
  
@@ -152,12 +151,31 @@ public class Kettlelog extends Application {
         //0 refers to ADDING data from addwindow
         //1 refers to UPDATING data editwindow
         //2 refers to DELETING data from alertstage
-        //3 is smth for filtering 
+        //3 refers to FILTERING data 
 
          switch(changetype){
             case 0:
                 data.remove(empty);
-                data.add(items.get(0)); //ITEMS WILL ONLY HAVE 1 ITEM, THE ONE THAT WE ARE ADDING.
+                //Our observablelist from the parameter only has one item in this case, so let's take it out. 
+                Item added = items.get(0);
+
+                //We then need to do FOUR things with this item. 
+
+                //1. Create a database(.db) file for it. 
+                String dbname = added.getName() + ".db";
+                createDataBase(dbname);
+
+                //2. Create two tables for this item's database: one for info, one for log. 
+                createTables(dbname);
+
+                //3. Then, we need to populate the database tables with the information. 
+                // The zero is referring to the starred. When a brand new item is added, the item is obviously not starred so it will be 0. 
+                // 0 -> Not Starred, 1 -> Starred
+                app.insertinfo(added.getName(), added.getStatus(), added.getMinimum(), added.getDelivery(), added.getDesc(), 0, added.getDateAdded());
+                app.insertlogs(added.getName(), added.getDate(), added.getQuantity());
+
+                //4.Add it our data's observablelist so that we can display it in the table. 
+                data.add(added); 
                 
                 break;
             case 2:
@@ -166,7 +184,7 @@ public class Kettlelog extends Application {
                 }
 
                 disableRemoveBtn();
-                for(int j = 0; j<data.size(); j++){//search items for checked property
+                for(int j = 0; j<data.size(); j++){ //search items for checked property
                     if((data.get(j)).getChecked()==true){
                         enableRemoveBtn();
                     }
@@ -210,6 +228,7 @@ public class Kettlelog extends Application {
     //================================================================================
     // DATABASE[SQL]
     //================================================================================
+
     //takes in a filename and creates a new database with that filename in the db folder of Kettlelog.
     //filename needs to be UNIQUE in order to create the database. otherwise, we're just connecting to an existing database. 
     public static void createDataBase(String filename){
@@ -242,8 +261,51 @@ public class Kettlelog extends Application {
         return conn;
     }
 
-    //method to load in all items and logs from database
-    public static void loadData(){//ObservableList<Item> loadData(){
+    //whenever an item is created, we need to create two tables in its database. 
+    //the parameter will specify which database we attach the tables to. 
+    public static void createTables(String filename) {
+
+        // SQL statement that creates the table representing the info of the item (name, shipping time, minimum, etc.)
+        // Notes: Checked is left out because if the user closes the program with something checked we don't need to save that check.
+        //        Starred is represented as an integer, although it is a boolean. 
+        String infotableSQL = "CREATE TABLE IF NOT EXISTS info ("
+            + "id integer primary key,"
+            + "name text not null,"
+            + "status text not null,"
+            + "minimumstock text not null,"
+            + "deliverytime text not null,"
+            + "description text not null,"
+            + "starred int not null,"
+            + "dateadded text not null"
+            + ");";
+
+        //Creating the log table in the same database. 
+        String logtableSQL = "CREATE TABLE IF NOT EXISTS log ("
+            + "id integer primary key,"
+            + "logdate text not null,"
+            + "logquan text not null"
+            + ");";
+
+        try{
+            Connection conn = getDataBase(filename);
+            Statement stmt = conn.createStatement();
+            //creating our two tables in the database
+            stmt.execute(infotableSQL);
+            stmt.execute(logtableSQL);
+            System.out.println("Tables have been created successfully.");
+        } 
+        catch (SQLException e) {
+            System.out.println("tablecatch");
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    //public static void addItem()
+
+    //the purpose of this method is to take data from a .db database and load it into our code. 
+    //two observablelists need to be created from the two tables in the database (ObservableList<Item>, ObservableList<Log>)
+    /*public static void loadData(){//ObservableList<Item> loadData(){
     	//one database for each item
     	File dir = new File("./db/kettledb");
 		File[] dblist = dir.listFiles(); //store all databases in an array
@@ -302,53 +364,8 @@ public class Kettlelog extends Application {
 
 
 		}
-    }
+    }*/
 
-
-    //whenever an item is created, we need to create two tables in its database. 
-    //the parameter will specify which database we attach the tables to. 
-    public static void createTables(String filename) {
-
-        //getting the url for the connection
-        String url = "jdbc:sqlite:./db/kettledb/" + filename;
-        String infotablename = "info";
-        String logtablename = "log";
-
-        // SQL statement that creates the table representing the info of the item (name, shipping time, minimum, etc.)
-        // Notes: Checked is left out because if the user closes the program with something checked we don't need to save that check.
-        //        Starred is represented as an integer, although it is a boolean. 
-        String infotableSQL = "CREATE TABLE IF NOT EXISTS " + infotablename + "("
-            + "id integer primary key,"
-            + "name text not null,"
-            + "status text not null,"
-            + "minimumstock text not null,"
-            + "deliverytime text not null,"
-            + "description text not null,"
-            + "starred int not null,"
-            + "dateadded text not null"
-            + ");";
-
-        //Creating the log table in the same database. 
-        String logtableSQL = "CREATE TABLE IF NOT EXISTS " + logtablename + "("
-            + "id text primary key,"
-            + "logdate text not null,"
-            + "logquan text not null"
-            + ");";
-
-
-        try{
-            Connection conn = getDataBase(filename);
-            Statement stmt = conn.createStatement();
-            //creating our two tables in the database
-            stmt.execute(infotableSQL);
-            stmt.execute(logtableSQL);
-            System.out.println("Tables have been created successfully.");
-        } catch (SQLException e) {
-            System.out.println("tablecatch");
-            System.out.println(e.getMessage());
-        }
-
-    }
 
 
 }
