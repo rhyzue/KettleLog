@@ -44,13 +44,13 @@ public class Kettlelog extends Application {
     // METHODS
     //================================================================================
     public static void main(String[] args) {
+        createDataBase("test2.db");
+        createTables("test2.db");
         launch(args);
     }
  
     @Override
     public void start(Stage setup) {
-        createDataBase("test2.db");
-        createTables("test2.db");
 
         data.add(empty);
         itemsToDelete = FXCollections.observableArrayList(empty);
@@ -210,19 +210,6 @@ public class Kettlelog extends Application {
     //================================================================================
     // DATABASE[SQL]
     //================================================================================
-
-    //The purpose of this method will be to take an ObservableList<Item> and convert each Item into its own .db file. 
-    /*public static void createDataBase(ObservableList<Item> datalist){
-        int length = datalist.size();
-        for (int i = 0; i < length; i++) {
-            Item currentitem = datalist.get(i);
-            //getName should eventually be changed to getID, which is a unique timestamp. 
-            String filename = currentitem.getName().toLowerCase() + ".db";
-            createDataBaseHelper(filename);
-    	}
-	}*/
-
-
     //takes in a filename and creates a new database with that filename in the db folder of Kettlelog.
     //filename needs to be UNIQUE in order to create the database. otherwise, we're just connecting to an existing database. 
     public static void createDataBase(String filename){
@@ -298,8 +285,8 @@ public class Kettlelog extends Application {
 
         //getting the url for the connection
         String url = "jdbc:sqlite:./db/kettledb/" + filename;
-        String infotablename = filename + "info";
-        String logtablename = filename + "log";
+        String infotablename = "info";
+        String logtablename = "log";
 
         // SQL statement that creates the table representing the info of the item (name, shipping time, minimum, etc.)
         // Notes: Checked is left out because if the user closes the program with something checked we don't need to save that check.
@@ -312,7 +299,7 @@ public class Kettlelog extends Application {
             + "deliverytime text not null,"
             + "description text not null,"
             + "starred int not null,"
-            + "dateadded text not null,"
+            + "dateadded text not null"
             + ");";
 
         //Creating the log table in the same database. 
@@ -322,12 +309,16 @@ public class Kettlelog extends Application {
             + "logquan text not null"
             + ");";
 
-        try (Connection conn = DriverManager.getConnection(url);
-            Statement stmt = conn.createStatement()) {
+
+        try{
+            Connection conn = getDataBase(filename);
+            Statement stmt = conn.createStatement();
+            //creating our two tables in the database
             stmt.execute(infotableSQL);
             stmt.execute(logtableSQL);
+            System.out.println("Tables have been created successfully.");
         } catch (SQLException e) {
-            System.out.println("HELLO HELLO");
+            System.out.println("tablecatch");
             System.out.println(e.getMessage());
         }
 
