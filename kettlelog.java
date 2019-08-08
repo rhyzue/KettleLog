@@ -50,8 +50,7 @@ public class Kettlelog extends Application {
  
     @Override
     public void start(Stage setup) {
-
-        data.add(empty);
+        loadData();
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.show();
         primaryStage.updatePrimaryStage(data);
@@ -305,51 +304,57 @@ public class Kettlelog extends Application {
 
     //the purpose of this method is to take data from a .db database and load it into our code. 
     //two observablelists need to be created from the two tables in the database (ObservableList<Item>, ObservableList<Log>)
-    /*public static void loadData(){//ObservableList<Item> loadData(){
+    public void loadData(){//ObservableList<Item> loadData(){
     	//one database for each item
     	File dir = new File("./db/kettledb");
 		File[] dblist = dir.listFiles(); //store all databases in an array
 
+        //if no files, exit function
+        if (dblist.length==0){
+            data.add(empty); //if there's no files, add empty
+            return;
+        }
+
 		for (int i = 0; i < dblist.length; i++) { //loop through all dbs
-			//String dbName = dblist[i].getName();
-			String dbName = "renTest.db";
+			String dbName = dblist[i].getName();
+
+            System.out.println("Loading data");
 
 			try{
 				//connect to the db
 				Connection conn = getDataBase(dbName);
 				Statement stmt = conn.createStatement();
 
-				String getMainData = "SELECT * FROM data"; //Call one table "Data", 2nd table "Log"
+				String getMainData = "SELECT * FROM info"; //Call one table "Data", 2nd table "Log"
 	            ResultSet mainData = stmt.executeQuery(getMainData);
 
                 Item it = new Item();
-                Item itLog = new Item();
-                ObservableList<Log> logInfo = FXCollections.observableArrayList();
-
-	            while (mainData.next()) {
+	            while (mainData.next()) { //only one row in mainData
                     //it.setId(mainData.getString("id"));
 	                it.setName(mainData.getString("name"));
                     it.setStatus(mainData.getString("status"));
-                    //it.setQuantity(mainData.getString("quantity"));
-                    it.setMininum(mainData.getString("minimumstock"));
+                    it.setMinimum(mainData.getString("minimumstock"));
                     it.setDelivery(mainData.getString("deliverytime"));
                     it.setDesc(mainData.getString("description"));
-                    it.setStarred(mainData.getInt("starred"));
+                    it.setStarred(mainData.getInt("starred")==1); //1=1, true, 0=1, false
                     it.setDateAdded(mainData.getString("dateadded"));
 	            }
 
-                //NEED LOOP FOR THIS (MULTIPLE LOGS)
 	            String getLogData = "SELECT * FROM log";
 	            ResultSet logData = stmt.executeQuery(getLogData);
 
+                ObservableList<Log> logInfo = FXCollections.observableArrayList();
                 //get all info from log table, stick it in new Item
 	            while (logData.next()) {
-	                itLog.setDate(logData.getString("date"));
-                    itLog.setQuantity(logData.getString("quantity"));
+                    Log itLog = new Log();
+	                itLog.setDateLogged(logData.getString("logdate"));
+                    itLog.setQuanLogged(logData.getString("logquan"));
+                    logInfo.add(itLog);
 	            }
 
-                //add itLog to list
-                logInfo.add(itLog);
+                //give main item a quantity from the last log
+                String lastQuanLogged = logInfo.get(logInfo.size()-1).getQuanLogged();
+                it.setQuantity(lastQuanLogged);
 
                 //add observable list to item
                 it.setLogData(logInfo);
@@ -361,10 +366,8 @@ public class Kettlelog extends Application {
         	catch (SQLException e) {
             	System.out.println(e.getMessage());
         	}
-
-
 		}
-    }*/
+    }
 
 
 
