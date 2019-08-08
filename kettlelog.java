@@ -4,6 +4,7 @@ import java.io.*;
 import java.sql.*;
 import javafx.stage.*;
 import javafx.scene.Scene;
+import java.nio.file.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -184,6 +185,10 @@ public class Kettlelog extends Application {
                 break;
             case 2:
                 for(int i = 0; i<items.size(); i++){ //cycle thru itemsToDelete list and remove from data 
+                    //remove database
+                    if(!items.get(i).getID().equals("emptyID")){
+                        deleteDB(items.get(i).getID());
+                    }
                     data.remove(items.get(i));
                 }
 
@@ -238,11 +243,14 @@ public class Kettlelog extends Application {
     public static void createDataBase(String filename){
 
         String url = "jdbc:sqlite:./db/kettledb/" + filename;
+        Connection conn = null;
  
-        try (Connection conn = DriverManager.getConnection(url)) {
+        try {
+            conn = DriverManager.getConnection(url);
             if (conn != null) {
                 System.out.println("A new database has been created.");
             }
+            conn.close();
  
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -297,6 +305,8 @@ public class Kettlelog extends Application {
             stmt.execute(infotableSQL);
             stmt.execute(logtableSQL);
             System.out.println("Tables have been created successfully.");
+            stmt.close();
+            conn.close();
         } 
         catch (SQLException e) {
             System.out.println("tablecatch");
@@ -324,25 +334,26 @@ public class Kettlelog extends Application {
             String cmd = "UPDATE info SET starred = " + value + " WHERE id = " + id +";";
             Statement stmt = conn.createStatement();
             stmt.execute(cmd);
-            System.out.println("Starred value updated successfully");
+            stmt.close();
+            conn.close();
         }
         catch(SQLException e){
             System.out.println(e.getMessage());
         }
     }
-/*
+
     public void deleteDB(String id){
         try {
-            Files.delete("./db/kettledb/id"+".db");
+            Files.delete(Paths.get("./db/kettledb/"+id+".db"));
         } catch (NoSuchFileException x) {
-            System.err.format("%s: no such" + " file or directory%n", path);
+            System.err.format("%s: no such" + " file or directory%n", id+".db");
         } catch (DirectoryNotEmptyException x) {
-            System.err.format("%s not empty%n", path);
+            System.err.format("%s not empty%n", "kettledb");
         } catch (IOException x) {
             // File permission problems are caught here.
             System.err.println(x);
         }
-    } */
+    } 
 
     //the purpose of this method is to take data from a .db database and load it into our code. 
     //two observablelists need to be created from the two tables in the database (ObservableList<Item>, ObservableList<Log>)
@@ -410,6 +421,8 @@ public class Kettlelog extends Application {
                 //add item to data
                 data.add(it);
 
+                stmt.close();
+                conn.close();
             }
             catch (SQLException e) {
                 System.out.println(e.getMessage());

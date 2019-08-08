@@ -35,6 +35,9 @@ public class InsertData {
 
             v.executeUpdate();
 
+            v.close();
+            conn.close();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -55,6 +58,9 @@ public class InsertData {
                 v.setString(2, logquan);
 
             v.executeUpdate();
+
+            v.close();
+            conn.close();
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -89,6 +95,9 @@ public class InsertData {
                 v.setString(7, dateadded);
 
             v.executeUpdate();
+
+            v.close();
+            conn.close();
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());

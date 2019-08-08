@@ -123,15 +123,17 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                 public void handle(ActionEvent event) { 
                     //deselect all checkboxes
                     Item item = (Item) cell.getTableRow().getItem();
-                    if(item.getStarred()==true){  
+                    if(item.getStarred()==true){  //item is already starred - unstar
                         starImg.setImage(starImgClr);      
                         starBtn.setGraphic(starImg);      
                         item.setStarred(false);
+                        kettle.updateStarredDB(item.getID(), false);
                     }       
-                    else{ 
+                    else{ //item is not currently starred - set star to true
                         starImg.setImage(starImgSel);         
                         starBtn.setGraphic(starImg);    
                         item.setStarred(true);  
+                        kettle.updateStarredDB(item.getID(), true);
                     }
 
                     filterSel = filterHandler.getFilterSel();
