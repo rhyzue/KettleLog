@@ -273,15 +273,41 @@ public class Kettlelog extends Application {
 				String getMainData = "SELECT * FROM data"; //Call one table "Data", 2nd table "Log"
 	            ResultSet mainData = stmt.executeQuery(getMainData);
 
+                Item it = new Item();
+                Item itLog = new Item();
+                ObservableList<Log> logInfo = FXCollections.observableArrayList();
+
 	            while (mainData.next()) {
-	                System.out.println(mainData.getString("name"));
+                    //it.setId(mainData.getString("id"));
+	                it.setName(mainData.getString("name"));
+                    it.setStatus(mainData.getString("status"));
+                    //it.setQuantity(mainData.getString("quantity"));
+                    it.setMininum(mainData.getString("minimumstock"));
+                    it.setDelivery(mainData.getString("deliverytime"));
+                    it.setDesc(mainData.getString("description"));
+                    it.setStarred(mainData.getInt("starred"));
+                    it.setDateAdded(mainData.getString("dateadded"));
 	            }
 
+                //NEED LOOP FOR THIS (MULTIPLE LOGS)
 	            String getLogData = "SELECT * FROM log";
-	            ResultSet logData    = stmt.executeQuery(getLogData);
+	            ResultSet logData = stmt.executeQuery(getLogData);
+
+                //get all info from log table, stick it in new Item
 	            while (logData.next()) {
-	                System.out.println(mainData.getString("quantity"));
+	                itLog.setDate(logData.getString("date"));
+                    itLog.setQuantity(logData.getString("quantity"));
 	            }
+
+                //add itLog to list
+                logInfo.add(itLog);
+
+                //add observable list to item
+                it.setLogData(logInfo);
+
+                //add item to data
+                data.add(it);
+
         	}
         	catch (SQLException e) {
             	System.out.println(e.getMessage());
