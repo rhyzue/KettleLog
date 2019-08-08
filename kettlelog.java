@@ -311,6 +311,35 @@ public class Kettlelog extends Application {
         app.editinfo(id, name, status, minimum, delivery, desc, starbool, dateadded);
     }
 
+    public void updateStarredDB(String id, boolean value){
+
+        //find file with that id
+        Connection conn = getDataBase(id+".db");
+
+        try{
+            String cmd = "UPDATE info SET starred = " + value + " WHERE id = " + id +";";
+            Statement stmt = conn.createStatement();
+            stmt.execute(cmd);
+            System.out.println("Starred value updated successfully");
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void deleteDB(String id){
+        try {
+            Files.delete("./db/kettledb/id"+".db");
+        } catch (NoSuchFileException x) {
+            System.err.format("%s: no such" + " file or directory%n", path);
+        } catch (DirectoryNotEmptyException x) {
+            System.err.format("%s not empty%n", path);
+        } catch (IOException x) {
+            // File permission problems are caught here.
+            System.err.println(x);
+        }
+    }
+
     //the purpose of this method is to take data from a .db database and load it into our code. 
     //two observablelists need to be created from the two tables in the database (ObservableList<Item>, ObservableList<Log>)
 
@@ -339,9 +368,10 @@ public class Kettlelog extends Application {
                 ResultSet mainData = stmt.executeQuery(getMainData);
 
                 Item it = new Item();
-                while (mainData.next()) { //only one row in mainData
+
+	            while (mainData.next()) { //only one row in mainData
                     it.setId(mainData.getString("id"));
-                    it.setName(mainData.getString("name"));
+	                it.setName(mainData.getString("name"));
                     it.setStatus(mainData.getString("status"));
                     it.setMinimum(mainData.getString("minimumstock"));
                     it.setDelivery(mainData.getString("deliverytime"));
