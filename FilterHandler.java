@@ -54,6 +54,7 @@ public class FilterHandler implements ChangeListener<String>{
                 kettle.clearSearchBar();
                 break;
             case "None":
+                kettle.primaryStage.resetComboBox();
                 kettle.clearSearchBar();
                 filterSel = 0;
             default:

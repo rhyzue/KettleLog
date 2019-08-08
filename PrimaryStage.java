@@ -45,6 +45,8 @@ public class PrimaryStage extends Stage{
 	private static MenuBar kettlemenu = new MenuBar();
     private static Region opaqueLayer = new Region();
     private static Button removeBtn = new Button();
+    private static AnchorPane topBar = new AnchorPane();
+    private ComboBox<String> filter;
 
     private static TableView<Item> table = new TableView<Item>();
     private static final String[] titles = {"Name","Status","Quantity","Minimum"};
@@ -60,6 +62,7 @@ public class PrimaryStage extends Stage{
 
     //Handler eventHandler = new Handler();
     Kettlelog kettle = new Kettlelog();
+    private static FilterHandler filterListener = new FilterHandler();
 
 
 	PrimaryStage(){ //TEMP: opaque should belong to PS. make set method to access from main
@@ -144,8 +147,6 @@ public class PrimaryStage extends Stage{
         // TOP BAR (includes add/remove, filter, search)
         //================================================================================
 
-        AnchorPane topBar = new AnchorPane();
-
         //ADD BUTTON
         Button addBtn = new Button();
         addBtn.setText("ADD");
@@ -206,12 +207,12 @@ public class PrimaryStage extends Stage{
 
   
         //FILTER COMBOBOX
-        ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
-        ComboBox<String> filter= new ComboBox<String>(filterOptions);
+        //ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
+        filter = new ComboBox<String>(filterOptions);
             filter.setPromptText("Filter By");
             filter.setPrefWidth(150.0);
     
-        FilterHandler filterListener = new FilterHandler();
+        //FilterHandler filterListener = new FilterHandler();
         filter.valueProperty().addListener(filterListener);
 
         AnchorPane.setLeftAnchor(filter, 52.0);
@@ -292,6 +293,22 @@ public class PrimaryStage extends Stage{
 
     public void clearSearchBar(){
         searchbar.clear();
+    }
+
+    public void resetComboBox(){
+        //remove the combobox
+        topBar.getChildren().remove(filter);
+
+        //create a new one
+        filter = new ComboBox<String>(filterOptions);
+        filter.setPromptText("Filter By");
+        filter.setPrefWidth(150.0);
+
+        AnchorPane.setLeftAnchor(filter, 52.0);
+        AnchorPane.setBottomAnchor(filter, spacefromtable);
+
+        filter.valueProperty().addListener(filterListener);
+        topBar.getChildren().add(filter);
     }
 
     public class ColumnHandler implements ListChangeListener<TableColumn>{

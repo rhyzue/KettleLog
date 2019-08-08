@@ -36,7 +36,7 @@ public class Kettlelog extends Application {
     private static ObservableList<Item> itemsToDelete;
     private static Item empty = new Item("emptyID", "", "", "", "", "", "", false, false, "", "", emptylist);
 
-    private static PrimaryStage primaryStage = new PrimaryStage();
+    public static PrimaryStage primaryStage = new PrimaryStage();
     private static InfoStage infoStage = new InfoStage();
     private static AddStage addStage = new AddStage();
     private static AlertStage alertStage = new AlertStage();
