@@ -15,6 +15,7 @@ import javafx.collections.*;
 import javafx.beans.value.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.*;
 import javafx.scene.paint.Color;
 import java.text.SimpleDateFormat;
 import javafx.scene.control.ScrollPane.*;
@@ -49,8 +50,11 @@ public class InfoStage extends Stage{
     private static Text adc = new Text();
     private static Text erp = new Text();
     private static Text erd = new Text();
+    private static Text warning = new Text();
     private static Text logmonitortext = new Text();
     private static Text graphtext = new Text(); //consumption graph
+    private static Text editinstruction = new Text();
+    private static Text delinstruction = new Text();
     private static Label infolabel = new Label(); //item name 
     private static Label datelabel = new Label(); //date added
     private static Label adclabel = new Label(); //average daily consumption 
@@ -213,9 +217,18 @@ public class InfoStage extends Stage{
         AnchorPane.setRightAnchor(line4, 160.0);
         line4.setPrefWidth(105.0);
 
+        //Warning text
+        warning.setText("Create at least 3 logs for the estimated reorder point and date to appear.");
+        warning.setFont(new Font(12));
+        warning.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(warning, 25.0);
+        AnchorPane.setTopAnchor(warning, 110.0 + (distancedown * 4)); 
+
+        double movedown = 40.0;
+
         //Uneditable Description Box
         AnchorPane.setLeftAnchor(infodesc, 25.0);
-        AnchorPane.setTopAnchor(infodesc, 100.0 + (distancedown * 4) + 10.0);
+        AnchorPane.setTopAnchor(infodesc, 100.0 + (distancedown * 4) + 10.0 + movedown);
         infodesc.setPrefWidth(450.0);
         infodesc.setPrefHeight(125.0);
         infodesc.setEditable(false);
@@ -224,7 +237,7 @@ public class InfoStage extends Stage{
 
         //Consumption Graph Text
         AnchorPane.setLeftAnchor(graphtext, 25.0);
-        AnchorPane.setTopAnchor(graphtext, 95.0 + (distancedown * 8)); 
+        AnchorPane.setTopAnchor(graphtext, 95.0 + (distancedown * 8) + movedown); 
         graphtext.setText("Weekly Consumption Graph");
         graphtext.setFont(new Font(16));
 
@@ -253,26 +266,48 @@ public class InfoStage extends Stage{
 
         //Adding the graph to the anchorpane.
         AnchorPane.setLeftAnchor(linechart, 7.5);
-        AnchorPane.setTopAnchor(linechart, 80.0 + (distancedown * 9));
+        AnchorPane.setTopAnchor(linechart, 80.0 + (distancedown * 9) + movedown);
         linechart.setPrefWidth(475.0);
         linechart.setPrefHeight(350.0);
         linechart.setLegendVisible(false);
 
-        //Log Monitor Table
+        //Log Monitor Table Text
         AnchorPane.setLeftAnchor(logmonitortext, 25.0);
-        AnchorPane.setTopAnchor(logmonitortext, 100.0 + (distancedown * 17)); 
+        AnchorPane.setTopAnchor(logmonitortext, 100.0 + (distancedown * 17) + movedown); 
         logmonitortext.setText("Log Table");
         logmonitortext.setFont(new Font(16));
+
+        //Instructions for editing.
+        editinstruction.setText("Edit a log by ");
+        editinstruction.setFont(new Font(12));
+        editinstruction.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(warning, 25.0);
+        AnchorPane.setTopAnchor(warning, 110.0 + (distancedown * 4)); 
 
         //================================================================================
         // LOG TABLE
         //================================================================================
+        logtable.setEditable(true);
 
+        dateloggedcol.setCellFactory(TextFieldTableCell.forTableColumn());
         dateloggedcol.setCellValueFactory(new PropertyValueFactory<>("dateLogged"));
         dateloggedcol.prefWidthProperty().bind(logtable.widthProperty().multiply(0.495));
         dateloggedcol.setStyle( "-fx-alignment: CENTER-LEFT;");
         dateloggedcol.setResizable(false);
 
+        //when the column is edited, the Log should be edited directly. 
+        dateloggedcol.setOnEditCommit(
+            new EventHandler<TableColumn.CellEditEvent<Log, String>>() {
+                @Override
+                public void handle(TableColumn.CellEditEvent<Log, String> event) {
+                    Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
+                    selectedlog.setDateLogged(event.getNewValue());
+                    System.out.println(selectedlog.getDateLogged());
+                }
+            }
+        );
+
+        quanloggedcol.setCellFactory(TextFieldTableCell.forTableColumn());
         quanloggedcol.setCellValueFactory(new PropertyValueFactory<>("quanLogged"));
         quanloggedcol.prefWidthProperty().bind(logtable.widthProperty().multiply(0.495));
         quanloggedcol.setStyle( "-fx-alignment: CENTER-LEFT;");
@@ -282,28 +317,47 @@ public class InfoStage extends Stage{
         VBox logbox = new VBox(logtable);
 
         double tableheight = 350.0;
-        double bottomgap = 25.0; 
+        double bottomgap = 40.0; 
 
+        double movedown2 = 70.0;
         AnchorPane.setLeftAnchor(logbox, 25.0);
-        AnchorPane.setTopAnchor(logbox, 90.0 + (distancedown * 18));
+        AnchorPane.setTopAnchor(logbox, 90.0 + (distancedown * 18) + movedown + movedown2);
         logbox.setPrefWidth(450.0);
         logbox.setPrefHeight(tableheight);
-
-        AnchorPane.setTopAnchor(bottomborder, 90.0 + (distancedown * 18));
-        bottomborder.setPrefHeight(tableheight + bottomgap);
-        bottomborder.setCenter(logbox);
 
         //Making the columns of the table undraggable.
         ColumnHandler columnChange = new ColumnHandler();
         logtable.getColumns().addListener(columnChange);  
 
+        //Delete button for logtable (editing is done directly, so we don't need a button.)
+        Button logdel = new Button();
+        Image logdelImg = new Image("./Misc/delete2.png");
+        ImageView logdelImgView = new ImageView();
+            logdel.setStyle("-fx-background-color: transparent;");             
+            logdelImgView.setImage(logdelImg);
+            logdelImgView.setFitWidth(20);
+            logdelImgView.setPreserveRatio(true);
+            logdelImgView.setSmooth(true);
+            logdelImgView.setCache(true); 
+            logdel.setGraphic(logdelImgView);
+
+        HBox buttonbox = new HBox();
+        buttonbox.getChildren().addAll(logdel);
+       
+        AnchorPane.setRightAnchor(buttonbox, 20.0);
+        AnchorPane.setBottomAnchor(buttonbox, 6.0);
+        
+        AnchorPane.setTopAnchor(bottomborder, 90.0 + (distancedown * 18) + movedown + movedown2);
+        bottomborder.setPrefHeight(tableheight + bottomgap);
+        bottomborder.setCenter(logbox);
+
         //================================================================================
-        // Anchorpane
+        // END OF TABLE INITIALIZATION
         //================================================================================
         infocenter.setStyle(infomidcolour);     
-        infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel);
+        infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel, warning);
         infocenter.getChildren().addAll(line2, erp, erplabel, line3, erd, erdlabel, line4, infodesc);
-        infocenter.getChildren().addAll(graphtext, linechart, help1, help2, logmonitortext, logbox, bottomborder);
+        infocenter.getChildren().addAll(graphtext, linechart, help1, help2, logmonitortext, logbox, bottomborder, buttonbox);
 
         //SCROLLPANE CONFIGURATION
         infobox.getChildren().add(infocenter);
@@ -352,6 +406,7 @@ public class InfoStage extends Stage{
 
         //Synchronizing the chart to the log table.
         XYChart.Series series = new XYChart.Series();
+        linechart.getData().clear();
         ObservableList<Log> chartinfo = rowinfo.getLogData();
         int length = chartinfo.size();
         
@@ -359,7 +414,9 @@ public class InfoStage extends Stage{
             String datewithyear = (chartinfo.get(i)).getDateLogged();
             //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
             String date = (datewithyear.substring(5)).replace("-", "/");
+            System.out.println(date);
             String quanstring = (chartinfo.get(i)).getQuanLogged();
+            System.out.println(quanstring);
             int quantity = Integer.parseInt(quanstring);
             series.getData().add(new XYChart.Data(date, quantity));
         }

@@ -62,6 +62,10 @@ public class Kettlelog extends Application {
         return primaryStage;
     }
 
+    public InfoStage getInfoStage(){
+        return infoStage;
+    }
+
     public void showAddStage(int popuptype, String[] textarray, Item rowinfo){
 
         System.out.println("about to show add stage...");
@@ -103,8 +107,8 @@ public class Kettlelog extends Application {
         primaryStage.showOpaqueLayer();
         alertStage.updateAlertStage(itemsToDelete);
 
-        alertStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250);
-        alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 175) + extraheight);
+        alertStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250); //250 is width divided by 2
+        alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 175) + extraheight); 
 
         alertStage.show();
     }
@@ -114,6 +118,7 @@ public class Kettlelog extends Application {
         alertStage.hide();
         itemsToDelete.clear();
     } 
+
 
     public boolean isItemChecked(){
         for(int i = 0; i<data.size(); i++){
