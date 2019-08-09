@@ -31,6 +31,7 @@ public class InfoStage extends Stage{
     //================================================================================
     private String infostripcolour;
     private String infomidcolour;
+    private static int presscount = 0;
     private static double infowidth = 500;
     private static double infoheight = 700;
     private static double scrollheight = 2000;
@@ -55,6 +56,7 @@ public class InfoStage extends Stage{
     private static Text graphtext = new Text(); //consumption graph
     private static Text editinstruction = new Text();
     private static Text delinstruction = new Text();
+    private static Text cannotdelete = new Text();
     private static Label infolabel = new Label(); //item name 
     private static Label datelabel = new Label(); //date added
     private static Label adclabel = new Label(); //average daily consumption 
@@ -218,7 +220,7 @@ public class InfoStage extends Stage{
         line4.setPrefWidth(105.0);
 
         //Warning text
-        warning.setText("Create at least 3 logs for the estimated reorder point and date to appear.");
+        warning.setText(" * Create at least 3 logs for the estimated reorder point and date to appear.");
         warning.setFont(new Font(12));
         warning.setFill(Color.GREY);
         AnchorPane.setLeftAnchor(warning, 25.0);
@@ -278,11 +280,18 @@ public class InfoStage extends Stage{
         logmonitortext.setFont(new Font(16));
 
         //Instructions for editing.
-        editinstruction.setText("Edit a log by ");
+        editinstruction.setText(" * To edit a log, double click its values, make change, then press enter key.");
         editinstruction.setFont(new Font(12));
         editinstruction.setFill(Color.GREY);
-        AnchorPane.setLeftAnchor(warning, 25.0);
-        AnchorPane.setTopAnchor(warning, 110.0 + (distancedown * 4)); 
+        AnchorPane.setLeftAnchor(editinstruction, 25.0);
+        AnchorPane.setTopAnchor(editinstruction, 100.0 + (distancedown * 18) + movedown); 
+
+        //Instructions for deleting.
+        delinstruction.setText(" * To delete a log, select it and then press the trash can on the bottom right.");
+        delinstruction.setFont(new Font(12));
+        delinstruction.setFill(Color.GREY);
+        AnchorPane.setLeftAnchor(delinstruction, 25.0);
+        AnchorPane.setTopAnchor(delinstruction, 100.0 + (distancedown * 18.7) + movedown); 
 
         //================================================================================
         // LOG TABLE
@@ -325,6 +334,13 @@ public class InfoStage extends Stage{
         logbox.setPrefWidth(450.0);
         logbox.setPrefHeight(tableheight);
 
+        //Warning message for deleting logs.
+        cannotdelete.setFont(new Font(12));
+        cannotdelete.setFill(Color.RED);
+        AnchorPane.setLeftAnchor(cannotdelete, 25.0);
+        AnchorPane.setBottomAnchor(cannotdelete, 13.0);
+        cannotdelete.setVisible(false);
+
         //Making the columns of the table undraggable.
         ColumnHandler columnChange = new ColumnHandler();
         logtable.getColumns().addListener(columnChange);  
@@ -341,11 +357,36 @@ public class InfoStage extends Stage{
             logdelImgView.setCache(true); 
             logdel.setGraphic(logdelImgView);
 
+        //Removing the log from the ObservableList of logs & the table.
+        logdel.setOnAction(e -> {
+            //We don't want the user to be able to delete a log if it's the ONLY log. 
+            ObservableList<Log> selectedloglist = logtable.getItems();
+            if (selectedloglist.size() == 1) {
+                cannotdelete.setText(" * You cannot delete your only log.");
+                cannotdelete.setVisible(true);
+            } else {
+                //confirmation should be refreshed every time a new log is selected.
+
+                presscount++;
+                if (presscount == 1) {
+                    cannotdelete.setText(" * Delete the selected log permanently? Press again to confirm.");
+                    cannotdelete.setVisible(true);
+                } else {
+                    Log selectedlog = logtable.getSelectionModel().getSelectedItem();
+                    logtable.getItems().remove(selectedlog);
+                    cannotdelete.setVisible(false);
+                    presscount = 0;
+                }
+                
+            }
+
+        });
+
         HBox buttonbox = new HBox();
         buttonbox.getChildren().addAll(logdel);
        
         AnchorPane.setRightAnchor(buttonbox, 20.0);
-        AnchorPane.setBottomAnchor(buttonbox, 6.0);
+        AnchorPane.setBottomAnchor(buttonbox, 4.5);
         
         AnchorPane.setTopAnchor(bottomborder, 90.0 + (distancedown * 18) + movedown + movedown2);
         bottomborder.setPrefHeight(tableheight + bottomgap);
@@ -358,6 +399,7 @@ public class InfoStage extends Stage{
         infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel, warning);
         infocenter.getChildren().addAll(line2, erp, erplabel, line3, erd, erdlabel, line4, infodesc);
         infocenter.getChildren().addAll(graphtext, linechart, help1, help2, logmonitortext, logbox, bottomborder, buttonbox);
+        infocenter.getChildren().addAll(editinstruction, delinstruction, cannotdelete);
 
         //SCROLLPANE CONFIGURATION
         infobox.getChildren().add(infocenter);
@@ -435,6 +477,8 @@ public class InfoStage extends Stage{
 
             switch(itemClicked){
                 case "infocancel":
+                    cannotdelete.setVisible(false);
+                    presscount = 0;
                     kettle.hideInfoStage();
                     break;    
                 default:
