@@ -46,14 +46,14 @@ public class PrimaryStage extends Stage{
     private static Region opaqueLayer = new Region();
     private static Button removeBtn = new Button();
     private static AnchorPane topBar = new AnchorPane();
-    private ComboBox<String> filter;
+    private ComboBox<String> optionBox;
 
     private static TableView<Item> table = new TableView<Item>();
     private static final String[] titles = {"Name","Status","Quantity","Minimum"};
     private static TableColumn<Item, String> buttoncolumn = new TableColumn<>("");
     private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
     private static Item empty = new Item("emptyid", "", "", "", "", "", "", false, false, "", "", emptylist);
-    private static ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
+    private static ObservableList<String> optionList = FXCollections.observableArrayList("Sort by: Starred", "Sort by: Most Recent", "Sort by: Oldest Added", "Select All", "None");
     private static String[] emptyinfo = {"", "", "", "", "", ""};
     private static ObservableList<Item> itemsToDelete;
 
@@ -62,7 +62,7 @@ public class PrimaryStage extends Stage{
 
     //Handler eventHandler = new Handler();
     Kettlelog kettle = new Kettlelog();
-    private static FilterHandler filterListener = new FilterHandler();
+    private static OptionHandler optionListener = new OptionHandler();
 
 
 	PrimaryStage(){ //TEMP: opaque should belong to PS. make set method to access from main
@@ -144,7 +144,7 @@ public class PrimaryStage extends Stage{
         VBox tableBox = new VBox(table);
 
         //================================================================================
-        // TOP BAR (includes add/remove, filter, search)
+        // TOP BAR (includes add/remove, Option, search)
         //================================================================================
 
         //ADD BUTTON
@@ -206,17 +206,15 @@ public class PrimaryStage extends Stage{
         }); 
 
   
-        //FILTER COMBOBOX
-        //ObservableList<String> filterOptions = FXCollections.observableArrayList("Starred", "Most Recent", "Oldest Added", "None");
-        filter = new ComboBox<String>(filterOptions);
-            filter.setPromptText("Filter By");
-            filter.setPrefWidth(150.0);
+        //OPTIONS COMBOBOX
+        optionBox = new ComboBox<String>(optionList);
+            optionBox.setPromptText("Options");
+            optionBox.setPrefWidth(150.0);
     
-        //FilterHandler filterListener = new FilterHandler();
-        filter.valueProperty().addListener(filterListener);
+        optionBox.valueProperty().addListener(optionListener);
 
-        AnchorPane.setLeftAnchor(filter, 52.0);
-        AnchorPane.setBottomAnchor(filter, spacefromtable);
+        AnchorPane.setLeftAnchor(optionBox, 52.0);
+        AnchorPane.setBottomAnchor(optionBox, spacefromtable);
 
         //KETTLELOG LOGO
         Image kettleimage = new Image("./Misc/Logo.png");
@@ -231,7 +229,7 @@ public class PrimaryStage extends Stage{
         //TOPBAR GENERAL INFORMATION 
         topBar.setStyle("-fx-background-color: #004080;");
         topBar.setPrefSize(100, 150);
-        topBar.getChildren().addAll(logo, addBtn, removeBtn, searchbar, filter);
+        topBar.getChildren().addAll(logo, addBtn, removeBtn, searchbar, optionBox);
         
         //================================================================================
         // FINALIZATION
@@ -297,18 +295,18 @@ public class PrimaryStage extends Stage{
 
     public void resetComboBox(){
         //remove the combobox
-        topBar.getChildren().remove(filter);
+        topBar.getChildren().remove(optionBox);
 
         //create a new one
-        filter = new ComboBox<String>(filterOptions);
-        filter.setPromptText("Filter By");
-        filter.setPrefWidth(150.0);
+        optionBox = new ComboBox<String>(optionList);
+        optionBox.setPromptText("Options");
+        optionBox.setPrefWidth(150.0);
 
-        AnchorPane.setLeftAnchor(filter, 52.0);
-        AnchorPane.setBottomAnchor(filter, spacefromtable);
+        AnchorPane.setLeftAnchor(optionBox, 52.0);
+        AnchorPane.setBottomAnchor(optionBox, spacefromtable);
 
-        filter.valueProperty().addListener(filterListener);
-        topBar.getChildren().add(filter);
+        optionBox.valueProperty().addListener(optionListener);
+        topBar.getChildren().add(optionBox);
     }
 
     public class ColumnHandler implements ListChangeListener<TableColumn>{

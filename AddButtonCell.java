@@ -34,12 +34,12 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
         private final Image starImgClr = new Image("./Misc/starBtnClr.png");   
         private final Image starImgSel = new Image("./Misc/starBtnSel.png");
         private static boolean starred = false;
-        private static int filterSel = 0;
+        private static int optionSel = 0;
         private static ObservableList<Item> rowinfo = FXCollections.observableArrayList();
 
         private static Kettlelog kettle = new Kettlelog();
-        private static FilterHandler filterHandler = new FilterHandler();
-        private static FilterComparators filterObject = new FilterComparators();
+        private static OptionHandler optionHandler = new OptionHandler();
+        private static OptionComparators optionObject = new OptionComparators();
 
         @Override
         public TableCell call(final TableColumn<Item, String> param) {
@@ -136,11 +136,11 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                         kettle.updateStarredDB(item.getID(), true);
                     }
 
-                    filterSel = filterHandler.getFilterSel();
-                    if(filterSel==1){
-                        kettle.uncheckAllItems();
+                    optionSel = optionHandler.getOptionSel();
+                    if(optionSel==1){
+                        kettle.setAllChecked(false);
                         kettle.disableRemoveBtn();
-                        filterObject.sortByStarred();
+                        optionObject.sortByStarred();
                     }     
                 }       
             });         

@@ -28,44 +28,48 @@ import javafx.collections.transformation.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
-public class FilterHandler implements ChangeListener<String>{
+public class OptionHandler implements ChangeListener<String>{
 
     private static Kettlelog kettle = new Kettlelog();
-    private static FilterComparators filterObject = new FilterComparators(); //class will get data and table itself
-    private static int filterSel = 0;
+    private static OptionComparators object = new OptionComparators(); //class will get data and table itself
+    private static int optionSel = 0;
 
     @Override
     public void changed(ObservableValue ov, String oldValue, String newValue){
 
         switch(newValue){
-            case "Starred":
-                filterSel = 1;
-                filterObject.sortByStarred();
+            case "Sort by: Starred":
+                optionSel = 1;
+                object.sortByStarred();
                 kettle.clearSearchBar();
                 break;
-            case "Most Recent":
-                filterSel = 2;
-                filterObject.sortByMostRecent(2);
+            case "Sort by: Most Recent":
+                optionSel = 2;
+                object.sortByMostRecent(2);
                 kettle.clearSearchBar();
                 break;
-            case "Oldest Added":
-                filterSel = 3;
-                filterObject.sortByMostRecent(3);
+            case "Sort by: Oldest Added":
+                optionSel = 3;
+                object.sortByMostRecent(3);
                 kettle.clearSearchBar();
+                break;
+            case "Select All":
+                kettle.setAllChecked(true);
+                kettle.primaryStage.updatePrimaryStage(kettle.getData());
+                kettle.primaryStage.resetComboBox();
                 break;
             case "None":
                 kettle.primaryStage.resetComboBox();
                 kettle.clearSearchBar();
-                filterSel = 0;
+                optionSel = 0;
             default:
-                filterSel = 0;
+                optionSel = 0;
         }
 
     }
     
-    public int getFilterSel(){
-        //System.out.println("FilterSel is: "+filterSel);
-        return filterSel;
+    public int getOptionSel(){
+        return optionSel;
     }
 
 }

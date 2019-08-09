@@ -29,13 +29,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
 
-public class FilterComparators extends Kettlelog{ 
+public class OptionComparators extends Kettlelog{ 
 
-    private static ObservableList<Item> filterData;
+    private static ObservableList<Item> optionData;
     private Kettlelog kettle = new Kettlelog();
 
-    public FilterComparators(){
-        filterData = kettle.getData();
+    public OptionComparators(){
+        optionData = kettle.getData();
     }
 
     //Methods
@@ -44,20 +44,20 @@ public class FilterComparators extends Kettlelog{
 
         //sort by most recent
         if(order==2){
-            filterData.sort(comp.reversed());
+            optionData.sort(comp.reversed());
         }
         //sort by oldest
         else if (order==3){
-            filterData.sort(comp);
+            optionData.sort(comp);
         }
 
-        kettle.setData(filterData, 3); //in kettle, update data value
+        kettle.setData(optionData, 3); //in kettle, update data value
     }
 
     public void sortByStarred(){
         StarComparator comp = new StarComparator();
-        filterData.sort(comp.reversed());
-        kettle.setData(filterData, 3);
+        optionData.sort(comp.reversed());
+        kettle.setData(optionData, 3);
     }
 
 

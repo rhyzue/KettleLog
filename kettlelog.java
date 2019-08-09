@@ -214,10 +214,10 @@ public class Kettlelog extends Application {
 
     }
 
-    public void uncheckAllItems(){
+    public void setAllChecked(boolean value){
         for(int i = 0; i<data.size(); i++){
             Item curItem = data.get(i);
-            curItem.setChecked(false);
+            curItem.setChecked(value);
         } 
     }
 

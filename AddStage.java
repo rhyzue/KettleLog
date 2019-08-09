@@ -23,7 +23,7 @@ public class AddStage extends Stage{
     //================================================================================
     // INITIALIZATION
     //================================================================================
-    private static int filterSel = 0;
+    private static int optionSel = 0;
     private static int addpresscount = 0;
     private static int editpresscount = 0;
     private static int logger = 0;
@@ -91,8 +91,8 @@ public class AddStage extends Stage{
 
     //objects from kettlelog app
     private static Kettlelog kettle = new Kettlelog();
-    private static FilterComparators filterObject = new FilterComparators();
-    private static FilterHandler filterHandler = new FilterHandler();
+    private static OptionComparators optionObject = new OptionComparators();
+    private static OptionHandler optionHandler = new OptionHandler();
 
     //CHANGING VARIABLES
     private String prename;
@@ -627,13 +627,13 @@ public class AddStage extends Stage{
                     }
                 }
 
-                filterSel = filterHandler.getFilterSel();
+                optionSel = optionHandler.getOptionSel();
 
-                if(filterSel==1){
-                    filterObject.sortByStarred();
+                if(optionSel==1){
+                    optionObject.sortByStarred();
                 }
-                else if(filterSel==2 || filterSel==3){
-                    filterObject.sortByMostRecent(filterSel);
+                else if(optionSel==2 || optionSel==3){
+                    optionObject.sortByMostRecent(optionSel);
                 }
             }
         }); 
