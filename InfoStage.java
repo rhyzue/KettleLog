@@ -313,6 +313,7 @@ public class InfoStage extends Stage{
                     Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
                     selectedlog.setDateLogged(event.getNewValue());
                     System.out.println(selectedlog.getDateLogged());
+                    logtable.requestFocus();
                 }
             }
         );
@@ -322,6 +323,18 @@ public class InfoStage extends Stage{
         quanloggedcol.prefWidthProperty().bind(logtable.widthProperty().multiply(0.495));
         quanloggedcol.setStyle( "-fx-alignment: CENTER-LEFT;");
         quanloggedcol.setResizable(false);
+
+        quanloggedcol.setOnEditCommit(
+            new EventHandler<TableColumn.CellEditEvent<Log, String>>() {
+                @Override
+                public void handle(TableColumn.CellEditEvent<Log, String> event) {
+                    Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
+                    selectedlog.setQuanLogged(event.getNewValue());
+                    System.out.println(selectedlog.getQuanLogged());
+                    logtable.requestFocus();
+                }
+            }
+        );
 
         logtable.getColumns().<Log, String>addAll(dateloggedcol, quanloggedcol);
         VBox logbox = new VBox(logtable);
@@ -383,7 +396,7 @@ public class InfoStage extends Stage{
                    	 	presscount=0;
                    	} 
                    	else {
-                   		cannotdelete.setText(" * A different log has been selected. Press twice more to confirm.");
+                   		cannotdelete.setText(" * WARNING: A different log has been selected for deletion.");
                    		cannotdelete.setVisible(true);
                    		presscount=0;
                    	}
