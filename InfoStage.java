@@ -81,7 +81,8 @@ public class InfoStage extends Stage{
     private static CategoryAxis xAxis = new CategoryAxis();
     private static NumberAxis yAxis = new NumberAxis();
     private static LineChart linechart = new LineChart(xAxis, yAxis);
-
+    private static Log firstselection = new Log();
+    private static Log finalselection = new Log();
 
     //Constructor
     InfoStage(){
@@ -358,24 +359,34 @@ public class InfoStage extends Stage{
             logdel.setGraphic(logdelImgView);
 
         //Removing the log from the ObservableList of logs & the table.
+        //Removing the log from the ObservableList of logs & the table.
         logdel.setOnAction(e -> {
             //We don't want the user to be able to delete a log if it's the ONLY log. 
             ObservableList<Log> selectedloglist = logtable.getItems();
             if (selectedloglist.size() == 1) {
                 cannotdelete.setText(" * You cannot delete your only log.");
                 cannotdelete.setVisible(true);
-            } else {
+            } 
+            else {
                 //confirmation should be refreshed every time a new log is selected.
-
                 presscount++;
                 if (presscount == 1) {
-                    cannotdelete.setText(" * Delete the selected log permanently? Press again to confirm.");
+                	firstselection = logtable.getSelectionModel().getSelectedItem();
+                    cannotdelete.setText(" * Delete the selected log permanently? Press once more to confirm.");
                     cannotdelete.setVisible(true);
-                } else {
-                    Log selectedlog = logtable.getSelectionModel().getSelectedItem();
-                    logtable.getItems().remove(selectedlog);
-                    cannotdelete.setVisible(false);
-                    presscount = 0;
+                }
+                else {
+                	finalselection = logtable.getSelectionModel().getSelectedItem();
+                	if(firstselection.getDateLogged().equals(finalselection.getDateLogged())){
+                		logtable.getItems().remove(finalselection);
+                   	 	cannotdelete.setVisible(false);	
+                   	 	presscount=0;
+                   	} 
+                   	else {
+                   		cannotdelete.setText(" * A different log has been selected. Press twice more to confirm.");
+                   		cannotdelete.setVisible(true);
+                   		presscount=0;
+                   	}
                 }
                 
             }
