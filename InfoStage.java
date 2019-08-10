@@ -42,6 +42,7 @@ public class InfoStage extends Stage{
     private static String infomidhex = "#b8d6d6;";
     private static Button help1 = new Button();
     private static Button help2 = new Button();
+    private static Button refresh = new Button();
     private static Tooltip helptip1 = new Tooltip("When the current quantity of this item reaches this estimated number, a reorder must be placed.");
     private static Tooltip helptip2 = new Tooltip("The approximate date you should place a reorder.");
     private static Separator line1 = new Separator();
@@ -247,6 +248,20 @@ public class InfoStage extends Stage{
         graphtext.setText("Weekly Consumption Graph");
         graphtext.setFont(new Font(16));
 
+        //Refresh Button
+        refresh.setTooltip(new Tooltip("Refresh Graph"));
+        Image refreshImg = new Image("./Misc/refresh.png");
+        ImageView refreshImgView = new ImageView();
+            refresh.setStyle("-fx-background-color: transparent;");             
+            refreshImgView.setImage(refreshImg);
+            refreshImgView.setFitWidth(20);
+            refreshImgView.setPreserveRatio(true);
+            refreshImgView.setSmooth(true);
+            refreshImgView.setCache(true); 
+            refresh.setGraphic(refreshImgView);
+        AnchorPane.setRightAnchor(refresh, 25.0);
+        AnchorPane.setTopAnchor(refresh, 90.0 + (distancedown * 8) + movedown); 
+
         //================================================================================
         // CONSUMPTION GRAPH
         //================================================================================
@@ -327,7 +342,7 @@ public class InfoStage extends Stage{
                         Log oldlog = event.getTableView().getItems().get(row);
                         logtable.getItems().set(row, oldlog);
                         logtable.requestFocus();
-                        cannotdelete.setText(" * Date must be in YYYY-MM-DD format.");
+                        cannotdelete.setText(" * Date must be in YYYY-MM-DD format. Do not include any spaces!");
                         cannotdelete.setVisible(true);
                     }
                 }
@@ -417,7 +432,7 @@ public class InfoStage extends Stage{
         infocenter.getChildren().addAll(infolabel, dateadded, datelabel, line1, adc, adclabel, warning);
         infocenter.getChildren().addAll(line2, erp, erplabel, line3, erd, erdlabel, line4, infodesc);
         infocenter.getChildren().addAll(graphtext, linechart, help1, help2, logmonitortext, logbox, bottomborder, buttonbox);
-        infocenter.getChildren().addAll(editinstruction, delinstruction, cannotdelete);
+        infocenter.getChildren().addAll(editinstruction, delinstruction, cannotdelete, refresh);
 
         //SCROLLPANE CONFIGURATION
         infobox.getChildren().add(infocenter);
@@ -464,27 +479,18 @@ public class InfoStage extends Stage{
             infodesc.setText("Item Description: " + rowinfo.getDesc());
         }
 
-        //Synchronizing the chart to the log table.
-        XYChart.Series series = new XYChart.Series();
-        linechart.getData().clear();
-        ObservableList<Log> chartinfo = rowinfo.getLogData();
-        int length = chartinfo.size();
-        
-        for (int i = 0; i < length; i++) {
-            String datewithyear = (chartinfo.get(i)).getDateLogged();
-            //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
-            String date = (datewithyear.substring(5)).replace("-", "/");
-            System.out.println(date);
-            String quanstring = (chartinfo.get(i)).getQuanLogged();
-            System.out.println(quanstring);
-            int quantity = Integer.parseInt(quanstring);
-            series.getData().add(new XYChart.Data(date, quantity));
-        }
-
-        linechart.getData().add(series);
+        updateGraph(rowinfo);
 
         //Setting the data for the log table. 
         logtable.setItems(rowinfo.getLogData());
+
+        //Refresh Graph functionality
+        refresh.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+                public void handle(ActionEvent event) {
+                    updateGraph(rowinfo);
+                }
+            });
 
         //Removing the log from the ObservableList of logs & the table.
         logdel.setOnAction(e -> {
@@ -530,8 +536,35 @@ public class InfoStage extends Stage{
 
     }
 
+    public void updateGraph(Item rowinfo) {
+
+         //Synchronizing the chart to the log table.
+        XYChart.Series series = new XYChart.Series();
+        linechart.getData().clear();
+        ObservableList<Log> chartinfo = rowinfo.getLogData();
+        int length = chartinfo.size();
+        
+        for (int i = 0; i < length; i++) {
+            String datewithyear = (chartinfo.get(i)).getDateLogged();
+            //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
+            String date = (datewithyear.substring(5)).replace("-", "/");
+            System.out.println(date);
+            String quanstring = (chartinfo.get(i)).getQuanLogged();
+            System.out.println(quanstring);
+            int quantity = Integer.parseInt(quanstring);
+            series.getData().add(new XYChart.Data(date, quantity));
+        }
+
+        linechart.getData().add(series);
+
+    }
+
     //This method takes in a string and determines if it's a date in YYYY-MM-DD form.
     public static boolean isValidDate(String date) {
+        if (date == null || date.length() != "yyyy-MM-dd".length()) {
+            return false;
+        }
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
         try {
