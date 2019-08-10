@@ -152,6 +152,20 @@ public class Kettlelog extends Application {
         return data;
     }
 
+    public ObservableList<Log> getLogs(String id){
+        //loop through data
+        for(int i = 0; i<data.size(); i++){
+            //find which item has correct id, return that list of logs
+            if(data.get(i).getID().equals(id)){
+
+                System.out.println("Got item: "+ data.get(i).getName());
+                return data.get(i).getLogData();
+            }
+        }
+
+        return null;
+    }
+
     public void clearSearchBar(){
         primaryStage.clearSearchBar();
     }

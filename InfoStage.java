@@ -333,12 +333,15 @@ public class InfoStage extends Stage{
                     String newdate = event.getNewValue();
                     String olddate = event.getOldValue();
                     //We only want to commit the edit if the date is in the correct format.
-                    if (isValidDate(newdate)){
+                    if (isValidDate(newdate) && !dateExists(newdate, id)){
                         Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
                         selectedlog.setDateLogged(newdate);
                         //System.out.println(selectedlog.getDateLogged());
                         kettle.updateLog(id, "logdate", newdate, olddate);
                         logtable.requestFocus();
+
+                        sortByDateLogged();
+
                         cannotdelete.setVisible(false);
                     }
                     else {
@@ -346,7 +349,14 @@ public class InfoStage extends Stage{
                         Log oldlog = event.getTableView().getItems().get(row);
                         logtable.getItems().set(row, oldlog);
                         logtable.requestFocus();
-                        cannotdelete.setText(" * Date must be in YYYY-MM-DD format. Do not include any spaces!");
+
+                        //if user entered an existing date, vs an invalid date
+                        if(dateExists(newdate, id)){
+                            cannotdelete.setText(" * Date already exists.");
+                        }
+                        else{
+                            cannotdelete.setText(" * Date must be in YYYY-MM-DD format. Do not include any spaces!");
+                        }
                         cannotdelete.setVisible(true);
                     }
                 }
@@ -388,6 +398,7 @@ public class InfoStage extends Stage{
         );
 
         logtable.getColumns().<Log, String>addAll(dateloggedcol, quanloggedcol);
+
         VBox logbox = new VBox(logtable);
 
         double tableheight = 350.0;
@@ -511,6 +522,8 @@ public class InfoStage extends Stage{
         //Setting the data for the log table. 
         logtable.setItems(rowinfo.getLogData());
 
+        sortByDateLogged();
+
         //Refresh Graph functionality
         refresh.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -586,6 +599,13 @@ public class InfoStage extends Stage{
 
     }
 
+    public void sortByDateLogged(){
+        logtable.getSortOrder().add(dateloggedcol);
+        dateloggedcol.setSortType(TableColumn.SortType.DESCENDING);
+        dateloggedcol.setSortable(true);
+        logtable.sort();
+    }
+
     //This method takes in a string and determines if it's a date in YYYY-MM-DD form.
     public static boolean isValidDate(String date) {
 
@@ -601,6 +621,21 @@ public class InfoStage extends Stage{
             return false;
         }
         return true;
+    }
+
+    public boolean dateExists(String date, String id){
+        //get list of dates
+        //loop through all dates, compare to date
+        
+        ObservableList<Log>logData = kettle.getLogs(id);
+
+        for(int i = 0; i<logData.size(); i++){
+            if(logData.get(i).getDateLogged().equals(date)){
+                return true;
+            }
+        }
+        return false;
+
     }
 
     public class InfoHandler implements EventHandler<ActionEvent>{
