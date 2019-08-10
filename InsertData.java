@@ -104,5 +104,22 @@ public class InsertData {
         }         
     }
 
+    //This is a method that deletes a log from logtable for a database. 
+    public void removeLog(String id, String logdate) {
 
+        String command = "DELETE FROM log WHERE logdate = ?";
+
+        try {
+            String filename = id + ".db";
+            Connection conn = kettle.getDataBase(filename);
+            PreparedStatement v = conn.prepareStatement(command);
+
+            v.setString(1, logdate);
+            v.executeUpdate();
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }         
+    }
 }
+

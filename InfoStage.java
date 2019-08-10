@@ -66,6 +66,7 @@ public class InfoStage extends Stage{
     private static Label erdlabel = new Label(); //estimated reorder date
     private static TextArea infodesc = new TextArea();
     private static Button infocancel = new Button();
+    private static Button logdel = new Button();
     private static AnchorPane infotstrip = new AnchorPane();
     private static AnchorPane infocenter = new AnchorPane();
     private static AnchorPane infobstrip = new AnchorPane();
@@ -389,7 +390,6 @@ public class InfoStage extends Stage{
         logtable.getColumns().addListener(columnChange);  
 
         //Delete button for logtable (editing is done directly, so we don't need a button.)
-        Button logdel = new Button();
         Image logdelImg = new Image("./Misc/delete2.png");
         ImageView logdelImgView = new ImageView();
             logdel.setStyle("-fx-background-color: transparent;");             
@@ -399,41 +399,6 @@ public class InfoStage extends Stage{
             logdelImgView.setSmooth(true);
             logdelImgView.setCache(true); 
             logdel.setGraphic(logdelImgView);
-
-        //Removing the log from the ObservableList of logs & the table.
-        //Removing the log from the ObservableList of logs & the table.
-        logdel.setOnAction(e -> {
-            //We don't want the user to be able to delete a log if it's the ONLY log. 
-            ObservableList<Log> selectedloglist = logtable.getItems();
-            if (selectedloglist.size() == 1) {
-                cannotdelete.setText(" * You cannot delete your only log.");
-                cannotdelete.setVisible(true);
-            } 
-            else {
-                //confirmation should be refreshed every time a new log is selected.
-                presscount++;
-                if (presscount == 1) {
-                	firstselection = logtable.getSelectionModel().getSelectedItem();
-                    cannotdelete.setText(" * Delete the selected log permanently? Press once more to confirm.");
-                    cannotdelete.setVisible(true);
-                }
-                else {
-                	finalselection = logtable.getSelectionModel().getSelectedItem();
-                	if(firstselection.getDateLogged().equals(finalselection.getDateLogged())){
-                		logtable.getItems().remove(finalselection);
-                   	 	cannotdelete.setVisible(false);	
-                   	 	presscount=0;
-                   	} 
-                   	else {
-                   		cannotdelete.setText(" * WARNING: A different log has been selected for deletion.");
-                   		cannotdelete.setVisible(true);
-                   		presscount=0;
-                   	}
-                }
-                
-            }
-
-        });
 
         HBox buttonbox = new HBox();
         buttonbox.getChildren().addAll(logdel);
@@ -520,6 +485,49 @@ public class InfoStage extends Stage{
 
         //Setting the data for the log table. 
         logtable.setItems(rowinfo.getLogData());
+
+        //Removing the log from the ObservableList of logs & the table.
+        logdel.setOnAction(e -> {
+            //We don't want the user to be able to delete a log if it's the ONLY log. 
+            ObservableList<Log> selectedloglist = logtable.getItems();
+            if (selectedloglist.size() == 1) {
+                cannotdelete.setText(" * You cannot delete your only log.");
+                cannotdelete.setVisible(true);
+            } 
+            else {
+                //confirmation should be refreshed every time a new log is selected.
+                presscount++;
+                if (presscount == 1) {
+                    firstselection = logtable.getSelectionModel().getSelectedItem();
+                    cannotdelete.setText(" * Delete the selected log permanently? Press once more to confirm.");
+                    cannotdelete.setVisible(true);
+                }
+                else {
+                    finalselection = logtable.getSelectionModel().getSelectedItem();
+                    if(firstselection.getDateLogged().equals(finalselection.getDateLogged())){
+                        //Here is where the log actually gets deleted.
+                        logtable.getItems().remove(finalselection);
+                        cannotdelete.setVisible(false); 
+                        presscount=0;
+                        //We've deleted the log from our ObservableList, but now we need to get rid of it in our SQL Database.
+                        String itemid = rowinfo.getID();
+                        System.out.println(itemid);
+                        //Since the date must be unique, we can use this to identify which log to delete. 
+                        String logid = finalselection.getDateLogged();
+                        System.out.println(logid);
+                        kettle.deleteLog(itemid, logid);
+                    } 
+                    else {
+                        cannotdelete.setText(" * WARNING: A different log has been selected for deletion.");
+                        cannotdelete.setVisible(true);
+                        presscount=0;
+                    }
+                }
+                
+            }
+
+        });
+
     }
 
     //This method takes in a string and determines if it's a date in YYYY-MM-DD form.

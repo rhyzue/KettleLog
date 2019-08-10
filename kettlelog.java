@@ -298,8 +298,7 @@ public class Kettlelog extends Application {
 
         //Creating the log table in the same database. 
         String logtableSQL = "CREATE TABLE IF NOT EXISTS log ("
-            + "id integer primary key,"
-            + "logdate text not null,"
+            + "logdate text primary key,"
             + "logquan text not null"
             + ");";
 
@@ -328,6 +327,12 @@ public class Kettlelog extends Application {
     //Method that edits the information table for a specific database. 
     public static void editInfoTable(String id, String name, String status, String minimum, String delivery, String desc, int starbool, String dateadded) {
         app.editinfo(id, name, status, minimum, delivery, desc, starbool, dateadded);
+    }
+
+    //This method will delete a single log from the SQL Database for an item.
+    public static void deleteLog(String itemid, String logid) {
+        System.out.println("helloworlddelete");
+        app.removeLog(itemid, logid);
     }
 
     public void updateStarredDB(String id, boolean value){
