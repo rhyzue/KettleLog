@@ -18,6 +18,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
 import javafx.scene.paint.Color;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import javafx.scene.control.ScrollPane.*;
 import java.time.format.DateTimeFormatter;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -310,10 +312,23 @@ public class InfoStage extends Stage{
             new EventHandler<TableColumn.CellEditEvent<Log, String>>() {
                 @Override
                 public void handle(TableColumn.CellEditEvent<Log, String> event) {
-                    Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
-                    selectedlog.setDateLogged(event.getNewValue());
-                    System.out.println(selectedlog.getDateLogged());
-                    logtable.requestFocus();
+                    String newdate = event.getNewValue();
+                    //We only want to commit the edit if the date is in the correct format.
+                    if (isValidDate(newdate)){
+                        Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
+                        selectedlog.setDateLogged(newdate);
+                        System.out.println(selectedlog.getDateLogged());
+                        logtable.requestFocus();
+                        cannotdelete.setVisible(false);
+                    }
+                    else {
+                        int row = event.getTablePosition().getRow();
+                        Log oldlog = event.getTableView().getItems().get(row);
+                        logtable.getItems().set(row, oldlog);
+                        logtable.requestFocus();
+                        cannotdelete.setText(" * Date must be in YYYY-MM-DD format.");
+                        cannotdelete.setVisible(true);
+                    }
                 }
             }
         );
@@ -328,10 +343,24 @@ public class InfoStage extends Stage{
             new EventHandler<TableColumn.CellEditEvent<Log, String>>() {
                 @Override
                 public void handle(TableColumn.CellEditEvent<Log, String> event) {
-                    Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
-                    selectedlog.setQuanLogged(event.getNewValue());
-                    System.out.println(selectedlog.getQuanLogged());
-                    logtable.requestFocus();
+                    String newquantity = event.getNewValue();
+                    //We only want to commit the edit if the quantity is a number. 
+                    if (newquantity.chars().allMatch( Character::isDigit )) {
+                        Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
+                        selectedlog.setQuanLogged(newquantity);
+                        logtable.requestFocus();
+                        cannotdelete.setVisible(false);
+                    } 
+
+                    //If it's not an integer, don't allow the edit and display an error message.
+                    else {
+                        int row = event.getTablePosition().getRow();
+                        Log oldlog = event.getTableView().getItems().get(row);
+                        logtable.getItems().set(row, oldlog);
+                        logtable.requestFocus();
+                        cannotdelete.setText(" * Quantity must only contain numbers and no other characters.");
+                        cannotdelete.setVisible(true);
+                    }
                 }
             }
         );
@@ -350,7 +379,7 @@ public class InfoStage extends Stage{
 
         //Warning message for deleting logs.
         cannotdelete.setFont(new Font(12));
-        cannotdelete.setFill(Color.RED);
+        cannotdelete.setFill(Color.FIREBRICK);
         AnchorPane.setLeftAnchor(cannotdelete, 25.0);
         AnchorPane.setBottomAnchor(cannotdelete, 13.0);
         cannotdelete.setVisible(false);
@@ -491,6 +520,18 @@ public class InfoStage extends Stage{
 
         //Setting the data for the log table. 
         logtable.setItems(rowinfo.getLogData());
+    }
+
+    //This method takes in a string and determines if it's a date in YYYY-MM-DD form.
+    public static boolean isValidDate(String date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(date.trim());
+        } catch (ParseException pe) {
+            return false;
+        }
+        return true;
     }
 
     public class InfoHandler implements EventHandler<ActionEvent>{
