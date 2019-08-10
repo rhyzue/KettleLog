@@ -352,6 +352,26 @@ public class Kettlelog extends Application {
         }
     }
 
+    //id to find db, info to update to, type of info (logdate, logquan)
+    public void updateLog(String id, String type, String info, String oldinfo){
+        //get id from item
+        //find file with that id
+        Connection conn = getDataBase(id+".db");
+
+        try{
+            String cmd = "UPDATE log SET " + type + " = '" + info + "' WHERE logdate = '" + oldinfo +"';";
+            System.out.println(cmd);
+            Statement stmt = conn.createStatement();
+            stmt.execute(cmd);
+            stmt.close();
+            conn.close();
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
     public void deleteDB(String id){
         try {
             Files.delete(Paths.get("./db/kettledb/"+id+".db"));
@@ -389,6 +409,18 @@ public class Kettlelog extends Application {
             String dbName = dblist[i].getName();
             System.out.println("Loading data");
             System.out.println(dbName);
+
+            if(dbName.equals(".gitignore")){
+                System.out.println("not db file: skipped");
+                i++;
+                if(i<dblist.length){
+                    dbName = dblist[i].getName();
+                    System.out.println(dbName);
+                }
+                else{
+                    return;
+                }
+            }
 
             try{
                 //connect to the db

@@ -87,6 +87,8 @@ public class InfoStage extends Stage{
     private static Log firstselection = new Log();
     private static Log finalselection = new Log();
 
+    private static String id;
+
     //Constructor
     InfoStage(){
 
@@ -314,11 +316,13 @@ public class InfoStage extends Stage{
                 @Override
                 public void handle(TableColumn.CellEditEvent<Log, String> event) {
                     String newdate = event.getNewValue();
+                    String olddate = event.getOldValue();
                     //We only want to commit the edit if the date is in the correct format.
                     if (isValidDate(newdate)){
                         Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
                         selectedlog.setDateLogged(newdate);
-                        System.out.println(selectedlog.getDateLogged());
+                        //System.out.println(selectedlog.getDateLogged());
+                        kettle.updateLog(id, "logdate", newdate, olddate);
                         logtable.requestFocus();
                         cannotdelete.setVisible(false);
                     }
@@ -345,10 +349,12 @@ public class InfoStage extends Stage{
                 @Override
                 public void handle(TableColumn.CellEditEvent<Log, String> event) {
                     String newquantity = event.getNewValue();
+                    String oldquantity = event.getOldValue();
                     //We only want to commit the edit if the quantity is a number. 
                     if (newquantity.chars().allMatch( Character::isDigit )) {
                         Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
                         selectedlog.setQuanLogged(newquantity);
+                        kettle.updateLog(id, "logquan", newquantity, selectedlog.getDateLogged());
                         logtable.requestFocus();
                         cannotdelete.setVisible(false);
                     } 
@@ -453,6 +459,7 @@ public class InfoStage extends Stage{
     }
 
     public void updateInfoStage(Item rowinfo){
+    	id = rowinfo.getID();
 
         infolabel.setText(rowinfo.getName());
         datelabel.setText(rowinfo.getDateAdded());
@@ -474,9 +481,9 @@ public class InfoStage extends Stage{
             String datewithyear = (chartinfo.get(i)).getDateLogged();
             //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
             String date = (datewithyear.substring(5)).replace("-", "/");
-            System.out.println(date);
+            //System.out.println(date);
             String quanstring = (chartinfo.get(i)).getQuanLogged();
-            System.out.println(quanstring);
+            //System.out.println(quanstring);
             int quantity = Integer.parseInt(quanstring);
             series.getData().add(new XYChart.Data(date, quantity));
         }
@@ -511,10 +518,10 @@ public class InfoStage extends Stage{
                         presscount=0;
                         //We've deleted the log from our ObservableList, but now we need to get rid of it in our SQL Database.
                         String itemid = rowinfo.getID();
-                        System.out.println(itemid);
+                        //System.out.println(itemid);
                         //Since the date must be unique, we can use this to identify which log to delete. 
                         String logid = finalselection.getDateLogged();
-                        System.out.println(logid);
+                        //System.out.println(logid);
                         kettle.deleteLog(itemid, logid);
                     } 
                     else {
@@ -532,6 +539,9 @@ public class InfoStage extends Stage{
 
     //This method takes in a string and determines if it's a date in YYYY-MM-DD form.
     public static boolean isValidDate(String date) {
+    	if(date==null || date.length()!="yyyy-mm-dd".length()){
+    		return false;
+    	}
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
         try {
