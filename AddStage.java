@@ -394,17 +394,17 @@ public class AddStage extends Stage{
         stext.setText(predel);
         dtext.setText(predesc);
 
+        datepicker.setValue(LocalDate.now());
+
         if (popuptype == 0) {
             addtext.setText("Add New Item");
             createbtn.setText("Create");
             helptip.setText(addtip);
-            datepicker.setValue(LocalDate.now());
+
         } else {
             addtext.setText("Log/Edit Item");
             createbtn.setText("Edit");
             helptip.setText(edittip);
-            LocalDate originaldate = LocalDate.parse(predate);
-            datepicker.setValue(originaldate);
             checkhbox.setVisible(true);
             logitem.setVisible(true);
             a5.setVisible(true);
@@ -588,14 +588,14 @@ public class AddStage extends Stage{
                                 //Adding the log to our SQL Database.
                                 kettle.addLog(rowinfo.getID(), newdate, curQuan);
                                 //Even though the yes checkbox is selected, the user can still edit the item, so we need to change our SQL database again.
-                                kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
+                                kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, curQuan, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
                                 logdateunique = 0;
                                 
                             }
 
                             //If the no box is selected, we don't need to add a log to the item's database. 
                             //However, we need to edit the InfoTable in its database. 
-                            kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
+                            kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, curQuan, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
 
                             rowinfo.setName(iName);
                             rowinfo.setStatus(itemStatus);

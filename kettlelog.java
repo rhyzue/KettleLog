@@ -154,15 +154,24 @@ public class Kettlelog extends Application {
 
     public ObservableList<Log> getLogs(String id){
         //loop through data
-        for(int i = 0; i<data.size(); i++){
+        for(int i = 0; i < data.size(); i++){
             //find which item has correct id, return that list of logs
             if(data.get(i).getID().equals(id)){
-
                 System.out.println("Got item: "+ data.get(i).getName());
                 return data.get(i).getLogData();
             }
         }
+        return null;
+    }
 
+    //getting an item just based off of its id.
+    public Item getItem(String id){
+        for (int i = 0; i < data.size(); i++){
+            //when we eventually find a match, return that item
+            if(data.get(i).getID().equals(id)){
+                return data.get(i);
+            }
+        }
         return null;
     }
 
@@ -195,7 +204,7 @@ public class Kettlelog extends Application {
                 //3. Then, we need to populate the database tables with the information. 
                 // The zero is referring to the starred. When a brand new item is added, the item is obviously not starred so it will be 0. 
                 // 0 -> Not Starred, 1 -> Starred
-                app.insertinfo(added.getID(), added.getName(), added.getStatus(), added.getMinimum(), added.getDelivery(), added.getDesc(), 0, added.getDateAdded());
+                app.insertinfo(added.getID(), added.getName(), added.getStatus(), added.getQuantity(), added.getMinimum(), added.getDelivery(), added.getDesc(), 0, added.getDateAdded());
                 app.insertlogs(added.getID(), added.getDate(), added.getQuantity());
 
                 //4.Add it our data's observablelist so that we can display it in the table. 
@@ -303,6 +312,7 @@ public class Kettlelog extends Application {
             + "id text primary key,"
             + "name text not null,"
             + "status text not null,"
+            + "quantity text not null,"
             + "minimumstock text not null,"
             + "deliverytime text not null,"
             + "description text not null,"
@@ -339,8 +349,8 @@ public class Kettlelog extends Application {
     }
 
     //Method that edits the information table for a specific database. 
-    public static void editInfoTable(String id, String name, String status, String minimum, String delivery, String desc, int starbool, String dateadded) {
-        app.editinfo(id, name, status, minimum, delivery, desc, starbool, dateadded);
+    public static void editInfoTable(String id, String name, String status, String quantity, String minimum, String delivery, String desc, int starbool, String dateadded) {
+        app.editinfo(id, name, status, quantity, minimum, delivery, desc, starbool, dateadded);
     }
 
     //This method will delete a single log from the SQL Database for an item.
@@ -397,7 +407,20 @@ public class Kettlelog extends Application {
             // File permission problems are caught here.
             System.err.println(x);
         }
-    } 
+    }
+
+    //This method gets the quantity of the most recent date for an item.
+    public String getNewQuan(String id, String mostrecentdate){
+        Item rowinfo = getItem(id);
+        ObservableList<Log> loglist = rowinfo.getLogData();
+        for (int i = 0; i < loglist.size(); i++) {
+            if (loglist.get(i).getDateLogged().equals(mostrecentdate)){
+                return loglist.get(i).getQuanLogged();
+            }
+        }
+        System.out.println("No log with that date found.");
+        return null;        
+    }
 
     //the purpose of this method is to take data from a .db database and load it into our code. 
     //two observablelists need to be created from the two tables in the database (ObservableList<Item>, ObservableList<Log>)

@@ -2,7 +2,9 @@ import Log.*;
 import Item.*; 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.SQLException;
  
 public class InsertData {
@@ -12,9 +14,9 @@ public class InsertData {
     InsertData(){
     }
 
-    public void insertinfo(String id, String name, String status, String minimum, String delivery, String desc, int starbool, String dateadded) {
+    public void insertinfo(String id, String name, String status, String quantity, String minimum, String delivery, String desc, int starbool, String dateadded) {
 
-        String command = "INSERT INTO info(id, name, status, minimumstock, deliverytime, description, starred, dateadded) VALUES(?,?,?,?,?,?,?,?)";
+        String command = "INSERT INTO info(id, name, status, quantity, minimumstock, deliverytime, description, starred, dateadded) VALUES(?,?,?,?,?,?,?,?,?)";
 
 
         try {
@@ -27,11 +29,12 @@ public class InsertData {
                 v.setString(1, id);
                 v.setString(2, name);
                 v.setString(3, status);
-                v.setString(4, minimum);
-                v.setString(5, delivery);
-                v.setString(6, desc);
-                v.setInt(7, starbool);
-                v.setString(8, dateadded);
+                v.setString(4, quantity);
+                v.setString(5, minimum);
+                v.setString(6, delivery);
+                v.setString(7, desc);
+                v.setInt(8, starbool);
+                v.setString(9, dateadded);
 
             v.executeUpdate();
 
@@ -69,10 +72,11 @@ public class InsertData {
     }
 
     //This is a method that edits the infotable for a database. 
-    public void editinfo(String id, String name, String status, String minimum, String delivery, String desc, int starbool, String dateadded) {
+    public void editinfo(String id, String name, String status, String quantity, String minimum, String delivery, String desc, int starbool, String dateadded) {
 
         String command = "UPDATE info SET name = ?, "
                 + "status = ?, "
+                + "quantity = ?, "
                 + "minimumstock = ?, "
                 + "deliverytime = ?, "
                 + "description = ?, "
@@ -88,11 +92,12 @@ public class InsertData {
            //Editing the values of our row.
                 v.setString(1, name);
                 v.setString(2, status);
-                v.setString(3, minimum);
-                v.setString(4, delivery);
-                v.setString(5, desc);
-                v.setInt(6, starbool);
-                v.setString(7, dateadded);
+                v.setString(3, quantity);
+                v.setString(4, minimum);
+                v.setString(5, delivery);
+                v.setString(6, desc);
+                v.setInt(7, starbool);
+                v.setString(8, dateadded);
 
             v.executeUpdate();
 
@@ -121,5 +126,6 @@ public class InsertData {
                 System.out.println(e.getMessage());
             }         
     }
+
 }
 

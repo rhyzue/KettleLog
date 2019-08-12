@@ -16,6 +16,7 @@ import javafx.beans.value.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
+import java.lang.StringBuilder;
 import javafx.scene.paint.Color;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
@@ -87,7 +88,7 @@ public class InfoStage extends Stage{
     private static LineChart linechart = new LineChart(xAxis, yAxis);
     private static Log firstselection = new Log();
     private static Log finalselection = new Log();
-
+    private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
     private static String id;
 
     //Constructor
@@ -339,12 +340,12 @@ public class InfoStage extends Stage{
                         //System.out.println(selectedlog.getDateLogged());
                         kettle.updateLog(id, "logdate", newdate, olddate);
                         logtable.requestFocus();
-
                         sortByDateLogged();
-
                         cannotdelete.setVisible(false);
+                        setUpdatedQuan(id);
                     }
                     else {
+                        //If the edit is NOT valid...
                         int row = event.getTablePosition().getRow();
                         Log oldlog = event.getTableView().getItems().get(row);
                         logtable.getItems().set(row, oldlog);
@@ -352,7 +353,7 @@ public class InfoStage extends Stage{
 
                         //if user entered an existing date, vs an invalid date
                         if(dateExists(newdate, id)){
-                            cannotdelete.setText(" * Date already exists.");
+                            cannotdelete.setText(" * This date already has a corresponding log.");
                         }
                         else{
                             cannotdelete.setText(" * Date must be in YYYY-MM-DD format. Do not include any spaces!");
@@ -382,6 +383,7 @@ public class InfoStage extends Stage{
                         kettle.updateLog(id, "logquan", newquantity, selectedlog.getDateLogged());
                         logtable.requestFocus();
                         cannotdelete.setVisible(false);
+                        setUpdatedQuan(id);
                     } 
 
                     //If it's not an integer, don't allow the edit and display an error message.
@@ -529,6 +531,7 @@ public class InfoStage extends Stage{
             @Override
                 public void handle(ActionEvent event) {
                     updateGraph(rowinfo);
+                    
                 }
             });
 
@@ -562,6 +565,7 @@ public class InfoStage extends Stage{
                         String logid = finalselection.getDateLogged();
                         //System.out.println(logid);
                         kettle.deleteLog(itemid, logid);
+                        setUpdatedQuan(id);
                     } 
                     else {
                         cannotdelete.setText(" * WARNING: A different log has been selected for deletion.");
@@ -636,6 +640,63 @@ public class InfoStage extends Stage{
         }
         return false;
 
+    }
+
+    //This is a method that will make the quantity of the item the quantity of the most recent log. 
+    public void setUpdatedQuan(String id){
+
+        ObservableList<Log>logData = kettle.getLogs(id);
+        ArrayList<Integer> datelist = new ArrayList<>();
+
+        //Here's a way where we can verify a log list is what we expect it to be.
+        /*for (int i = 0; i < logData.size(); i++) {
+            System.out.println((logData.get(i)).getDateLogged());
+            System.out.println((logData.get(i)).getQuanLogged());
+        }*/
+
+        //Now we need to find the MOST RECENT date in this log list. 
+        for (int i = 0; i < logData.size(); i++){
+            String logdate = (logData.get(i)).getDateLogged(); //EX: 2019-02-27
+            //Turn this date into an integer by remocing the dashes. 
+            logdate = logdate.replace("-", "");
+            System.out.println(logdate);
+            int dateint = Integer.parseInt(logdate);
+            datelist.add(dateint);
+        }
+        //Finding the most recent is equivalent to finding the largest one of these numbers.
+        int mostrecentint = getMax(datelist);
+        String mostrecentstring = String.valueOf(mostrecentint); //EX: 20190227
+        StringBuilder sb = new StringBuilder(mostrecentstring);
+        sb.insert(4, "-"); //2019-0227
+        sb.insert(7, "-"); //2019-02-27
+        String finaldate = sb.toString();
+        System.out.println(finaldate);
+
+        Item item = kettle.getItem(id);
+
+        System.out.println("Your id is " + id);
+        System.out.println("Your most recent date is " + finaldate);
+
+        String newQuan = kettle.getNewQuan(id, finaldate);
+        item.setQuantity(newQuan);
+
+        //Item's Quantity is now changed. But we need to make the same change in the SQL database.
+        kettle.editInfoTable(item.getID(), item.getName(), item.getStatus(), newQuan, item.getMinimum(), item.getDelivery(), item.getDesc(), 0, item.getDateAdded()); 
+
+        //We also need to reset the table's data.
+        kettle.setData(placeholder, 1);
+
+    }
+
+    //This method takes in a list of numbers (lon) and returns the max.
+    public int getMax(ArrayList<Integer> lon){
+        int max = Integer.MIN_VALUE;
+        for(int i = 0; i < lon.size(); i++){
+            if(lon.get(i) > max){
+                max = lon.get(i);
+            }
+        }
+        return max;
     }
 
     public class InfoHandler implements EventHandler<ActionEvent>{
