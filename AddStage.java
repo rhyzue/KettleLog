@@ -12,6 +12,7 @@ import javafx.scene.image.*;
 import javafx.beans.value.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
+import java.lang.StringBuilder;
 import javafx.scene.paint.Color;
 import java.text.SimpleDateFormat;
 import javafx.scene.image.ImageView;
@@ -101,6 +102,7 @@ public class AddStage extends Stage{
     private String predel;
     private String predesc;
     private String predate;
+    private static String id;
 
     AddStage(){
 
@@ -377,6 +379,8 @@ public class AddStage extends Stage{
 
     public void updateAddStage(int popuptype, String[] textarray, Item rowinfo){
 
+        id = rowinfo.getID();
+
         //PRE-SET TEXT FIELDS TAKEN FROM 5-ELEMENT ARRAY
         //This array takes the name, quantity, minimum, shipping time, description and date of the column.
         //The purpose of this is to save the information so that it can be displayed when the edit button is clicked.
@@ -579,7 +583,20 @@ public class AddStage extends Stage{
 
                             //Only consider it a log if the yes box is selected.
                             if (yesbox.isSelected()){
-
+                                //If the item is a log and the date is before the loglist most recent's date, DON'T UPDATE THE ITEM'S QUANTITY.
+                                int mostrecent = findMostRecentDate(id);
+                                newdate = newdate.replace("-", "");
+                                int currentlogdate = Integer.parseInt(newdate);
+                                //Converting newdate back to its original YYYY-MM-DD form.
+                                StringBuilder sb = new StringBuilder(newdate);
+                                sb.insert(4, "-"); //2019-0227
+                                sb.insert(7, "-"); //2019-02-27
+                                newdate = sb.toString();
+                                //The date the user wants to log is LATER than the item's most recent, so update the item's quantity. 
+                                if (currentlogdate > mostrecent) {
+                                    rowinfo.setQuantity(curQuan);
+                                    kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, curQuan, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
+                                }
                                 ObservableList<Log> editloglist = rowinfo.getLogData();
                                 Log newlog = new Log(newdate, curQuan);
                                 //Adding the log to our observablelist. 
@@ -588,18 +605,18 @@ public class AddStage extends Stage{
                                 //Adding the log to our SQL Database.
                                 kettle.addLog(rowinfo.getID(), newdate, curQuan);
                                 //Even though the yes checkbox is selected, the user can still edit the item, so we need to change our SQL database again.
-                                kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, curQuan, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
+                                kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, rowinfo.getQuantity(), minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
                                 logdateunique = 0;
-                                
+                            
                             }
 
                             //If the no box is selected, we don't need to add a log to the item's database. 
                             //However, we need to edit the InfoTable in its database. 
-                            kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, curQuan, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
+                            kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, rowinfo.getQuantity(), minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
 
                             rowinfo.setName(iName);
                             rowinfo.setStatus(itemStatus);
-                            rowinfo.setQuantity(curQuan);
+                            //rowinfo.setQuantity(curQuan);
                             rowinfo.setMinimum(minQuan);
                             rowinfo.setDelivery(delTime);
                             rowinfo.setDesc(itemDesc);
@@ -638,6 +655,40 @@ public class AddStage extends Stage{
             }
         }); 
     }
+
+    //This method finds an item's loglist and returns the most recent date from that loglist. 
+    //It returns it as an integer (ex. 20190807) so that we can compare it later.
+    public int findMostRecentDate(String id) {
+
+        ArrayList<Integer> datelist = new ArrayList<>();
+        ObservableList<Log>logData = kettle.getLogs(id);
+
+        //Now we need to find the MOST RECENT date in this log list. 
+        for (int i = 0; i < logData.size(); i++){
+            String logdate = (logData.get(i)).getDateLogged(); //EX: 2019-02-27
+            //Turn this date into an integer by remocing the dashes. 
+            logdate = logdate.replace("-", "");
+            System.out.println(logdate);
+            int dateint = Integer.parseInt(logdate);
+            datelist.add(dateint);
+        }
+        //Finding the most recent is equivalent to finding the largest one of these numbers.
+        int mostrecentint = getMax(datelist);
+        return mostrecentint;
+
+    }
+
+    //This method takes in a list of numbers (lon) and returns the max.
+    public int getMax(ArrayList<Integer> lon){
+        int max = Integer.MIN_VALUE;
+        for(int i = 0; i < lon.size(); i++){
+            if(lon.get(i) > max){
+                max = lon.get(i);
+            }
+        }
+        return max;
+    }
+
 }
 
  

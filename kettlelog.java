@@ -119,7 +119,6 @@ public class Kettlelog extends Application {
         itemsToDelete.clear();
     } 
 
-
     public boolean isItemChecked(){
         for(int i = 0; i<data.size(); i++){
             if(data.get(i).getChecked()==true){
@@ -473,6 +472,7 @@ public class Kettlelog extends Application {
                     it.setID(mainData.getString("id"));
 	                it.setName(mainData.getString("name"));
                     it.setStatus(mainData.getString("status"));
+                    it.setQuantity(mainData.getString("quantity"));
                     it.setMinimum(mainData.getString("minimumstock"));
                     it.setDelivery(mainData.getString("deliverytime"));
                     it.setDesc(mainData.getString("description"));
@@ -494,8 +494,8 @@ public class Kettlelog extends Application {
                 }
 
                 //give main item a quantity from the last log
-                String lastQuanLogged = logInfo.get(logInfo.size()-1).getQuanLogged();
-                it.setQuantity(lastQuanLogged);
+                /*String lastQuanLogged = logInfo.get(logInfo.size()-1).getQuanLogged();
+                it.setQuantity(lastQuanLogged);*/
 
                 String lastDateLogged = logInfo.get(logInfo.size()-1).getDateLogged();
                 it.setDate(lastDateLogged);
