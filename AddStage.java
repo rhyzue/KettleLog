@@ -89,6 +89,7 @@ public class AddStage extends Stage{
     private static ImageView helpImg = new ImageView(); 
     private static DatePicker datepicker = new DatePicker();
     private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
+    private static Button reorderbtn = new Button();
 
     //objects from kettlelog app
     private static Kettlelog kettle = new Kettlelog();
@@ -335,6 +336,7 @@ public class AddStage extends Stage{
                 checkhbox.setVisible(false);
                 logitem.setVisible(false);
                 a5.setVisible(false);
+                reorderbtn.setVisible(false);
                 if (radioGroup.getSelectedToggle()!=null){
                     radioGroup.getSelectedToggle().setSelected(false);
                 }
@@ -366,7 +368,30 @@ public class AddStage extends Stage{
             a5.setVisible(false);
             AnchorPane.setRightAnchor(a5, logdistance + 75.0); 
             AnchorPane.setBottomAnchor(a5, 46.0);
-            qanchor.getChildren().addAll(logitem, a5, checkhbox);
+
+            //Reorder Button
+            reorderbtn.setVisible(false);
+            Image reorderBtnImg = new Image("./Misc/box.png");
+            ImageView reorderImgView = new ImageView(); 
+                reorderbtn.setStyle("-fx-background-color: transparent;");  
+                reorderImgView.setImage(reorderBtnImg);
+                reorderImgView.setFitWidth(30);
+                reorderImgView.setPreserveRatio(true);
+                reorderImgView.setSmooth(true);
+                reorderImgView.setCache(true); 
+                reorderbtn.setGraphic(reorderImgView);
+
+
+            reorderbtn.setOnAction(new EventHandler<ActionEvent>() {       
+                @Override       
+                public void handle(ActionEvent event) { 
+                    kettle.showAlertStage(0, placeholder);
+                }
+            }); 
+
+            AnchorPane.setBottomAnchor(reorderbtn, 35.0);
+            AnchorPane.setLeftAnchor(reorderbtn, 285.0);
+            qanchor.getChildren().addAll(logitem, a5, checkhbox, reorderbtn);
 
         this.setScene(new Scene(abase, addwidth, addheight));
         this.initStyle(StageStyle.UNDECORATED);
@@ -412,6 +437,7 @@ public class AddStage extends Stage{
             checkhbox.setVisible(true);
             logitem.setVisible(true);
             a5.setVisible(true);
+            reorderbtn.setVisible(true);
 
         }
 
@@ -504,6 +530,7 @@ public class AddStage extends Stage{
                         checkhbox.setVisible(false);
                         logitem.setVisible(false);
                         a5.setVisible(false);
+                        reorderbtn.setVisible(false);
                         if (radioGroup.getSelectedToggle()!=null){
                             radioGroup.getSelectedToggle().setSelected(false);
                         }
@@ -627,6 +654,7 @@ public class AddStage extends Stage{
                             checkhbox.setVisible(false);
                             logitem.setVisible(false);
                             a5.setVisible(false);
+                            reorderbtn.setVisible(false);
 
                             //JUST PUTTING IN AN EMPTY OBSERVABLELIST FOR THE SETDATA FUNCTION
                             kettle.setData(placeholder, 1);

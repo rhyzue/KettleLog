@@ -230,7 +230,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                 public void handle(ActionEvent event) { 
                     Item curItem = (Item) cell.getTableRow().getItem();
                     rowinfo.add(curItem);
-                    kettle.showAlertStage(rowinfo);
+                    kettle.showAlertStage(1, rowinfo);
                     rowinfo.remove(curItem);
                 }
             }); 

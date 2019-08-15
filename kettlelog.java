@@ -102,10 +102,10 @@ public class Kettlelog extends Application {
         infoStage.hide();
     } 
 
-    public void showAlertStage(ObservableList<Item> itemsToDelete) {
+    public void showAlertStage(int popuptype, ObservableList<Item> itemsToDelete) {
 
         primaryStage.showOpaqueLayer();
-        alertStage.updateAlertStage(itemsToDelete);
+        alertStage.updateAlertStage(popuptype, itemsToDelete);
 
         alertStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250); //250 is width divided by 2
         alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 175) + extraheight); 

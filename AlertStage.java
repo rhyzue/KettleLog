@@ -45,6 +45,8 @@ public class AlertStage extends Stage{
     private static Text delconfirm = new Text();
     private static AnchorPane alerttstrip = new AnchorPane();
     private static VBox alertcentervbox = new VBox(10);
+    private static VBox reordervbox1 = new VBox(10);
+    private static VBox reordervbox2 = new VBox(10);
     private static Text delundo = new Text();
     private static Text delperm = new Text();
     private static Label itemlabel = new Label();
@@ -54,8 +56,11 @@ public class AlertStage extends Stage{
     private static HBox alertbbx = new HBox(15);
     private static AnchorPane alertbstrip = new AnchorPane();
     private static BorderPane alertpane = new BorderPane();
-
     private static ObservableList<Item> itemsToDelete = FXCollections.observableArrayList();
+    private static Text datereceived = new Text();
+    private static Text amountreceived = new Text();
+    private static DatePicker datepicker = new DatePicker();
+    private static TextField amountbox = new TextField();
 
     private static Kettlelog kettleclass = new Kettlelog();
 
@@ -79,12 +84,15 @@ public class AlertStage extends Stage{
 
         //Center part of the pane which contains the Kettlelog logo and some text labels.
 
-        delconfirm.setText("Are you sure you want to delete");
-        delconfirm.setFont(new Font(16));
-
         kettle.setFitHeight(150);
         kettle.setFitWidth(150);
         kettle.setImage(kettleonlyimage);
+        AnchorPane.setLeftAnchor(kettle, 10.0);
+        AnchorPane.setTopAnchor(kettle, 40.0);
+
+        //VBOX FOR DELETING STAGE
+        delconfirm.setText("Are you sure you want to delete");
+        delconfirm.setFont(new Font(16));
 
         itemlabel.setFont(new Font(16));
         itemlabel.setPrefHeight(50.0);
@@ -101,15 +109,39 @@ public class AlertStage extends Stage{
         alertcentervbox.setPrefSize(220.0, 230.0);
         alertcentervbox.getChildren().addAll(delconfirm, itemlabel, delperm, delundo);
         alertcentervbox.setPadding(new Insets(50.0, 0.0, 0.0, 0.0));
-        //alertcentervbox.setStyle("-fx-background-color: #cf1020;");
 
         AnchorPane.setTopAnchor(alertcentervbox, 0.0);
         AnchorPane.setRightAnchor(alertcentervbox, 30.0);
-        AnchorPane.setLeftAnchor(kettle, 10.0);
-        AnchorPane.setTopAnchor(kettle, 40.0);
+
+        //VBOX FOR LOGGING A REORDER
+
+        datereceived.setText("Date Received:");
+        datereceived.setFont(new Font(16));
+
+        datepicker.setPrefWidth(175);
+        datepicker.setEditable(false);
+
+        //reordervbox1.setPrefSize(100.0, 200.0);
+        reordervbox1.getChildren().addAll(datereceived, datepicker);
+        //reordervbox1.setPadding(new Insets(70.0, 0.0, 0.0, 0.0));
+
+        AnchorPane.setBottomAnchor(reordervbox1, 130.0);
+        AnchorPane.setLeftAnchor(reordervbox1, 230.0);
+
+        amountreceived.setText("Amount Received:");
+        amountreceived.setFont(new Font(16));
+
+        amountbox.setPrefWidth(175);
+
+        //reordervbox2.setPrefSize(100.0, 200.0);
+        reordervbox2.getChildren().addAll(amountreceived, amountbox);
+        //reordervbox2.setPadding(new Insets(70.0, 0.0, 0.0, 0.0));
+
+        AnchorPane.setBottomAnchor(reordervbox2, 60.0);
+        AnchorPane.setLeftAnchor(reordervbox2, 230.0);
 
         alertcenter.setStyle(alertmidcolour);
-        alertcenter.getChildren().addAll(kettle, alertcentervbox);
+        alertcenter.getChildren().addAll(kettle, reordervbox1, reordervbox2, alertcentervbox);
 
         //Bottom part of the pane which has the two buttons "Cancel" and "Delete". 
 
@@ -144,20 +176,37 @@ public class AlertStage extends Stage{
 
     }
 
-    public void updateAlertStage(ObservableList<Item> items){//itemstodelete should be a parameter too potentially
+    public void updateAlertStage(int popuptype, ObservableList<Item> items){
 
-        //itemlabel.setText(rowinfo.getName() + "?");
-        //delperm.setText("This item will be deleted permanently.");
-        itemsToDelete.addAll(items);
+        //POPUPTYPE 0 = REORDERING ITEM
+        //POPUPTYPE 1 = DELETING ITEM(S)
+
+        alertcentervbox.setVisible(false);
+
+        if (popuptype == 0) {
+
+
+
+
+        }
+
+
+        else { //popuptype must be 1 
+
+            alertcentervbox.setVisible(true);
+
+            itemsToDelete.addAll(items);
         
-        if(itemsToDelete.size()==1){
-            itemlabel.setText(itemsToDelete.get(0).getName() + "?");
-            delperm.setText("This item will be deleted permanently.");
+            if(itemsToDelete.size()==1){
+                itemlabel.setText(itemsToDelete.get(0).getName() + "?");
+                delperm.setText("This item will be deleted permanently.");
+            }
+            else{
+                itemlabel.setText("the selected items?");
+                delperm.setText("The items will be deleted permanently.");
+            }
         }
-        else{
-            itemlabel.setText("the selected items?");
-            delperm.setText("The items will be deleted permanently.");
-        }
+        
 
     }
 
