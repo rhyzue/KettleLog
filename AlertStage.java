@@ -31,17 +31,19 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 
 public class AlertStage extends Stage{
 
-    private final String striphex = "#610031;";
-    private final String alertmidhex = "#dfccd5;";
+    private final String striphexdelete = "#610031;";
+    private final String deletemidhex = "#dfccd5;";
+    private final String striphexreorder = "#ffb300;";
+    private final String reordermidhex = "ffe5b7;";
     private final double alertwidth = 500.0;
     private final double alertw_to_h = 1.42857;
     private final double alertheight = alertwidth / alertw_to_h;
-    private static String stripcolour; 
-    private static String alertmidcolour; 
 
     private static Text deltext = new Text();
     private static Image kettleonlyimage = new Image("./Misc/kettle.png");
+    private static Image deliveryboxes = new Image("./Misc/delivery.png");
     private static ImageView kettle = new ImageView();
+    private static ImageView delivery = new ImageView();
     private static Text delconfirm = new Text();
     private static AnchorPane alerttstrip = new AnchorPane();
     private static VBox alertcentervbox = new VBox(10);
@@ -59,6 +61,8 @@ public class AlertStage extends Stage{
     private static ObservableList<Item> itemsToDelete = FXCollections.observableArrayList();
     private static Text datereceived = new Text();
     private static Text amountreceived = new Text();
+    private static Text instruction1 = new Text();
+    private static Text instruction2 = new Text();
     private static DatePicker datepicker = new DatePicker();
     private static TextField amountbox = new TextField();
 
@@ -67,28 +71,28 @@ public class AlertStage extends Stage{
     AlertStage(){
         //System.out.println("===============hereAlert");
 
-        stripcolour = String.format("-fx-background-color: %s", striphex);
-        alertmidcolour = String.format("-fx-background-color: %s", alertmidhex);
+        double reordermoveup = 20.0;
 
-        //Top part of the pane which says "Confirm Deletion.""
-        
-        deltext.setText("Confirm Deletion");
+        //Top part of the pane.
         deltext.setFont(new Font(18));
-        deltext.setFill(Color.WHITE);
-
         AnchorPane.setLeftAnchor(deltext, 30.0);
         AnchorPane.setBottomAnchor(deltext, 10.0);
-        alerttstrip.setStyle(stripcolour);
         alerttstrip.setPrefSize(alertwidth, 75); //(width, height)
         alerttstrip.getChildren().addAll(deltext);
 
-        //Center part of the pane which contains the Kettlelog logo and some text labels.
+        //Center part of the pane
 
         kettle.setFitHeight(150);
         kettle.setFitWidth(150);
         kettle.setImage(kettleonlyimage);
         AnchorPane.setLeftAnchor(kettle, 10.0);
         AnchorPane.setTopAnchor(kettle, 40.0);
+
+        delivery.setFitHeight(125);
+        delivery.setFitWidth(125);
+        delivery.setImage(deliveryboxes);
+        AnchorPane.setLeftAnchor(delivery, 60.0);
+        AnchorPane.setTopAnchor(delivery, 30.0);
 
         //VBOX FOR DELETING STAGE
         delconfirm.setText("Are you sure you want to delete");
@@ -125,23 +129,40 @@ public class AlertStage extends Stage{
         reordervbox1.getChildren().addAll(datereceived, datepicker);
         //reordervbox1.setPadding(new Insets(70.0, 0.0, 0.0, 0.0));
 
-        AnchorPane.setBottomAnchor(reordervbox1, 130.0);
-        AnchorPane.setLeftAnchor(reordervbox1, 230.0);
+        AnchorPane.setBottomAnchor(reordervbox1, 130.0 + reordermoveup);
+        AnchorPane.setLeftAnchor(reordervbox1, 250.0);
 
         amountreceived.setText("Amount Received:");
         amountreceived.setFont(new Font(16));
 
         amountbox.setPrefWidth(175);
+        amountbox.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(javafx.beans.value.ObservableValue<? extends String> observable, String oldValue, 
+                String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    amountbox.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
 
-        //reordervbox2.setPrefSize(100.0, 200.0);
         reordervbox2.getChildren().addAll(amountreceived, amountbox);
-        //reordervbox2.setPadding(new Insets(70.0, 0.0, 0.0, 0.0));
+        AnchorPane.setBottomAnchor(reordervbox2, 60.0 + reordermoveup);
+        AnchorPane.setLeftAnchor(reordervbox2, 250.0);
 
-        AnchorPane.setBottomAnchor(reordervbox2, 60.0);
-        AnchorPane.setLeftAnchor(reordervbox2, 230.0);
+        instruction1.setText(" * The date should be when the reorder ARRIVES, not when it was ordered.");
+        instruction1.setFont(new Font(12));
+        instruction1.setFill(Color.BLACK);
+        AnchorPane.setBottomAnchor(instruction1, 40.0);
+        AnchorPane.setLeftAnchor(instruction1, 50.0);
 
-        alertcenter.setStyle(alertmidcolour);
-        alertcenter.getChildren().addAll(kettle, reordervbox1, reordervbox2, alertcentervbox);
+        instruction2.setText(" * Unlike regular logs, a reorder log can share a date with any other log.");
+        instruction2.setFont(new Font(12));
+        instruction2.setFill(Color.BLACK);
+        AnchorPane.setBottomAnchor(instruction2, 20.0);
+        AnchorPane.setLeftAnchor(instruction2, 50.0);
+
+        alertcenter.getChildren().addAll(kettle, reordervbox1, reordervbox2, alertcentervbox, delivery, instruction1, instruction2);
 
         //Bottom part of the pane which has the two buttons "Cancel" and "Delete". 
 
@@ -152,15 +173,15 @@ public class AlertStage extends Stage{
         AlertHandler alertHandler = new AlertHandler(); //declare object for handler class
         alertcancel.setOnAction(alertHandler); 
 
-        alertdelete.setText("Delete Item");
+        
         alertdelete.setPrefHeight(30);
-        alertdelete.setId("alertdelete");
+        alertdelete.setId("confirmation");
         alertdelete.setOnAction(alertHandler); 
         alertbbx.getChildren().addAll(alertcancel, alertdelete);
 
         AnchorPane.setRightAnchor(alertbbx, 7.5);
         AnchorPane.setTopAnchor(alertbbx, 7.5);
-        alertbstrip.setStyle(stripcolour);
+        
         alertbstrip.setPrefSize(alertwidth, 50); //(width, height)
         alertbstrip.getChildren().addAll(alertbbx);
 
@@ -182,18 +203,51 @@ public class AlertStage extends Stage{
         //POPUPTYPE 1 = DELETING ITEM(S)
 
         alertcentervbox.setVisible(false);
+        reordervbox1.setVisible(false);
+        reordervbox2.setVisible(false);
+        kettle.setVisible(false);
+        delivery.setVisible(false);
+        instruction1.setVisible(false);
+        instruction2.setVisible(false);
 
+        //================================================================================
+        // LOGGING A REORDER
+        //================================================================================
         if (popuptype == 0) {
 
+            String stripcolour = String.format("-fx-background-color: %s", striphexreorder);
+            String alertmidcolour = String.format("-fx-background-color: %s", reordermidhex);
+            alerttstrip.setStyle(stripcolour);
+            alertcenter.setStyle(alertmidcolour);
+            alertbstrip.setStyle(stripcolour);
 
-
+            reordervbox1.setVisible(true);
+            reordervbox2.setVisible(true);
+            delivery.setVisible(true);
+            instruction1.setVisible(true);
+            instruction2.setVisible(true);
+            alertdelete.setText("Confirm Log"); 
+            deltext.setText("Log Reorder"); 
+            deltext.setFill(Color.BLACK); 
 
         }
 
+        //================================================================================
+        // DELETING AN ITEM
+        //================================================================================
+        else {
 
-        else { //popuptype must be 1 
+            String stripcolour = String.format("-fx-background-color: %s", striphexdelete);
+            String alertmidcolour = String.format("-fx-background-color: %s", deletemidhex);
+            alerttstrip.setStyle(stripcolour);
+            alertcenter.setStyle(alertmidcolour);
+            alertbstrip.setStyle(stripcolour);
 
             alertcentervbox.setVisible(true);
+            kettle.setVisible(true);
+            alertdelete.setText("Delete Item");   
+            deltext.setText("Confirm Deletion");
+            deltext.setFill(Color.WHITE);
 
             itemsToDelete.addAll(items);
         
@@ -219,12 +273,28 @@ public class AlertStage extends Stage{
             switch(itemClicked){
                 case "alertcancel":
                     itemsToDelete.clear();
+                    AddStage addStage = kettleclass.getAddStage();
+                    addStage.hideOpaqueLayer();
                     kettleclass.hideAlertStage();
+                    alertcentervbox.setVisible(false);
+                    reordervbox1.setVisible(false);
+                    reordervbox2.setVisible(false);
+                    kettle.setVisible(false);
+                    delivery.setVisible(false);
+                    instruction1.setVisible(false);
+                    instruction2.setVisible(false);
                     break;  
 
-                case "alertdelete":
+                case "confirmation":
                     kettleclass.setData(itemsToDelete, 2);
                     itemsToDelete.clear();
+                    alertcentervbox.setVisible(false);
+                    reordervbox1.setVisible(false);
+                    reordervbox2.setVisible(false);
+                    kettle.setVisible(false);
+                    delivery.setVisible(false);
+                    instruction1.setVisible(false);
+                    instruction2.setVisible(false);
                     break;  
                 default:
                     System.out.println("Otherstuff");

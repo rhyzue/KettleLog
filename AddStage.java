@@ -90,6 +90,7 @@ public class AddStage extends Stage{
     private static DatePicker datepicker = new DatePicker();
     private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
     private static Button reorderbtn = new Button();
+    private static Region opaqueLayer = new Region();
 
     //objects from kettlelog app
     private static Kettlelog kettle = new Kettlelog();
@@ -109,6 +110,9 @@ public class AddStage extends Stage{
 
         //0 --> ADD WINDOW
         //1 --> EDIT WINDOW
+        opaqueLayer.setStyle("-fx-background-color: #006733;");
+        opaqueLayer.setOpacity(0.7);
+        opaqueLayer.setVisible(false); 
 
         String topbottom = String.format("-fx-background-color: %s", tbcolour);
         String middle = String.format("-fx-background-color: %s", midcolour);
@@ -385,6 +389,7 @@ public class AddStage extends Stage{
             reorderbtn.setOnAction(new EventHandler<ActionEvent>() {       
                 @Override       
                 public void handle(ActionEvent event) { 
+                    showOpaqueLayer();
                     kettle.showAlertStage(0, placeholder);
                 }
             }); 
@@ -393,7 +398,10 @@ public class AddStage extends Stage{
             AnchorPane.setLeftAnchor(reorderbtn, 285.0);
             qanchor.getChildren().addAll(logitem, a5, checkhbox, reorderbtn);
 
-        this.setScene(new Scene(abase, addwidth, addheight));
+        StackPane root = new StackPane();
+        root.getChildren().addAll(abase, opaqueLayer);
+
+        this.setScene(new Scene(root, addwidth, addheight));
         this.initStyle(StageStyle.UNDECORATED);
         this.initOwner(kettle.getPrimaryStage());
         this.initModality(Modality.WINDOW_MODAL);
@@ -715,6 +723,14 @@ public class AddStage extends Stage{
             }
         }
         return max;
+    }
+
+    public void showOpaqueLayer(){
+        opaqueLayer.setVisible(true); 
+    }
+
+    public void hideOpaqueLayer(){
+        opaqueLayer.setVisible(false);
     }
 
 }

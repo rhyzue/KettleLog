@@ -62,6 +62,10 @@ public class Kettlelog extends Application {
         return primaryStage;
     }
 
+    public AddStage getAddStage(){
+        return addStage;
+    }
+
     public InfoStage getInfoStage(){
         return infoStage;
     }
