@@ -339,7 +339,7 @@ public class PrimaryStage extends Stage{
                     //pass into alert stage for confirmation
                     //if yes, alert stage passes back into kettlelog to set data
                     itemsToDelete=kettle.getCheckedItems();
-                    kettle.showAlertStage(1, itemsToDelete);
+                    kettle.showAlertStage(1, itemsToDelete, empty);
                     itemsToDelete.clear();
                     break;    
                 default:

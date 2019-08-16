@@ -170,13 +170,8 @@ public class AlertStage extends Stage{
         alertcancel.setPrefHeight(30);
         alertcancel.setId("alertcancel");
 
-        AlertHandler alertHandler = new AlertHandler(); //declare object for handler class
-        alertcancel.setOnAction(alertHandler); 
-
-        
         alertdelete.setPrefHeight(30);
         alertdelete.setId("confirmation");
-        alertdelete.setOnAction(alertHandler); 
         alertbbx.getChildren().addAll(alertcancel, alertdelete);
 
         AnchorPane.setRightAnchor(alertbbx, 7.5);
@@ -197,7 +192,7 @@ public class AlertStage extends Stage{
 
     }
 
-    public void updateAlertStage(int popuptype, ObservableList<Item> items){
+    public void updateAlertStage(int popuptype, ObservableList<Item> items, Item rowinfo){
 
         //POPUPTYPE 0 = REORDERING ITEM
         //POPUPTYPE 1 = DELETING ITEM(S)
@@ -230,6 +225,37 @@ public class AlertStage extends Stage{
             deltext.setText("Log Reorder"); 
             deltext.setFill(Color.BLACK); 
 
+            //We only want the addstage's opaque layer to go away, NOT the primarystage's
+            alertcancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+                public void handle(ActionEvent event) {
+                    kettleclass.hideAlertStage(0);
+                    AddStage addStage = kettleclass.getAddStage();
+                    addStage.hideOpaqueLayer();
+                    itemsToDelete.clear();
+                    alertcentervbox.setVisible(false);
+                    reordervbox1.setVisible(false);
+                    reordervbox2.setVisible(false);
+                    kettle.setVisible(false);
+                    delivery.setVisible(false);
+                    instruction1.setVisible(false);
+                    instruction2.setVisible(false); 
+                }
+            });
+
+            //if the user confirms the reorder log, we want to hide both the addstage and primarystage opaque's layers
+            //We also want to add the log to the LogList, with a type of "REORDER" and a quantity of "REORDER: + X"
+            alertdelete.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+                public void handle(ActionEvent event) {
+                    kettleclass.hideAlertStage(0);
+                    AddStage addStage = kettleclass.getAddStage();
+                    kettleclass.hideAlertStage(1);
+                    kettleclass.hideAddStage();
+                }
+            });
+
+
         }
 
         //================================================================================
@@ -259,23 +285,13 @@ public class AlertStage extends Stage{
                 itemlabel.setText("the selected items?");
                 delperm.setText("The items will be deleted permanently.");
             }
-        }
-        
 
-    }
-
-    public class AlertHandler implements EventHandler<ActionEvent>{
-        @Override
-        public void handle(ActionEvent e) {
-
-            String itemClicked = ((Control)e.getSource()).getId();
-
-            switch(itemClicked){
-                case "alertcancel":
+            //We want to hide the PrimaryStage's opaque layer in this scenario.
+            alertcancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+                public void handle(ActionEvent event) {
+                    kettleclass.hideAlertStage(1);
                     itemsToDelete.clear();
-                    AddStage addStage = kettleclass.getAddStage();
-                    addStage.hideOpaqueLayer();
-                    kettleclass.hideAlertStage();
                     alertcentervbox.setVisible(false);
                     reordervbox1.setVisible(false);
                     reordervbox2.setVisible(false);
@@ -283,9 +299,13 @@ public class AlertStage extends Stage{
                     delivery.setVisible(false);
                     instruction1.setVisible(false);
                     instruction2.setVisible(false);
-                    break;  
+                }
+            });
 
-                case "confirmation":
+            //CONFIRMATION BUTTON 
+            alertdelete.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+                public void handle(ActionEvent event) {
                     kettleclass.setData(itemsToDelete, 2);
                     itemsToDelete.clear();
                     alertcentervbox.setVisible(false);
@@ -295,11 +315,12 @@ public class AlertStage extends Stage{
                     delivery.setVisible(false);
                     instruction1.setVisible(false);
                     instruction2.setVisible(false);
-                    break;  
-                default:
-                    System.out.println("Otherstuff");
-            }
+                }
+            });
+
         }
+        
+
     }
 
 }

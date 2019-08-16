@@ -88,6 +88,7 @@ public class Kettlelog extends Application {
 
     public void hideAddStage(){
         primaryStage.hideOpaqueLayer();
+        addStage.hideOpaqueLayer();
         addStage.hide();
     }
 
@@ -106,10 +107,10 @@ public class Kettlelog extends Application {
         infoStage.hide();
     } 
 
-    public void showAlertStage(int popuptype, ObservableList<Item> itemsToDelete) {
+    public void showAlertStage(int popuptype, ObservableList<Item> itemsToDelete, Item rowinfo) {
 
         primaryStage.showOpaqueLayer();
-        alertStage.updateAlertStage(popuptype, itemsToDelete);
+        alertStage.updateAlertStage(popuptype, itemsToDelete, rowinfo);
 
         alertStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250); //250 is width divided by 2
         alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 175) + extraheight); 
@@ -117,8 +118,10 @@ public class Kettlelog extends Application {
         alertStage.show();
     }
 
-    public void hideAlertStage(){
-        primaryStage.hideOpaqueLayer();
+    public void hideAlertStage(int popuptype){
+    	if (popuptype == 1) {
+        	primaryStage.hideOpaqueLayer();
+    	}
         alertStage.hide();
         itemsToDelete.clear();
     } 
@@ -233,7 +236,7 @@ public class Kettlelog extends Application {
                 if(data.size()==0){
                     data.add(empty);
                 }
-                hideAlertStage();
+                hideAlertStage(1);
                 break;
             case 3:
                 data = items;

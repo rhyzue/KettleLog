@@ -110,7 +110,7 @@ public class AddStage extends Stage{
 
         //0 --> ADD WINDOW
         //1 --> EDIT WINDOW
-        opaqueLayer.setStyle("-fx-background-color: #006733;");
+        opaqueLayer.setStyle("-fx-background-color: #00170c;");
         opaqueLayer.setOpacity(0.7);
         opaqueLayer.setVisible(false); 
 
@@ -385,15 +385,6 @@ public class AddStage extends Stage{
                 reorderImgView.setCache(true); 
                 reorderbtn.setGraphic(reorderImgView);
 
-
-            reorderbtn.setOnAction(new EventHandler<ActionEvent>() {       
-                @Override       
-                public void handle(ActionEvent event) { 
-                    showOpaqueLayer();
-                    kettle.showAlertStage(0, placeholder);
-                }
-            }); 
-
             AnchorPane.setBottomAnchor(reorderbtn, 35.0);
             AnchorPane.setLeftAnchor(reorderbtn, 285.0);
             qanchor.getChildren().addAll(logitem, a5, checkhbox, reorderbtn);
@@ -448,6 +439,14 @@ public class AddStage extends Stage{
             reorderbtn.setVisible(true);
 
         }
+
+        reorderbtn.setOnAction(new EventHandler<ActionEvent>() {       
+            @Override       
+            public void handle(ActionEvent event) { 
+                showOpaqueLayer();
+                kettle.showAlertStage(0, placeholder, rowinfo);
+            }
+        }); 
 
         createbtn.setOnAction(new EventHandler<ActionEvent>() {
         @Override

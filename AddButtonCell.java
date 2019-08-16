@@ -1,3 +1,4 @@
+import Log.*;
 import Item.*;
 import java.time.*; 
 import java.util.*;
@@ -36,6 +37,8 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
         private static boolean starred = false;
         private static int optionSel = 0;
         private static ObservableList<Item> rowinfo = FXCollections.observableArrayList();
+        private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
+        private static Item empty = new Item("emptyid", "", "", "", "", "", "", false, false, "", "", emptylist);
 
         private static Kettlelog kettle = new Kettlelog();
         private static OptionHandler optionHandler = new OptionHandler();
@@ -230,7 +233,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
                 public void handle(ActionEvent event) { 
                     Item curItem = (Item) cell.getTableRow().getItem();
                     rowinfo.add(curItem);
-                    kettle.showAlertStage(1, rowinfo);
+                    kettle.showAlertStage(1, rowinfo, empty);
                     rowinfo.remove(curItem);
                 }
             }); 
