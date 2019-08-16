@@ -211,7 +211,7 @@ public class Kettlelog extends Application {
                 // The zero is referring to the starred. When a brand new item is added, the item is obviously not starred so it will be 0. 
                 // 0 -> Not Starred, 1 -> Starred
                 app.insertinfo(added.getID(), added.getName(), added.getStatus(), added.getQuantity(), added.getMinimum(), added.getDelivery(), added.getDesc(), 0, added.getDateAdded());
-                app.insertlogs(added.getID(), added.getDate(), added.getQuantity());
+                app.insertlogs(added.getID(), "CONSUMPTION", added.getDate(), added.getQuantity());
 
                 //4.Add it our data's observablelist so that we can display it in the table. 
                 data.add(added); 
@@ -328,6 +328,7 @@ public class Kettlelog extends Application {
 
         //Creating the log table in the same database. 
         String logtableSQL = "CREATE TABLE IF NOT EXISTS log ("
+            + "logtype text not null,"
             + "logdate text primary key,"
             + "logquan text not null"
             + ");";
@@ -350,8 +351,8 @@ public class Kettlelog extends Application {
     }
 
     //This method will add a log to certain database's Log Table, specified by the Name parameter. 
-    public static void addLog(String id, String date, String quantity) {
-        app.insertlogs(id, date, quantity); 
+    public static void addLog(String id, String type, String date, String quantity) {
+        app.insertlogs(id, type, date, quantity); 
     }
 
     //Method that edits the information table for a specific database. 
@@ -495,6 +496,7 @@ public class Kettlelog extends Application {
                 //get all info from log table, stick it in new Item
                 while (logData.next()) {
                     Log itLog = new Log();
+                    itLog.setLogType(logData.getString("logtype"));
                     itLog.setDateLogged(logData.getString("logdate"));
                     itLog.setQuanLogged(logData.getString("logquan"));
                     logInfo.add(0, itLog);

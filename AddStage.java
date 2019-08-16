@@ -91,6 +91,7 @@ public class AddStage extends Stage{
     private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
     private static Button reorderbtn = new Button();
     private static Region opaqueLayer = new Region();
+    private static String logtype = "CONSUMPTION";
 
     //objects from kettlelog app
     private static Kettlelog kettle = new Kettlelog();
@@ -467,7 +468,7 @@ public class AddStage extends Stage{
                 String olddate = newdate;
 
                 ObservableList<Log> loglist = FXCollections.observableArrayList();
-                Log firstlog = new Log(olddate, curQuan);
+                Log firstlog = new Log(logtype, olddate, curQuan);
                 loglist.add(0, firstlog);
 
                 //CHECKS IF THERE ARE ANY REQUIRED FIELDS THAT ARE LEFT EMPTY
@@ -627,17 +628,17 @@ public class AddStage extends Stage{
                                 sb.insert(7, "-"); //2019-02-27
                                 newdate = sb.toString();
                                 //The date the user wants to log is LATER than the item's most recent, so update the item's quantity. 
-                                if (currentlogdate > mostrecent) {
+                                if (currentlogdate >= mostrecent) {
                                     rowinfo.setQuantity(curQuan);
                                     kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, curQuan, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
                                 }
                                 ObservableList<Log> editloglist = rowinfo.getLogData();
-                                Log newlog = new Log(newdate, curQuan);
+                                Log newlog = new Log(logtype, newdate, curQuan);
                                 //Adding the log to our observablelist. 
                                 editloglist.add(0, newlog);
                                 rowinfo.setLogData(editloglist);
                                 //Adding the log to our SQL Database.
-                                kettle.addLog(rowinfo.getID(), newdate, curQuan);
+                                kettle.addLog(rowinfo.getID(), logtype, newdate, curQuan);
                                 //Even though the yes checkbox is selected, the user can still edit the item, so we need to change our SQL database again.
                                 kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, rowinfo.getQuantity(), minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
                                 logdateunique = 0;

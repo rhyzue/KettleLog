@@ -47,9 +47,9 @@ public class InsertData {
     }
 
     //We need the name parameter here to specify which database to connect to.
-    public void insertlogs(String id, String logdate, String logquan) {
+    public void insertlogs(String id, String logtype, String logdate, String logquan) {
 
-        String command = "INSERT INTO log(logdate, logquan) VALUES(?,?)";
+        String command = "INSERT INTO log(logtype, logdate, logquan) VALUES(?,?,?)";
 
         try {
             String filename = id + ".db";
@@ -57,8 +57,9 @@ public class InsertData {
             PreparedStatement v = conn.prepareStatement(command);
 
             //Setting our insertion values here.
-                v.setString(1, logdate);
-                v.setString(2, logquan);
+                v.setString(1, logtype);
+                v.setString(2, logdate);
+                v.setString(3, logquan);
 
             v.executeUpdate();
 

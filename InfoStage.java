@@ -506,7 +506,7 @@ public class InfoStage extends Stage{
         ObservableList<Log> chartinfo = rowinfo.getLogData();
         int length = chartinfo.size();
         
-        for (int i = 0; i < length; i++) {
+        /*for (int i = 0; i < length; i++) {
             String datewithyear = (chartinfo.get(i)).getDateLogged();
             //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
             String date = (datewithyear.substring(5)).replace("-", "/");
@@ -515,14 +515,14 @@ public class InfoStage extends Stage{
             System.out.println(quanstring);
             int quantity = Integer.parseInt(quanstring);
             series.getData().add(new XYChart.Data(date, quantity));
-        }
+        }*/
 
-        linechart.getData().add(series);
-        updateGraph(rowinfo);
+        //linechart.getData().add(series);
+        //updateGraph(rowinfo);
 
 
         //Setting the data for the log table. 
-        logtable.setItems(rowinfo.getLogData());
+        //logtable.setItems(rowinfo.getLogData());
 
         sortByDateLogged();
 

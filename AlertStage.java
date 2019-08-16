@@ -1,3 +1,4 @@
+import Log.*;
 import Item.*; 
 import java.time.*; 
 import java.util.*;
@@ -243,11 +244,29 @@ public class AlertStage extends Stage{
                 }
             });
 
-            //if the user confirms the reorder log, we want to hide both the addstage and primarystage opaque's layers
-            //We also want to add the log to the LogList, with a type of "REORDER" and a quantity of "REORDER: + X"
             alertdelete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
                 public void handle(ActionEvent event) {
+                    //We want to add the log to the LogList, with a type of "REORDER" and a quantity of "REORDER: + X"
+                    String logtype = "REORDER";
+                    String reorderdate = datepicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    String reorderquan = "REORDER: +" + amountbox.getText();
+
+                    //Our current list of logs. We need to append the reorder to it!
+                    ObservableList<Log> currentloglist = rowinfo.getLogData();
+                    Log newlog = new Log(logtype, reorderdate, reorderquan);
+
+                    //Adding the log to our observablelist and then setting our item's log data to be this list.
+                    currentloglist.add(0, newlog);
+                    rowinfo.setLogData(currentloglist);
+                   
+                    //Adding the log to our SQL Database's Log table
+                    kettleclass.addLog(rowinfo.getID(), logtype, reorderdate, reorderquan);
+
+                    //Editing our SQL Database's Info table
+                    kettleclass.editInfoTable(rowinfo.getID(), rowinfo.getName(), rowinfo.getStatus(), rowinfo.getQuantity(), rowinfo.getMinimum(), rowinfo.getDelivery(), rowinfo.getDesc(), 0, rowinfo.getDateAdded()); 
+
+                    //if the user confirms the reorder log, we want to hide both the addstage and primarystage opaque's layers
                     kettleclass.hideAlertStage(0);
                     AddStage addStage = kettleclass.getAddStage();
                     kettleclass.hideAlertStage(1);
