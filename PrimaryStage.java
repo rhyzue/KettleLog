@@ -45,6 +45,8 @@ public class PrimaryStage extends Stage{
 	private static MenuBar kettlemenu = new MenuBar();
     private static Region opaqueLayer = new Region();
     private static Button removeBtn = new Button();
+    private static Button addBtn = new Button();
+    private static Button notifBtn = new Button();
     private static AnchorPane topBar = new AnchorPane();
     private ComboBox<String> optionBox;
 
@@ -148,15 +150,53 @@ public class PrimaryStage extends Stage{
         //================================================================================
 
         //ADD BUTTON
-        Button addBtn = new Button();
-        addBtn.setText("ADD");
+        Tooltip addTP = new Tooltip("Add Item");
+        addTP.setShowDelay(new javafx.util.Duration(100.0));
+        addBtn.setTooltip(addTP);
         addBtn.setId("addBtn");
+        Image addIcon = new Image("./Misc/addBtnIcon.png");
+        ImageView addImage = new ImageView();
+        addImage.setFitHeight(35);
+        addImage.setFitWidth(35);        
+        addImage.setImage(addIcon);
+        addImage.setPreserveRatio(true);
+        addImage.setSmooth(true);
+        addImage.setCache(true); 
+        addBtn.setStyle("-fx-background-color: transparent;");     
+        addBtn.setGraphic(addImage); 
 
         //REMOVE BUTTON
-        removeBtn = new Button();
-        removeBtn.setText("REMOVE");
+        Tooltip rmTP = new Tooltip("Remove Item");
+        rmTP.setShowDelay(new javafx.util.Duration(100.0));
+        removeBtn.setTooltip(rmTP);
         removeBtn.setId("removeBtn"); 
         removeBtn.setDisable(true);
+        Image rmIcon = new Image("./Misc/delBtnIcon.png");
+        ImageView rmImage = new ImageView();
+        rmImage.setFitHeight(35);
+        rmImage.setFitWidth(35);        
+        rmImage.setImage(rmIcon);
+        rmImage.setPreserveRatio(true);
+        rmImage.setSmooth(true);
+        rmImage.setCache(true); 
+        removeBtn.setStyle("-fx-background-color: transparent;");     
+        removeBtn.setGraphic(rmImage); 
+
+        //Notification
+        Tooltip notifTP = new Tooltip("Notifications");
+        notifTP.setShowDelay(new javafx.util.Duration(100.0));
+        notifBtn.setTooltip(notifTP);
+        notifBtn.setId("notifBtn"); 
+        Image notifIcon = new Image("./Misc/notifGreen.png");
+        ImageView notifImage = new ImageView();
+        notifImage.setFitHeight(35);
+        notifImage.setFitWidth(35);        
+        notifImage.setImage(notifIcon);
+        notifImage.setPreserveRatio(true);
+        notifImage.setSmooth(true);
+        notifImage.setCache(true); 
+        notifBtn.setStyle("-fx-background-color: transparent;");     
+        notifBtn.setGraphic(notifImage); 
 
         //================================================================================
         // ADD AND REMOVE BUTTON FUNCTIONALITY
@@ -166,12 +206,15 @@ public class PrimaryStage extends Stage{
         Handler eventHandler = new Handler();  
         addBtn.setOnAction(eventHandler);
         removeBtn.setOnAction(eventHandler);
+        notifBtn.setOnAction(eventHandler);
         
         //POSITIONS OF ADD AND REMOVE
-        AnchorPane.setRightAnchor(addBtn, 135.0);
-        AnchorPane.setBottomAnchor(addBtn, spacefromtable);
+        AnchorPane.setRightAnchor(addBtn, 100.0);
+        AnchorPane.setBottomAnchor(addBtn, spacefromtable-10);
         AnchorPane.setRightAnchor(removeBtn, 55.0);
-        AnchorPane.setBottomAnchor(removeBtn, spacefromtable);
+        AnchorPane.setBottomAnchor(removeBtn, spacefromtable-10);
+        AnchorPane.setRightAnchor(notifBtn, 155.0);
+        AnchorPane.setBottomAnchor(notifBtn, spacefromtable-5);
        
         //SEARCH BAR
         searchbar.setPrefWidth(w / 2.56);
@@ -229,7 +272,7 @@ public class PrimaryStage extends Stage{
         //TOPBAR GENERAL INFORMATION 
         topBar.setStyle("-fx-background-color: #004080;");
         topBar.setPrefSize(100, 150);
-        topBar.getChildren().addAll(logo, addBtn, removeBtn, searchbar, optionBox);
+        topBar.getChildren().addAll(logo, notifBtn, addBtn, removeBtn, searchbar, optionBox);
         
         //================================================================================
         // FINALIZATION
@@ -341,7 +384,10 @@ public class PrimaryStage extends Stage{
                     itemsToDelete=kettle.getCheckedItems();
                     kettle.showAlertStage(1, itemsToDelete, empty);
                     itemsToDelete.clear();
-                    break;    
+                    break;  
+                case "notifBtn":
+                    kettle.showNotifStage();
+                    break;  
                 default:
                     System.out.println("Default.");
             }

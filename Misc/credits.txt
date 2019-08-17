@@ -1,0 +1,2 @@
+addBtn: Freepik, Flaticon.com
+delBtn: Google, Flaticon.com

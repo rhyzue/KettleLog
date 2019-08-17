@@ -41,6 +41,7 @@ public class Kettlelog extends Application {
     private static AddStage addStage = new AddStage();
     private static AlertStage alertStage = new AlertStage();
     private static InsertData app = new InsertData();
+    private static NotifStage notifStage = new NotifStage();
 
     //================================================================================
     // METHODS
@@ -125,6 +126,21 @@ public class Kettlelog extends Application {
         alertStage.hide();
         itemsToDelete.clear();
     } 
+
+    public void showNotifStage() {
+
+        primaryStage.showOpaqueLayer();
+        //notifStage.updateNotifStage();
+
+        notifStage.show();
+    }
+
+    public void hideNotifStage() {
+
+        primaryStage.hideOpaqueLayer();
+
+        notifStage.hide();
+    }
 
     public boolean isItemChecked(){
         for(int i = 0; i<data.size(); i++){
@@ -456,6 +472,11 @@ public class Kettlelog extends Application {
             if(dbName.equals(".gitignore")){
                 System.out.println("not db file: skipped");
                 i++;
+                if(i==dblist.length && data.size()==0){
+                    System.out.println("no files!");
+                    data.add(empty);
+                    return;
+                }
                 if(i<dblist.length){
                     dbName = dblist[i].getName();
                     System.out.println(dbName);
