@@ -24,6 +24,7 @@ import javafx.scene.control.Alert.*;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.input.MouseEvent;
 import javafx.application.Application;
+import javafx.animation.*;
 import java.time.format.DateTimeFormatter;
 import javafx.collections.transformation.*;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -49,6 +50,9 @@ public class PrimaryStage extends Stage{
     private static Button notifBtn = new Button();
     private static AnchorPane topBar = new AnchorPane();
     private ComboBox<String> optionBox;
+    private static TranslateTransition tt = new TranslateTransition();
+    private static PauseTransition pt = new PauseTransition();
+    private static SequentialTransition st;
 
     private static TableView<Item> table = new TableView<Item>();
     private static final String[] titles = {"Name","Status","Quantity","Minimum"};
@@ -273,6 +277,18 @@ public class PrimaryStage extends Stage{
         topBar.setStyle("-fx-background-color: #004080;");
         topBar.setPrefSize(100, 150);
         topBar.getChildren().addAll(logo, notifBtn, addBtn, removeBtn, searchbar, optionBox);
+
+        //ANIMATION
+        tt.setDuration(javafx.util.Duration.millis(300));
+        tt.setNode(notifBtn);
+        tt.setFromY(0.0);
+        tt.setToY(-10.0);
+        tt.setCycleCount(4);
+        tt.setAutoReverse(true);
+        tt.setInterpolator(Interpolator.LINEAR);
+        pt.setDuration(javafx.util.Duration.millis(1000));
+        st = new SequentialTransition(tt, pt);
+        st.setCycleCount(-1);
         
         //================================================================================
         // FINALIZATION
@@ -334,6 +350,15 @@ public class PrimaryStage extends Stage{
 
     public void clearSearchBar(){
         searchbar.clear();
+    }
+
+    private void setNotifBounce(boolean bounce) {
+        if(bounce){
+            st.play();
+        }
+        else{
+            st.stop();
+        }
     }
 
     public void resetComboBox(){

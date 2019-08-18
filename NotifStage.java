@@ -2,10 +2,12 @@ import java.util.*;
 import javafx.util.*;
 import javafx.stage.*;
 import javafx.event.*;
+import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.text.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
+import javafx.scene.control.ScrollPane.*;
 import javafx.scene.paint.Color;
 
 import javafx.collections.transformation.*;
@@ -17,9 +19,12 @@ public class NotifStage extends Stage{
     private static Button clearBtn = new Button("Clear");
     private static Button closeBtn = new Button("Close");
     private static Label notifLabel = new Label("Notifications");
+    private static Font notifFont = new Font(20);
 
     private static AnchorPane topAnchor = new AnchorPane();
     private static AnchorPane bottomAnchor = new AnchorPane();
+    private static ScrollPane sp = new ScrollPane();
+    private static VBox notifVB = new VBox();
     private static BorderPane notifBP = new BorderPane();
 
     private static Kettlelog kettle = new Kettlelog();
@@ -33,8 +38,12 @@ public class NotifStage extends Stage{
         AnchorPane.setRightAnchor(clearBtn, 10.0);
         AnchorPane.setTopAnchor(clearBtn, 20.0);
 
-        AnchorPane.setLeftAnchor(notifLabel, 10.0);
+        notifLabel.setFont(notifFont);
+        notifLabel.setStyle("-fx-text-fill: white");
+        AnchorPane.setLeftAnchor(notifLabel, 20.0);
         AnchorPane.setTopAnchor(notifLabel, 20.0);
+        topAnchor.setStyle("-fx-background-color: #ff940c;");
+        topAnchor.setPrefHeight(60);
         topAnchor.getChildren().addAll(notifLabel, clearBtn);
 
 
@@ -44,12 +53,22 @@ public class NotifStage extends Stage{
 
         AnchorPane.setRightAnchor(closeBtn, 10.0);
         AnchorPane.setBottomAnchor(closeBtn, 10.0);
+        bottomAnchor.setStyle("-fx-background-color: #ff940c;");
+        bottomAnchor.setPrefHeight(50);
         bottomAnchor.getChildren().addAll(closeBtn);
 
+        notifVB.setPadding(new Insets(10.0, 10.0, 10.0, 10.0));
+        notifVB.setStyle("-fx-background-color: #ffe1bb;");
+        //notifVB.getChildren().addAll(notifList);
 
+        sp.setContent(notifVB);
+        sp.setFitToWidth(true);
+        sp.setFitToHeight(true);
 
         notifBP.setTop(topAnchor);
         notifBP.setBottom(bottomAnchor);
+        notifBP.setCenter(sp);
+        notifBP.setStyle("-fx-background-color: #ffe1bb;");
 
         this.setResizable(false);
         this.setScene(new Scene(notifBP, 500, 500));
