@@ -85,7 +85,7 @@ public class NotifStage extends Stage{
         AnchorPane.setRightAnchor(closeBtn, 10.0);
         AnchorPane.setBottomAnchor(closeBtn, 10.0);
         AnchorPane.setLeftAnchor(refreshBtn, 10.0);
-        AnchorPane.setBottomAnchor(refreshBtn, 10.0);
+        AnchorPane.setBottomAnchor(refreshBtn, 7.0);
         bottomAnchor.setStyle("-fx-background-color: #ff940c;");
         bottomAnchor.setPrefHeight(50);
         bottomAnchor.getChildren().addAll(refreshBtn, closeBtn);

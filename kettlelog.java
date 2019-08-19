@@ -463,7 +463,7 @@ public class Kettlelog extends Application {
         //We need to sort the loglist, putting the oldest logs at the front and newest at the front. 
         loglist = sortLogsByDate(loglist);
 
-        //Iterate backwords until we find our most recent consumption-type log.
+        //Iterate backwords until we find our most recent consumption-type log (which is guaranteed to exist.)
         int last = length - 1;
         for (int x = last; x >= 0; x--) {
             Log current3 = loglist.get(x);
@@ -506,7 +506,7 @@ public class Kettlelog extends Application {
 
             public int compare(Log log1, Log log2) {
 
-                DateFormat format = new SimpleDateFormat("yyyy-MM-DD", Locale.US);
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                 java.util.Date date1 = null;
                 java.util.Date date2 = null;
 
@@ -600,6 +600,95 @@ public class Kettlelog extends Application {
         }
 
         return consumptiononly;
+    }
+
+    //this method takes in an item's list of logs and determines its average daily consumption according to a formula.
+    //==================================================================================
+    // FORMULA: (Starting Inventory + Reordered Amount - Final Inventory) / Days Elapsed
+    //==================================================================================
+    public void getADC(String id) {
+        //First, let's get our loglist, sort it, and remove the useless reorders.
+        ObservableList<Log> loglist = getLogs(id);
+        loglist = sortLogsByDate(loglist); //logs are now sorted from oldest to newest
+        loglist = trimLogList(loglist); //all useless reorders removed.
+        int length = loglist.size();
+
+        //1. The first step is to calculate our Starting Inventory.
+        int startinv = getStartInv(loglist);
+        System.out.println("Your starting inventory is " + startinv);
+
+        int reorderamount = getReorderedAmount(loglist);
+        System.out.println("Your total reordered amount is " + reorderamount);
+
+    }
+
+    //this method takes in an observablelist and trims it so that all useless reorder logs are removed. 
+    //Reorder logs are considered useless if they are before the first consumption-type log.
+    public ObservableList<Log> trimLogList(ObservableList<Log> loglist){
+        int length = loglist.size();
+        int index = 0;
+        //Search through our loglist and find the first consumption log. 
+        for (int i = 0; i < length; i++) {
+            Log current = loglist.get(i);
+            if ((current.getLogType()).equals("CONSUMPTION")) {
+                index = i;
+                break;
+            }
+        }
+
+        ArrayList<Log> logAL = new ArrayList<Log>(loglist.subList(index, length));
+        loglist = FXCollections.observableArrayList(logAL);
+        //the length of the loglist has been changed so we need to factor that in.
+        int length2 = loglist.size();
+
+        System.out.println("ABOUT TO PRINT OUT THE TRIMMED LIST.");
+        for (int x = 0; x < length2; x++) {
+            System.out.println((loglist.get(x)).getDateLogged());
+            System.out.println((loglist.get(x)).getQuanLogged());
+        }
+
+        return loglist;
+    }
+
+    //helper method that will get our starting inventory given a SORTED list of logs (oldest -> newest)
+    public int getStartInv(ObservableList<Log> loglist) {
+        //we just need to return oldest's quantity, which will be the first of our trimmed list.
+        Log oldestconsumption = loglist.get(0);
+        String startinvstr = oldestconsumption.getQuanLogged();
+        int startinv = Integer.parseInt(startinvstr);
+        return startinv;
+    }
+
+    //this method will take in a sorted loglist and calculate the total reordered amount for the item.
+    public int getReorderedAmount(ObservableList<Log> loglist) {
+        //Let's first extract all the reorder-type logs from our loglist and append them to a new one. 
+        int reordertotal = 0;
+        int length = loglist.size();
+        ObservableList<Log> onlyreorders = FXCollections.observableArrayList();
+        for (int i = 0; i < length; i++) {
+            Log current = loglist.get(i);
+            if ((current.getLogType()).equals("REORDER")) {
+                onlyreorders.add(current);
+            }
+        }
+        //Once extracted, we need to add up their number parts together.
+        int reorderlength = onlyreorders.size();
+        for (int j = 0; j < reorderlength; j++) {
+            Log currentreorder = onlyreorders.get(j);
+            String reorderquan = currentreorder.getQuanLogged();
+            String stringquantity = reorderquan.substring(reorderquan.lastIndexOf('+') + 1); //everything after the plus sign, so just the number
+            int intquantity = Integer.parseInt(stringquantity);
+            reordertotal = reordertotal + intquantity;
+        }
+
+        return reordertotal;
+    }
+
+    //method that updates final quantity, ADC, ROP, ROD all at once.
+    public void updateEverything(String id){
+        setUpdatedQuan(id);
+        getADC(id);
+
     }
 
     //the purpose of this method is to take data from a .db database and load it into our code. 

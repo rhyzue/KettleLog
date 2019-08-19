@@ -328,6 +328,8 @@ public class PrimaryStage extends Stage{
 
     public void updatePrimaryStage(ObservableList<Item> data){
 
+        setNotifBounce(true);
+
         if(!data.get(0).getName().equals("")){ //if empty
             AddButtonCell cell = new AddButtonCell(); 
             buttoncolumn.setCellFactory(cell);

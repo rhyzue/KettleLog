@@ -643,7 +643,7 @@ public class AddStage extends Stage{
                                 //Adding the log to our SQL Database.
                                 kettle.addLog(rowinfo.getID(), logid, logtype, newdate, curQuan);
                                 //Changing the item's quantity if necessary.
-                                kettle.setUpdatedQuan(rowinfo.getID());
+                                kettle.updateEverything(rowinfo.getID());
                                 //Even though the yes checkbox is selected, the user can still edit the item, so we need to change our SQL database again.
                                 kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, rowinfo.getQuantity(), minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
                                 logdateunique = 0;

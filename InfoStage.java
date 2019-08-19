@@ -336,38 +336,46 @@ public class InfoStage extends Stage{
                     String newdate = event.getNewValue();
                     String olddate = event.getOldValue();
 
-                    //We only want to commit the edit if the date is in the correct format.
-                    if (isValidDate(newdate) && !dateExists(newdate, id)){
-                        Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
-                        selectedlog.setDateLogged(newdate);
-                        //System.out.println(selectedlog.getDateLogged());
-                        kettle.updateLog(id, "logdate", newdate, selectedlog.getID());
-                        logtable.requestFocus();
-                        cannotdelete.setVisible(false);
-                        kettle.setUpdatedQuan(id);
-                        sortByDateLogged();
-                    }
-                    else {
-                        //If the edit is NOT valid...
-                        int row = event.getTablePosition().getRow();
-                        Log oldlog = event.getTableView().getItems().get(row);
-                        logtable.getItems().set(row, oldlog);
-                        logtable.requestFocus();
+                    int row = event.getTablePosition().getRow();
+                    Log editedlog = event.getTableView().getItems().get(row);
 
-                        //If it's a reorder, it doesn't matter. Let the edit go through! 
-                        if ((oldlog.getLogType()).equals("REORDER")) {
+                    //REORDER TYPE, DATE MUST BE IN CORRECT FORMAT, BUT CAN BE ANY DATE.
+                    if ((editedlog.getLogType()).equals("REORDER")) {
+                        if (isValidDate(newdate)) {
                             Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
                             selectedlog.setDateLogged(newdate);
                             //System.out.println(selectedlog.getDateLogged());
                             kettle.updateLog(id, "logdate", newdate, selectedlog.getID());
                             logtable.requestFocus();
                             cannotdelete.setVisible(false);
-                            kettle.setUpdatedQuan(id);
+                            kettle.updateEverything(id);
                             sortByDateLogged();
+                        } else {
+                            logtable.getItems().set(row, editedlog);
+                            logtable.requestFocus();
+                            cannotdelete.setText(" * Date must be in YYYY-MM-DD format. Do not include any spaces!");
+                            cannotdelete.setVisible(true);
                         }
+                    }
+
+                    //CONSUMPTION TYPE, DATE MUST BE CORRECT FORMAT & NOT SHARE DATE WITH OTHER CONSUMPTION LOG.
+                    else if (isValidDate(newdate) && !dateExists(newdate, id)){
+                        Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
+                        selectedlog.setDateLogged(newdate);
+                        //System.out.println(selectedlog.getDateLogged());
+                        kettle.updateLog(id, "logdate", newdate, selectedlog.getID());
+                        logtable.requestFocus();
+                        cannotdelete.setVisible(false);
+                        kettle.updateEverything(id);
+                        sortByDateLogged();
+                    }
+                    else {
+                        //If the edit is NOT valid...
+                        logtable.getItems().set(row, editedlog);
+                        logtable.requestFocus();
 
                         //if user entered an existing date for a CONSUMPTION-TYPE log it is not valid.
-                        else if(dateExists(newdate, id)){
+                        if(dateExists(newdate, id)){
                             cannotdelete.setText(" * This date already has a corresponding non-reorder log.");
                         }
                         else{
@@ -395,6 +403,7 @@ public class InfoStage extends Stage{
 
                     int row = event.getTablePosition().getRow();
                     Log editedlog = event.getTableView().getItems().get(row);
+
                     if ((editedlog.getLogType()).equals("REORDER")) {
                         if (validReorderQuan(newquantity)) {
                             Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
@@ -402,7 +411,7 @@ public class InfoStage extends Stage{
                             kettle.updateLog(id, "logquan", newquantity, selectedlog.getID());
                             logtable.requestFocus();
                             cannotdelete.setVisible(false);
-                            kettle.setUpdatedQuan(id);
+                            kettle.updateEverything(id);
                             sortByDateLogged();
                         } else {
                             logtable.getItems().set(row, editedlog);
@@ -412,14 +421,14 @@ public class InfoStage extends Stage{
                         }
                     }
 
-                    //We only want to commit the edit if the quantity is a number. 
+                    //CONSUMPTION TYPE ~ we only want to commit the edit if the quantity is a number. 
                     else if (newquantity.chars().allMatch( Character::isDigit )) {
                         Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
                         selectedlog.setQuanLogged(newquantity);
                         kettle.updateLog(id, "logquan", newquantity, selectedlog.getID());
                         logtable.requestFocus();
                         cannotdelete.setVisible(false);
-                        kettle.setUpdatedQuan(id);
+                        kettle.updateEverything(id);
                         sortByDateLogged();
                     } 
 
@@ -611,7 +620,7 @@ public class InfoStage extends Stage{
                         String logid = finalselection.getID();
                         //System.out.println(logid);
                         kettle.deleteLog(itemid, logid);
-                        kettle.setUpdatedQuan(id);
+                        kettle.updateEverything(id);
                         sortByDateLogged();
                     } 
                     else {

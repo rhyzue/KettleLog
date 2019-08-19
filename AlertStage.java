@@ -294,8 +294,12 @@ public class AlertStage extends Stage{
                         //Editing our SQL Database's Info table
                         kettleclass.editInfoTable(rowinfo.getID(), rowinfo.getName(), rowinfo.getStatus(), rowinfo.getQuantity(), rowinfo.getMinimum(), rowinfo.getDelivery(), rowinfo.getDesc(), 0, rowinfo.getDateAdded()); 
 
-                        //Also, update our item's quantity if necessary.
-                        kettleclass.setUpdatedQuan(rowinfo.getID());
+                        //Also, update everything since a new reorder has been added.
+                        kettleclass.updateEverything(rowinfo.getID());
+
+                        //Also, update the table from infostage.
+                        InfoStage infoStage = kettleclass.getInfoStage();
+                        
 
                         //if the user confirms the reorder log, we want to hide both the addstage and primarystage opaque's layers
                         kettleclass.hideAlertStage(0);
