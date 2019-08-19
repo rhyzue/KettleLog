@@ -5,28 +5,46 @@ import javafx.geometry.*;
 import javafx.scene.text.*;
 import javafx.scene.image.*;
 import javafx.scene.paint.*;
+import javafx.scene.layout.*;
 import javafx.scene.control.*;
 
 public class Notif {
 
-	public HBox Notif(){ //should take in string id: id = empty+num on initial generation, will be replaced later on
-        NotifHandler notifHandler = new NotifHandler();
+	private HBox hb;
+    private Button readBtn = new Button("Mark read");
+    private Label message = new Label("Message");
+    private Button linkBtn = new Button();
+    private Image linkBtnImg = new Image("./Misc/link.png");
+    private ImageView linkImg = new ImageView();  
+    private Tooltip linkTP = new Tooltip("View");
+    private Button delBtn = new Button();
+    private Image delBtnImg = new Image("./Misc/delete2.png");
+    private ImageView delImg = new ImageView();    
+    private Tooltip delTP = new Tooltip("Delete");
 
-        HBox hb = new HBox(10);
-        Button readBtn = new Button("Mark read");
+    private String linkId;
+
+	public Notif(){
+        this.hb = makeNotifBox();
+        this.linkId = "No ID given";
+    }
+
+    public Notif(String id){
+    	this.hb= makeNotifBox();
+    	this.linkId=id;
+    }
+
+    public HBox makeNotifBox(){
+    	hb = new HBox(10);
+    	NotifHandler notifHandler = new NotifHandler();
+
         readBtn.setPrefWidth(100);
-        readBtn.setId("READ-"+id); //later in switch/case, if item contains readbtn, split and update status
+        readBtn.setId("readBtn"); 
         readBtn.setOnAction(notifHandler);
 
-        Label message = new Label(id);
         message.setPrefWidth(250.0);
         message.setPrefHeight(30.0);
-        message.setId("MSG-"+id); //use scene.lookup to set message in update notifstage
 
-        Button linkBtn = new Button();
-
-        Image linkBtnImg = new Image("./Misc/link.png");
-        ImageView linkImg = new ImageView();          
         linkBtn.setStyle("-fx-background-color: transparent;");             
             linkImg.setImage(linkBtnImg);
             linkImg.setFitWidth(20);
@@ -35,16 +53,11 @@ public class Notif {
             linkImg.setCache(true); 
         linkBtn.setGraphic(linkImg);
 
-        Tooltip linkTP = new Tooltip("View");
         linkTP.setShowDelay(new javafx.util.Duration(100.0));
         linkBtn.setTooltip(linkTP);   
-        linkBtn.setId("LINK-"+id);
+        linkBtn.setId("linkBtn");
         linkBtn.setOnAction(notifHandler);
 
-        Button delBtn = new Button();
-
-        Image delBtnImg = new Image("./Misc/delete2.png");
-        ImageView delImg = new ImageView();          
         delBtn.setStyle("-fx-background-color: transparent;");             
             delImg.setImage(delBtnImg);
             delImg.setFitWidth(20);
@@ -53,20 +66,54 @@ public class Notif {
             delImg.setCache(true); 
         delBtn.setGraphic(delImg); 
 
-        Tooltip delTP = new Tooltip("Delete");
         delTP.setShowDelay(new javafx.util.Duration(100.0));
         delBtn.setTooltip(delTP);  
         delBtn.setOnAction(notifHandler);
-        delBtn.setId("DEL-"+id);
+        delBtn.setId("delBtn");
 
         hb.setStyle("-fx-background-color: #ffbe5c;");
         hb.setPadding(new Insets(10, 10, 10, 10));
         hb.getChildren().addAll(readBtn, message, linkBtn, delBtn);
-        hb.setId("HB-"+id);
-        return hb;
+    	return hb;
     }
 
+    public HBox getNotifBox(){
+    	return hb;
+    }
+
+    public void setNotifVisible(boolean value){
+    	hb.setVisible(value);
+    }
+
+    public void setMessage(String text){
+    	message.setText(text);
+    }
+
+
     public class NotifHandler implements EventHandler<ActionEvent>{
+    	@Override
+        public void handle(ActionEvent e) {
 
+            String itemClicked = ((Control)e.getSource()).getId();
 
+            switch(itemClicked){
+            	case "readBtn":
+	            	if(hb.getOpacity()==0.5){
+	                    hb.setOpacity(1);
+	                    readBtn.setText("Mark Read");
+	                }
+	                else{
+	                    hb.setOpacity(0.5);
+	                    readBtn.setText("Mark Unread");
+	                }
+            		break;
+            	case "delBtn":
+            		hb.setVisible(false);
+            		break;
+	            default:
+	            	System.out.println("other");
+
+            }
+        }
+    }
 }
