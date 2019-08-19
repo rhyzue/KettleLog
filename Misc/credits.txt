@@ -1,2 +1,3 @@
 addBtn: Freepik, Flaticon.com
 delBtn: Google, Flaticon.com
+linkBtn: Gregor Cresnar, Flaticon.com

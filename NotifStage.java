@@ -5,13 +5,11 @@ import javafx.event.*;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.text.*;
+import javafx.scene.image.*;
 import javafx.scene.paint.*;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.control.ScrollPane.*;
-
-
-
 import javafx.collections.transformation.*;
 
 /*
@@ -29,6 +27,7 @@ public class NotifStage extends Stage{
     //components
     private static Button clearBtn = new Button("Clear");
     private static Button closeBtn = new Button("Close");
+    private static Button refreshBtn = new Button();
     private static Label notifLabel = new Label("Notifications");
     private static Font notifFont = new Font(20);
 
@@ -40,7 +39,7 @@ public class NotifStage extends Stage{
     private static BorderPane notifBP = new BorderPane();
     
     //controls
-    private static List<HBox> notifList = new ArrayList<>();
+    private static HBox[] notifArray = new HBox[20];
 
     private static Scene notifScene;
     private static Kettlelog kettle = new Kettlelog();
@@ -62,27 +61,45 @@ public class NotifStage extends Stage{
         topAnchor.setPrefHeight(60);
         topAnchor.getChildren().addAll(notifLabel, clearBtn);
 
-
         //BOTTOM (CLOSE BTN)
         closeBtn.setId("closeBtn");
         closeBtn.setOnAction(notifHandler);
 
+        Image refreshImg = new Image("./Misc/refreshBlack.png");
+        ImageView refreshImgView = new ImageView();
+            refreshBtn.setStyle("-fx-background-color: transparent;");             
+            refreshImgView.setImage(refreshImg);
+            refreshImgView.setFitWidth(25);
+            refreshImgView.setPreserveRatio(true);
+            refreshImgView.setSmooth(true);
+            refreshImgView.setCache(true); 
+            refreshBtn.setGraphic(refreshImgView);
+
+        Tooltip refreshTP = new Tooltip("Refresh");
+        refreshTP.setShowDelay(new javafx.util.Duration(100.0));
+        refreshBtn.setTooltip(refreshTP); 
+
+        refreshBtn.setId("refreshBtn");
+        refreshBtn.setOnAction(notifHandler);
+
         AnchorPane.setRightAnchor(closeBtn, 10.0);
         AnchorPane.setBottomAnchor(closeBtn, 10.0);
+        AnchorPane.setLeftAnchor(refreshBtn, 10.0);
+        AnchorPane.setBottomAnchor(refreshBtn, 10.0);
         bottomAnchor.setStyle("-fx-background-color: #ff940c;");
         bottomAnchor.setPrefHeight(50);
-        bottomAnchor.getChildren().addAll(closeBtn);
+        bottomAnchor.getChildren().addAll(refreshBtn, closeBtn);
 
 
         //VBOX CONTENTS (NOTIFS)
-        notifVB.setPadding(new Insets(10.0, 25.0, 10.0, 25.0));
+        notifVB.setPadding(new Insets(10.0, 20.0, 10.0, 20.0));
         notifVB.setStyle("-fx-background-color: #ffe1bb;");
 
         for(int i = 0; i<20; i++){
-            String noID = "Empty"+String.valueOf(i);
-            notifList.add(generateNotifBox(noID));
+            String notifID = "NOTIF"+String.valueOf(i);
+            notifArray[i] = generateNotifBox(notifID);
         }
-        notifVB.getChildren().addAll(notifList);
+        notifVB.getChildren().addAll(notifArray);
 
         //SETTING CONTENT OF SCROLLPANE
         sp.setContent(notifVB);
@@ -119,18 +136,50 @@ public class NotifStage extends Stage{
         readBtn.setId("READ-"+id); //later in switch/case, if item contains readbtn, split and update status
         readBtn.setOnAction(notifHandler);
 
-        Label message = new Label("Reorder needed for item: Gloves");
-        message.setPrefWidth(240.0);
+        Label message = new Label(id);
+        message.setPrefWidth(250.0);
         message.setPrefHeight(30.0);
         message.setId("MSG-"+id); //use scene.lookup to set message in update notifstage
 
-        Button linkBtn = new Button("View");
+        Button linkBtn = new Button();
+
+        Image linkBtnImg = new Image("./Misc/link.png");
+        ImageView linkImg = new ImageView();          
+        linkBtn.setStyle("-fx-background-color: transparent;");             
+            linkImg.setImage(linkBtnImg);
+            linkImg.setFitWidth(20);
+            linkImg.setPreserveRatio(true);
+            linkImg.setSmooth(true);
+            linkImg.setCache(true); 
+        linkBtn.setGraphic(linkImg);
+
+        Tooltip linkTP = new Tooltip("View");
+        linkTP.setShowDelay(new javafx.util.Duration(100.0));
+        linkBtn.setTooltip(linkTP);   
         linkBtn.setId("LINK-"+id);
         linkBtn.setOnAction(notifHandler);
 
+        Button delBtn = new Button();
+
+        Image delBtnImg = new Image("./Misc/delete2.png");
+        ImageView delImg = new ImageView();          
+        delBtn.setStyle("-fx-background-color: transparent;");             
+            delImg.setImage(delBtnImg);
+            delImg.setFitWidth(20);
+            delImg.setPreserveRatio(true);
+            delImg.setSmooth(true);
+            delImg.setCache(true); 
+        delBtn.setGraphic(delImg); 
+
+        Tooltip delTP = new Tooltip("Delete");
+        delTP.setShowDelay(new javafx.util.Duration(100.0));
+        delBtn.setTooltip(delTP);  
+        delBtn.setOnAction(notifHandler);
+        delBtn.setId("DEL-"+id);
+
         hb.setStyle("-fx-background-color: #ffbe5c;");
         hb.setPadding(new Insets(10, 10, 10, 10));
-        hb.getChildren().addAll(readBtn, message, linkBtn);
+        hb.getChildren().addAll(readBtn, message, linkBtn, delBtn);
         hb.setId("HB-"+id);
         return hb;
     }
@@ -145,6 +194,9 @@ public class NotifStage extends Stage{
                 kettle.hideNotifStage();
             }
             else if(itemClicked.equals("clearBtn")){
+
+            }
+            else if(itemClicked.equals("refreshBtn")){
 
             }
             else if(itemClicked.contains("READ")){
@@ -162,6 +214,15 @@ public class NotifStage extends Stage{
                     hb.setOpacity(0.5);
                     rd.setText("Mark Unread");
                 }
+
+            }
+            else if(itemClicked.contains("DEL")){
+                //get the id of the hbox, and lower its opacity
+                String lookupID = itemClicked.split("-")[1];
+                HBox hb = (HBox)notifScene.lookup("#HB-"+lookupID);
+                Button rd = (Button) notifScene.lookup("#DEL-"+lookupID);
+
+                hb.setVisible(false);
 
             }
 
