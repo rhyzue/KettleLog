@@ -137,6 +137,9 @@ public class Kettlelog extends Application {
         primaryStage.showOpaqueLayer();
         //notifStage.updateNotifStage();
 
+        notifStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250); //250 is width divided by 2
+        notifStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 250) + extraheight); 
+
         notifStage.show();
     }
 
