@@ -56,6 +56,7 @@ public class Kettlelog extends Application {
     @Override
     public void start(Stage setup) {
         loadData();
+        app.addNotification("Welcome to Kettlelog!", "None", 0, 0);
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.show();
         primaryStage.updatePrimaryStage(data);
@@ -317,10 +318,10 @@ public class Kettlelog extends Application {
         try {
             String url = "jdbc:sqlite:./db/kettledb/" + dbName;
             conn = DriverManager.getConnection(url);
-            System.out.println("Connection to SQLite has been established.");
+            System.out.println(dbName+": Connection to SQLite has been established.");
             
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("getDataBase: "+e.getMessage());
         }
 
         return conn;
@@ -368,6 +369,32 @@ public class Kettlelog extends Application {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    public void createNotifDB(){
+    	System.out.println("trying to create notif.db");
+    	String url = "jdbc:sqlite:./db/kettledb/notifications.db";
+        Connection conn = null;
+
+        String notifTableSQL = "CREATE TABLE IF NOT EXISTS notifData ("
+        	+ "message text not null," 
+        	+ "itemId text not null,"
+        	+ "readStatus int not null,"
+        	+ "notifId int primary key"
+        	+ ");";
+
+        try {
+            conn = DriverManager.getConnection(url);
+            Statement stmt = conn.createStatement();
+            //creating our two tables in the database
+            stmt.execute(notifTableSQL);
+            System.out.println("Notification table has been created");
+            stmt.close();
+            conn.close();
+ 
+        } catch (SQLException e) {
+            System.out.println("createNotifDB: "+ e.getMessage());
+        }
     }
 
     //This method will add a log to certain database's Log Table, specified by the ID parameter. 
@@ -436,6 +463,9 @@ public class Kettlelog extends Application {
         }
     }
 
+    //================================================================================
+    // CALCULATIONS & ALGORITHM
+    //================================================================================
     //This method determines which quantity should be set for the item.
     public String getNewQuan(String id, String mostrecentdate){
         int added = 0;
@@ -707,17 +737,21 @@ public class Kettlelog extends Application {
         //if no files, exit function
         if (dblist.length==0){
             System.out.println("no files!");
+            createNotifDB();
             data.add(empty); //if there's no files, add empty
             return;
         }
 
+        boolean hasNotifDB = false;
         for (int i = 0; i < dblist.length; i++) { //loop through all dbs
             String dbName = dblist[i].getName();
             System.out.println("Loading data");
             System.out.println(dbName);
 
-            if(dbName.equals(".gitignore")){
-                System.out.println("not db file: skipped");
+            if(dbName.equals(".gitignore")|| dbName.equals("notifications.db")){
+                if(dbName.equals("notifications.db")){
+                	hasNotifDB = true;
+                }
                 i++;
                 if(i==dblist.length && data.size()==0){
                     System.out.println("no files!");
@@ -787,9 +821,12 @@ public class Kettlelog extends Application {
                 conn.close();
             }
             catch (SQLException e) {
-                System.out.println(e.getMessage());
-                System.out.println("not working.");
+                System.out.println("loadData: "+e.getMessage());
             }
+        }
+
+        if(hasNotifDB==false){ //make notification db
+        	createNotifDB();
         }
     }
 

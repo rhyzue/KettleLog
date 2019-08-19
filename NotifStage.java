@@ -124,6 +124,7 @@ public class NotifStage extends Stage{
     }
 
     public void updateNotifStage(){
+        //load notif data
         
 
     }

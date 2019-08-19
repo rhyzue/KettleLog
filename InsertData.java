@@ -129,5 +129,69 @@ public class InsertData {
             }         
     }
 
+    public void addNotification(String message, String itemId, int readStatus, int notifId){
+
+        String command = "INSERT INTO notifData(message, itemId, readStatus, notifId) VALUES(?,?,?,?)";
+
+        try {
+            String filename = "notifications.db";
+            Connection conn = kettle.getDataBase(filename);
+            PreparedStatement v = conn.prepareStatement(command);
+
+            //Setting our insertion values here.
+                v.setString(1, message);
+                v.setString(2, itemId);
+                v.setInt(3, readStatus);
+                v.setInt(4, notifId);
+
+            v.executeUpdate();
+
+            v.close();
+            conn.close();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+        try {
+            //Connect to our database, so then we can access the tables in there directly
+            Connection conn = kettle.getDataBase("notifications.db");
+            Statement stmt = conn.createStatement();
+            System.out.println("Executing...");
+            stmt.execute(command);
+            System.out.println("Done");
+            stmt.close();
+            conn.close();
+
+        } catch (SQLException e) {
+            System.out.println("addNotification: "+ e.getMessage());
+        }
+    }
+
+}
+
+*/

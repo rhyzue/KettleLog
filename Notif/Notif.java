@@ -23,15 +23,18 @@ public class Notif {
     private Tooltip delTP = new Tooltip("Delete");
 
     private String linkId;
+    private String messageStr;
+    private int readStatus;
+    private int notifId;
 
 	public Notif(){
         this.hb = makeNotifBox();
         this.linkId = "No ID given";
     }
 
-    public Notif(String id){
+    public Notif(String itemId){
     	this.hb= makeNotifBox();
-    	this.linkId=id;
+    	this.linkId=itemId;
     }
 
     public HBox makeNotifBox(){
