@@ -66,6 +66,8 @@ public class AlertStage extends Stage{
     private static Text instruction2 = new Text();
     private static DatePicker datepicker = new DatePicker();
     private static TextField amountbox = new TextField();
+    private static Text emptywarning = new Text();
+    private static String id;
 
     private static Kettlelog kettleclass = new Kettlelog();
 
@@ -153,15 +155,21 @@ public class AlertStage extends Stage{
 
         instruction1.setText(" * The date should be when the reorder ARRIVES, not when it was ordered.");
         instruction1.setFont(new Font(12));
-        instruction1.setFill(Color.BLACK);
+        instruction1.setFill(Color.SLATEGREY);
         AnchorPane.setBottomAnchor(instruction1, 40.0);
         AnchorPane.setLeftAnchor(instruction1, 50.0);
 
         instruction2.setText(" * Unlike regular logs, a reorder log can share a date with any other log.");
         instruction2.setFont(new Font(12));
-        instruction2.setFill(Color.BLACK);
+        instruction2.setFill(Color.SLATEGREY);
         AnchorPane.setBottomAnchor(instruction2, 20.0);
         AnchorPane.setLeftAnchor(instruction2, 50.0);
+
+        emptywarning.setText("* You must specify an amount received.");
+        emptywarning.setFont(new Font(12));
+        emptywarning.setFill(Color.BLACK);
+        AnchorPane.setBottomAnchor(emptywarning, 20.0);
+        AnchorPane.setLeftAnchor(emptywarning, 20.0);
 
         alertcenter.getChildren().addAll(kettle, reordervbox1, reordervbox2, alertcentervbox, delivery, instruction1, instruction2);
 
@@ -179,7 +187,7 @@ public class AlertStage extends Stage{
         AnchorPane.setTopAnchor(alertbbx, 7.5);
         
         alertbstrip.setPrefSize(alertwidth, 50); //(width, height)
-        alertbstrip.getChildren().addAll(alertbbx);
+        alertbstrip.getChildren().addAll(emptywarning, alertbbx);
 
         alertpane.setTop(alerttstrip);
         alertpane.setCenter(alertcenter);
@@ -197,7 +205,7 @@ public class AlertStage extends Stage{
 
         //POPUPTYPE 0 = REORDERING ITEM
         //POPUPTYPE 1 = DELETING ITEM(S)
-
+        id = rowinfo.getID();
         alertcentervbox.setVisible(false);
         reordervbox1.setVisible(false);
         reordervbox2.setVisible(false);
@@ -205,6 +213,9 @@ public class AlertStage extends Stage{
         delivery.setVisible(false);
         instruction1.setVisible(false);
         instruction2.setVisible(false);
+        emptywarning.setVisible(false);
+
+        datepicker.setValue(LocalDate.now());
 
         //================================================================================
         // LOGGING A REORDER
@@ -216,6 +227,7 @@ public class AlertStage extends Stage{
             alerttstrip.setStyle(stripcolour);
             alertcenter.setStyle(alertmidcolour);
             alertbstrip.setStyle(stripcolour);
+            amountbox.setText("");
 
             reordervbox1.setVisible(true);
             reordervbox2.setVisible(true);
@@ -241,36 +253,60 @@ public class AlertStage extends Stage{
                     delivery.setVisible(false);
                     instruction1.setVisible(false);
                     instruction2.setVisible(false); 
+                    emptywarning.setVisible(false);
                 }
             });
 
             alertdelete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
                 public void handle(ActionEvent event) {
-                    //We want to add the log to the LogList, with a type of "REORDER" and a quantity of "REORDER: + X"
-                    String logtype = "REORDER";
-                    String reorderdate = datepicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    String reorderquan = "REORDER: +" + amountbox.getText();
+                    boolean incomplete = false;
+                    String logid = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
 
-                    //Our current list of logs. We need to append the reorder to it!
-                    ObservableList<Log> currentloglist = rowinfo.getLogData();
-                    Log newlog = new Log(logtype, reorderdate, reorderquan);
+                    String amountnum = amountbox.getText();
+                    //If the amount received textbox is empty, display the error message. 
+                    if (amountnum.isEmpty()) {
+                        incomplete = true;
+                    }
 
-                    //Adding the log to our observablelist and then setting our item's log data to be this list.
-                    currentloglist.add(0, newlog);
-                    rowinfo.setLogData(currentloglist);
-                   
-                    //Adding the log to our SQL Database's Log table
-                    kettleclass.addLog(rowinfo.getID(), logtype, reorderdate, reorderquan);
+                    if (incomplete) {
+                        emptywarning.setVisible(true);
+                    }
 
-                    //Editing our SQL Database's Info table
-                    kettleclass.editInfoTable(rowinfo.getID(), rowinfo.getName(), rowinfo.getStatus(), rowinfo.getQuantity(), rowinfo.getMinimum(), rowinfo.getDelivery(), rowinfo.getDesc(), 0, rowinfo.getDateAdded()); 
+                    else {
 
-                    //if the user confirms the reorder log, we want to hide both the addstage and primarystage opaque's layers
-                    kettleclass.hideAlertStage(0);
-                    AddStage addStage = kettleclass.getAddStage();
-                    kettleclass.hideAlertStage(1);
-                    kettleclass.hideAddStage();
+                        //We want to add the log to the LogList, with a type of "REORDER" and a quantity of "REORDER: + X"
+                        String logtype = "REORDER";
+                        String reorderdate = datepicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String reorderquan = "REORDER: +" + amountbox.getText();
+
+                        //Our current list of logs. We need to append the reorder to it!
+                        ObservableList<Log> currentloglist = rowinfo.getLogData();
+                        Log newlog = new Log(logid, logtype, reorderdate, reorderquan);
+
+                        //Adding the log to our observablelist and then setting our item's log data to be this list.
+                        currentloglist.add(0, newlog);
+                        rowinfo.setLogData(currentloglist);
+                       
+                        //Adding the log to our SQL Database's Log table
+                        kettleclass.addLog(rowinfo.getID(), logid, logtype, reorderdate, reorderquan);
+
+                        //Editing our SQL Database's Info table
+                        kettleclass.editInfoTable(rowinfo.getID(), rowinfo.getName(), rowinfo.getStatus(), rowinfo.getQuantity(), rowinfo.getMinimum(), rowinfo.getDelivery(), rowinfo.getDesc(), 0, rowinfo.getDateAdded()); 
+
+                        //Also, update our item's quantity if necessary.
+                        kettleclass.setUpdatedQuan(rowinfo.getID());
+
+                        //if the user confirms the reorder log, we want to hide both the addstage and primarystage opaque's layers
+                        kettleclass.hideAlertStage(0);
+                        AddStage addStage = kettleclass.getAddStage();
+                        kettleclass.hideAlertStage(1);
+                        kettleclass.hideAddStage();
+                        emptywarning.setVisible(false);
+
+                    }
+
+                    
                 }
             });
 
@@ -318,6 +354,7 @@ public class AlertStage extends Stage{
                     delivery.setVisible(false);
                     instruction1.setVisible(false);
                     instruction2.setVisible(false);
+                    emptywarning.setVisible(false);
                 }
             });
 
@@ -334,6 +371,7 @@ public class AlertStage extends Stage{
                     delivery.setVisible(false);
                     instruction1.setVisible(false);
                     instruction2.setVisible(false);
+                    emptywarning.setVisible(false);
                 }
             });
 

@@ -1,5 +1,6 @@
 import Log.*;
 import Item.*;
+import java.util.*;
 import java.io.*;
 import java.sql.*;
 import javafx.stage.*;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javafx.collections.*;
 import javafx.application.Application;
+import java.text.*;
 
 public class Kettlelog extends Application {
     @SuppressWarnings("unchecked")
@@ -41,6 +43,7 @@ public class Kettlelog extends Application {
     private static AddStage addStage = new AddStage();
     private static AlertStage alertStage = new AlertStage();
     private static InsertData app = new InsertData();
+    private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
 
     //================================================================================
     // METHODS
@@ -211,7 +214,7 @@ public class Kettlelog extends Application {
                 // The zero is referring to the starred. When a brand new item is added, the item is obviously not starred so it will be 0. 
                 // 0 -> Not Starred, 1 -> Starred
                 app.insertinfo(added.getID(), added.getName(), added.getStatus(), added.getQuantity(), added.getMinimum(), added.getDelivery(), added.getDesc(), 0, added.getDateAdded());
-                app.insertlogs(added.getID(), "CONSUMPTION", added.getDate(), added.getQuantity());
+                app.insertlogs(added.getID(), added.getID(), "CONSUMPTION", added.getDate(), added.getQuantity());
 
                 //4.Add it our data's observablelist so that we can display it in the table. 
                 data.add(added); 
@@ -328,8 +331,9 @@ public class Kettlelog extends Application {
 
         //Creating the log table in the same database. 
         String logtableSQL = "CREATE TABLE IF NOT EXISTS log ("
+            + "logid integer primary key,"
             + "logtype text not null,"
-            + "logdate text primary key,"
+            + "logdate text not null,"
             + "logquan text not null"
             + ");";
 
@@ -350,9 +354,9 @@ public class Kettlelog extends Application {
 
     }
 
-    //This method will add a log to certain database's Log Table, specified by the Name parameter. 
-    public static void addLog(String id, String type, String date, String quantity) {
-        app.insertlogs(id, type, date, quantity); 
+    //This method will add a log to certain database's Log Table, specified by the ID parameter. 
+    public static void addLog(String itemid, String logid, String type, String date, String quantity) {
+        app.insertlogs(itemid, logid, type, date, quantity); 
     }
 
     //Method that edits the information table for a specific database. 
@@ -384,13 +388,13 @@ public class Kettlelog extends Application {
     }
 
     //id to find db, info to update to, type of info (logdate, logquan)
-    public void updateLog(String id, String type, String info, String oldinfo){
+    public void updateLog(String id, String type, String info, String logid){
         //get id from item
         //find file with that id
         Connection conn = getDataBase(id+".db");
 
         try{
-            String cmd = "UPDATE log SET " + type + " = '" + info + "' WHERE logdate = '" + oldinfo +"';";
+            String cmd = "UPDATE log SET " + type + " = '" + info + "' WHERE logid = '" + logid +"';";
             System.out.println(cmd);
             Statement stmt = conn.createStatement();
             stmt.execute(cmd);
@@ -416,17 +420,170 @@ public class Kettlelog extends Application {
         }
     }
 
-    //This method gets the quantity of the most recent date for an item.
+    //This method determines which quantity should be set for the item.
     public String getNewQuan(String id, String mostrecentdate){
+        int added = 0;
         Item rowinfo = getItem(id);
+        Log mostrecentconsumption = new Log("", "", "", "");
         ObservableList<Log> loglist = rowinfo.getLogData();
-        for (int i = 0; i < loglist.size(); i++) {
-            if (loglist.get(i).getDateLogged().equals(mostrecentdate)){
-                return loglist.get(i).getQuanLogged();
+        ObservableList<Log> dateloglist = FXCollections.observableArrayList();
+        //If the date has any consumption-type log, that's the new quantity for sure.
+        int length = loglist.size();
+        //First, let's get a list of all the logs from that specific date.
+        for (int i = 0; i < length; i++) {
+            Log current = loglist.get(i);
+            if ((current.getDateLogged()).equals(mostrecentdate)) {
+                dateloglist.add(current);
             }
         }
-        System.out.println("No log with that date found.");
-        return null;        
+        //Now, iterate through this dateloglist and see if there are any consumption-type logs.
+        for (int j = 0; j < dateloglist.size(); j++) {
+            Log current2 = dateloglist.get(j);
+            if ((current2.getLogType()).equals("CONSUMPTION")) {
+                return current2.getQuanLogged();
+            }
+        }
+        //If we've reached this point, this most recent date only has REORDER-type logs.
+        //We need to sort the loglist, putting the oldest logs at the front and newest at the front. 
+        loglist = sortLogsByDate(loglist);
+
+        //Iterate backwords until we find our most recent consumption-type log.
+        int last = length - 1;
+        for (int x = last; x >= 0; x--) {
+            Log current3 = loglist.get(x);
+            if ((current3.getLogType()).equals("CONSUMPTION")) {
+                mostrecentconsumption = current3; 
+                break;
+            }
+        }
+
+        int initialquan = Integer.parseInt(mostrecentconsumption.getQuanLogged());
+        String datetostop = mostrecentconsumption.getDateLogged();
+
+        //Now we need to find all reorders AFTER THIS DATE and add it to initialquan.
+        for (int y = last; y >= 0; y--) {
+            Log reorderlog = loglist.get(y);
+            if ((reorderlog.getDateLogged()).equals(datetostop)) {
+                break;
+            } else {
+                //this must be a reorder log, so we need to get the quantity of it.
+                String reorderquan = reorderlog.getQuanLogged();
+                String stringquantity = reorderquan.substring(reorderquan.lastIndexOf('+') + 1); //everything after the plus sign, so just the number
+                int intquantity = Integer.parseInt(stringquantity);
+                System.out.println(intquantity);
+                added = added + intquantity;
+                //added now has a value of all the reorders, which is what we need to add to the LAST CONSUMPTION-TYPE LOG.
+            }
+        }
+
+        //need to add initialquan to our added
+        int finalquanint = initialquan + added;
+        String finalquan = String.valueOf(finalquanint);
+
+        return finalquan;
+    }
+
+    //This method takes in a list of logs and sorts it so that the most recent ones are at the end of the list.
+    public static ObservableList<Log> sortLogsByDate(ObservableList<Log> loglist) {
+
+        Collections.sort(loglist, new Comparator<Log>() {
+
+            public int compare(Log log1, Log log2) {
+
+                DateFormat format = new SimpleDateFormat("yyyy-MM-DD", Locale.US);
+                java.util.Date date1 = null;
+                java.util.Date date2 = null;
+
+                try {
+                    date1=format.parse(log1.getDateLogged());
+                    date2=format.parse(log2.getDateLogged());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                int firstcomp = date1.compareTo(date2);
+                if (firstcomp != 0) {
+                   return firstcomp;
+                } 
+                //If multiple logs share the same date, we need to then put the reorders first so that when we reverse, consumption is first.
+                String type1 = log1.getLogType();
+                String type2 = log2.getLogType();
+                return -type1.compareTo(type2);
+        }});
+
+        return loglist;
+    }
+
+    //This method sets an item's quantity to be its most updated version.
+    public void setUpdatedQuan(String id){
+
+        ObservableList<Log>logData = getLogs(id);
+        ArrayList<Integer> datelist = new ArrayList<>();
+
+        //1. if the most recent log is a consumption-type, the item's quantity should be this one no matter what.
+        //First, let's find the MOST RECENT date in this log list. 
+        for (int i = 0; i < logData.size(); i++){
+            String logdate = (logData.get(i)).getDateLogged(); //EX: 2019-02-27
+            //Turn this date into an integer by removing the dashes. 
+            logdate = logdate.replace("-", "");
+            System.out.println(logdate);
+            int dateint = Integer.parseInt(logdate);
+            datelist.add(dateint);
+        }
+        //Finding the most recent is equivalent to finding the largest one of these numbers.
+        int mostrecentint = getMax(datelist);
+        String mostrecentstring = String.valueOf(mostrecentint); //EX: 20190227
+        StringBuilder sb = new StringBuilder(mostrecentstring);
+        sb.insert(4, "-"); //2019-0227
+        sb.insert(7, "-"); //2019-02-27
+        String finaldate = sb.toString();
+        System.out.println(finaldate);
+
+        Item item = getItem(id);
+
+        System.out.println("Your id is " + id);
+        System.out.println("Your most recent date is " + finaldate);
+
+        //Here's a way where we can verify a log list is what we expect it to be.
+        /*for (int i = 0; i < logData.size(); i++) {
+            System.out.println((logData.get(i)).getDateLogged());
+            System.out.println((logData.get(i)).getQuanLogged());
+        }*/
+
+        String newQuan = getNewQuan(id, finaldate);
+        item.setQuantity(newQuan);
+
+        //Item's Quantity is now changed. But we need to make the same change in the SQL database.
+        editInfoTable(item.getID(), item.getName(), item.getStatus(), newQuan, item.getMinimum(), item.getDelivery(), item.getDesc(), 0, item.getDateAdded()); 
+
+        //We also need to reset the table's data.
+        setData(placeholder, 1);
+
+    }
+
+    //This method takes in a list of numbers (lon) and returns the max.
+    public int getMax(ArrayList<Integer> lon){
+        int max = Integer.MIN_VALUE;
+        for(int i = 0; i < lon.size(); i++){
+            if(lon.get(i) > max){
+                max = lon.get(i);
+            }
+        }
+        return max;
+    }
+
+    //This method takes in a loglist and returns the same list, but with all the reorder-type logs REMOVED.
+    public ObservableList<Log> getConsumption(ObservableList<Log> loglist) {
+        ObservableList<Log> consumptiononly = FXCollections.observableArrayList();
+        int length = loglist.size();
+        for (int i = 0; i < loglist.size(); i++) {
+            Log current = loglist.get(i);
+            if (current.getLogType().equals("CONSUMPTION")) {
+                consumptiononly.add(current);
+            } 
+        }
+
+        return consumptiononly;
     }
 
     //the purpose of this method is to take data from a .db database and load it into our code. 
@@ -496,6 +653,7 @@ public class Kettlelog extends Application {
                 //get all info from log table, stick it in new Item
                 while (logData.next()) {
                     Log itLog = new Log();
+                    itLog.setID(logData.getString("logid"));
                     itLog.setLogType(logData.getString("logtype"));
                     itLog.setDateLogged(logData.getString("logdate"));
                     itLog.setQuanLogged(logData.getString("logquan"));

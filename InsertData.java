@@ -47,19 +47,20 @@ public class InsertData {
     }
 
     //We need the name parameter here to specify which database to connect to.
-    public void insertlogs(String id, String logtype, String logdate, String logquan) {
+    public void insertlogs(String itemid, String logid, String logtype, String logdate, String logquan) {
 
-        String command = "INSERT INTO log(logtype, logdate, logquan) VALUES(?,?,?)";
+        String command = "INSERT INTO log(logid, logtype, logdate, logquan) VALUES(?,?,?,?)";
 
         try {
-            String filename = id + ".db";
+            String filename = itemid + ".db";
             Connection conn = kettle.getDataBase(filename);
             PreparedStatement v = conn.prepareStatement(command);
 
             //Setting our insertion values here.
-                v.setString(1, logtype);
-                v.setString(2, logdate);
-                v.setString(3, logquan);
+                v.setString(1, logid);
+                v.setString(2, logtype);
+                v.setString(3, logdate);
+                v.setString(4, logquan);
 
             v.executeUpdate();
 
@@ -111,16 +112,16 @@ public class InsertData {
     }
 
     //This is a method that deletes a log from logtable for a database. 
-    public void removeLog(String id, String logdate) {
+    public void removeLog(String id, String logid) {
 
-        String command = "DELETE FROM log WHERE logdate = ?";
+        String command = "DELETE FROM log WHERE logid = ?";
 
         try {
             String filename = id + ".db";
             Connection conn = kettle.getDataBase(filename);
             PreparedStatement v = conn.prepareStatement(command);
 
-            v.setString(1, logdate);
+            v.setString(1, logid);
             v.executeUpdate();
 
             } catch (SQLException e) {

@@ -453,6 +453,8 @@ public class AddStage extends Stage{
         @Override
             public void handle(ActionEvent event) {
 
+                String firstlogid = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
+
                 boolean incomplete = false;
                 String itemStatus = "";
                 String iName = itemtext.getText();
@@ -468,7 +470,7 @@ public class AddStage extends Stage{
                 String olddate = newdate;
 
                 ObservableList<Log> loglist = FXCollections.observableArrayList();
-                Log firstlog = new Log(logtype, olddate, curQuan);
+                Log firstlog = new Log(firstlogid, logtype, olddate, curQuan);
                 loglist.add(0, firstlog);
 
                 //CHECKS IF THERE ARE ANY REQUIRED FIELDS THAT ARE LEFT EMPTY
@@ -569,13 +571,13 @@ public class AddStage extends Stage{
                             changequantity = 1;
                         }
 
-                        //User should not be able to create a log with a date that has already been logged for. 
-                        ObservableList<Log> loginfo = rowinfo.getLogData();
+                        //User should not be able to create a log with a date that has already been logged for.
+                        ObservableList<Log> loginfo = kettle.getConsumption(rowinfo.getLogData());
                         int loglength = loginfo.size();
                         ArrayList<String> logdates = new ArrayList<String>();
 
                         for (int i = 0; i < loglength; i++){
-                            System.out.println((loginfo.get(i)).getDateLogged());
+                            //System.out.println((loginfo.get(i)).getDateLogged());
                             logdates.add((loginfo.get(i)).getDateLogged());
                         }
 
@@ -583,7 +585,7 @@ public class AddStage extends Stage{
                             if (logdates.contains(newdate)) {
                                 System.out.println("This date has been logged before.");
                                 logdateunique--; 
-                                missing.setText("* A log for this date already exists. Select a new date or edit your existing log.");
+                                missing.setText("* A non-reorder log for this date exists. Select a new date or edit your existing log.");
                                 missing.setVisible(true);
                             } else {
                                 logdateunique = 1;
@@ -618,8 +620,9 @@ public class AddStage extends Stage{
 
                             //Only consider it a log if the yes box is selected.
                             if (yesbox.isSelected()){
+                                String logid = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
                                 //If the item is a log and the date is before the loglist most recent's date, DON'T UPDATE THE ITEM'S QUANTITY.
-                                int mostrecent = findMostRecentDate(id);
+                                /*int mostrecent = findMostRecentDate(id);
                                 newdate = newdate.replace("-", "");
                                 int currentlogdate = Integer.parseInt(newdate);
                                 //Converting newdate back to its original YYYY-MM-DD form.
@@ -628,17 +631,19 @@ public class AddStage extends Stage{
                                 sb.insert(7, "-"); //2019-02-27
                                 newdate = sb.toString();
                                 //The date the user wants to log is LATER than the item's most recent, so update the item's quantity. 
-                                if (currentlogdate >= mostrecent) {
+                                /*if (currentlogdate >= mostrecent) {
                                     rowinfo.setQuantity(curQuan);
                                     kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, curQuan, minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
-                                }
+                                }*/
                                 ObservableList<Log> editloglist = rowinfo.getLogData();
-                                Log newlog = new Log(logtype, newdate, curQuan);
+                                Log newlog = new Log(logid, logtype, newdate, curQuan);
                                 //Adding the log to our observablelist. 
                                 editloglist.add(0, newlog);
                                 rowinfo.setLogData(editloglist);
                                 //Adding the log to our SQL Database.
-                                kettle.addLog(rowinfo.getID(), logtype, newdate, curQuan);
+                                kettle.addLog(rowinfo.getID(), logid, logtype, newdate, curQuan);
+                                //Changing the item's quantity if necessary.
+                                kettle.setUpdatedQuan(rowinfo.getID());
                                 //Even though the yes checkbox is selected, the user can still edit the item, so we need to change our SQL database again.
                                 kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, rowinfo.getQuantity(), minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded()); 
                                 logdateunique = 0;
@@ -697,7 +702,7 @@ public class AddStage extends Stage{
     public int findMostRecentDate(String id) {
 
         ArrayList<Integer> datelist = new ArrayList<>();
-        ObservableList<Log>logData = kettle.getLogs(id);
+        ObservableList<Log>logData = kettle.getConsumption(kettle.getLogs(id));
 
         //Now we need to find the MOST RECENT date in this log list. 
         for (int i = 0; i < logData.size(); i++){

@@ -86,6 +86,7 @@ public class InfoStage extends Stage{
     private static CategoryAxis xAxis = new CategoryAxis();
     private static NumberAxis yAxis = new NumberAxis();
     private static LineChart linechart = new LineChart(xAxis, yAxis);
+    private static Log initiallog = new Log();
     private static Log firstselection = new Log();
     private static Log finalselection = new Log();
     private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
@@ -325,6 +326,7 @@ public class InfoStage extends Stage{
         dateloggedcol.prefWidthProperty().bind(logtable.widthProperty().multiply(0.495));
         dateloggedcol.setStyle( "-fx-alignment: CENTER-LEFT;");
         dateloggedcol.setResizable(false);
+        dateloggedcol.setSortable(false);
 
         //when the column is edited, the Log should be edited directly. 
         dateloggedcol.setOnEditCommit(
@@ -333,16 +335,17 @@ public class InfoStage extends Stage{
                 public void handle(TableColumn.CellEditEvent<Log, String> event) {
                     String newdate = event.getNewValue();
                     String olddate = event.getOldValue();
+
                     //We only want to commit the edit if the date is in the correct format.
                     if (isValidDate(newdate) && !dateExists(newdate, id)){
                         Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
                         selectedlog.setDateLogged(newdate);
                         //System.out.println(selectedlog.getDateLogged());
-                        kettle.updateLog(id, "logdate", newdate, olddate);
+                        kettle.updateLog(id, "logdate", newdate, selectedlog.getID());
                         logtable.requestFocus();
-                        sortByDateLogged();
                         cannotdelete.setVisible(false);
-                        setUpdatedQuan(id);
+                        kettle.setUpdatedQuan(id);
+                        sortByDateLogged();
                     }
                     else {
                         //If the edit is NOT valid...
@@ -351,9 +354,21 @@ public class InfoStage extends Stage{
                         logtable.getItems().set(row, oldlog);
                         logtable.requestFocus();
 
-                        //if user entered an existing date, vs an invalid date
-                        if(dateExists(newdate, id)){
-                            cannotdelete.setText(" * This date already has a corresponding log.");
+                        //If it's a reorder, it doesn't matter. Let the edit go through! 
+                        if ((oldlog.getLogType()).equals("REORDER")) {
+                            Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
+                            selectedlog.setDateLogged(newdate);
+                            //System.out.println(selectedlog.getDateLogged());
+                            kettle.updateLog(id, "logdate", newdate, selectedlog.getID());
+                            logtable.requestFocus();
+                            cannotdelete.setVisible(false);
+                            kettle.setUpdatedQuan(id);
+                            sortByDateLogged();
+                        }
+
+                        //if user entered an existing date for a CONSUMPTION-TYPE log it is not valid.
+                        else if(dateExists(newdate, id)){
+                            cannotdelete.setText(" * This date already has a corresponding non-reorder log.");
                         }
                         else{
                             cannotdelete.setText(" * Date must be in YYYY-MM-DD format. Do not include any spaces!");
@@ -369,6 +384,7 @@ public class InfoStage extends Stage{
         quanloggedcol.prefWidthProperty().bind(logtable.widthProperty().multiply(0.495));
         quanloggedcol.setStyle( "-fx-alignment: CENTER-LEFT;");
         quanloggedcol.setResizable(false);
+        quanloggedcol.setSortable(false);
 
         quanloggedcol.setOnEditCommit(
             new EventHandler<TableColumn.CellEditEvent<Log, String>>() {
@@ -376,21 +392,40 @@ public class InfoStage extends Stage{
                 public void handle(TableColumn.CellEditEvent<Log, String> event) {
                     String newquantity = event.getNewValue();
                     String oldquantity = event.getOldValue();
+
+                    int row = event.getTablePosition().getRow();
+                    Log editedlog = event.getTableView().getItems().get(row);
+                    if ((editedlog.getLogType()).equals("REORDER")) {
+                        if (validReorderQuan(newquantity)) {
+                            Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
+                            selectedlog.setQuanLogged(newquantity);
+                            kettle.updateLog(id, "logquan", newquantity, selectedlog.getID());
+                            logtable.requestFocus();
+                            cannotdelete.setVisible(false);
+                            kettle.setUpdatedQuan(id);
+                            sortByDateLogged();
+                        } else {
+                            logtable.getItems().set(row, editedlog);
+                            logtable.requestFocus();
+                            cannotdelete.setText(" * Reorder quantity must be in form 'REORDER: +integer'");
+                            cannotdelete.setVisible(true);
+                        }
+                    }
+
                     //We only want to commit the edit if the quantity is a number. 
-                    if (newquantity.chars().allMatch( Character::isDigit )) {
+                    else if (newquantity.chars().allMatch( Character::isDigit )) {
                         Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
                         selectedlog.setQuanLogged(newquantity);
-                        kettle.updateLog(id, "logquan", newquantity, selectedlog.getDateLogged());
+                        kettle.updateLog(id, "logquan", newquantity, selectedlog.getID());
                         logtable.requestFocus();
                         cannotdelete.setVisible(false);
-                        setUpdatedQuan(id);
+                        kettle.setUpdatedQuan(id);
+                        sortByDateLogged();
                     } 
 
                     //If it's not an integer, don't allow the edit and display an error message.
                     else {
-                        int row = event.getTablePosition().getRow();
-                        Log oldlog = event.getTableView().getItems().get(row);
-                        logtable.getItems().set(row, oldlog);
+                        logtable.getItems().set(row, editedlog);
                         logtable.requestFocus();
                         cannotdelete.setText(" * Quantity must only contain numbers and no other characters.");
                         cannotdelete.setVisible(true);
@@ -500,13 +535,13 @@ public class InfoStage extends Stage{
         }
 
         
-        //Synchronizing the chart to the log table.
+        //Synchronizing the chart to the log table. 
         XYChart.Series series = new XYChart.Series();
         linechart.getData().clear();
-        ObservableList<Log> chartinfo = rowinfo.getLogData();
+        ObservableList<Log> chartinfo = kettle.getConsumption(rowinfo.getLogData());
         int length = chartinfo.size();
         
-        /*for (int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             String datewithyear = (chartinfo.get(i)).getDateLogged();
             //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
             String date = (datewithyear.substring(5)).replace("-", "/");
@@ -515,15 +550,13 @@ public class InfoStage extends Stage{
             System.out.println(quanstring);
             int quantity = Integer.parseInt(quanstring);
             series.getData().add(new XYChart.Data(date, quantity));
-        }*/
+        }
 
-        //linechart.getData().add(series);
-        //updateGraph(rowinfo);
-
+        linechart.getData().add(series);
+        updateGraph(rowinfo);
 
         //Setting the data for the log table. 
-        //logtable.setItems(rowinfo.getLogData());
-
+        logtable.setItems(rowinfo.getLogData());
         sortByDateLogged();
 
         //Refresh Graph functionality
@@ -537,12 +570,26 @@ public class InfoStage extends Stage{
 
         //Removing the log from the ObservableList of logs & the table.
         logdel.setOnAction(e -> {
-            //We don't want the user to be able to delete a log if it's the ONLY log. 
+
             ObservableList<Log> selectedloglist = logtable.getItems();
-            if (selectedloglist.size() == 1) {
-                cannotdelete.setText(" * You cannot delete your only log.");
+            int numofcons = 0;
+            int sellength = selectedloglist.size();
+
+            //Find the number of consumption-type logs in our loglist.
+            for (int i = 0; i < sellength; i++) {
+                Log currentlog = selectedloglist.get(i);
+                if ((currentlog.getLogType()).equals("CONSUMPTION")) {
+                    numofcons++;
+                }
+            }
+
+            //Cannot delete your only consumption-type log in the list!
+            initiallog = logtable.getSelectionModel().getSelectedItem();
+            if (((initiallog.getLogType()).equals("CONSUMPTION")) && (numofcons == 1)) {
+                cannotdelete.setText(" * You cannot delete your only non-reorder log.");
                 cannotdelete.setVisible(true);
-            } 
+            }
+
             else {
                 //confirmation should be refreshed every time a new log is selected.
                 presscount++;
@@ -553,7 +600,7 @@ public class InfoStage extends Stage{
                 }
                 else {
                     finalselection = logtable.getSelectionModel().getSelectedItem();
-                    if(firstselection.getDateLogged().equals(finalselection.getDateLogged())){
+                    if(firstselection.getID().equals(finalselection.getID())){
                         //Here is where the log actually gets deleted.
                         logtable.getItems().remove(finalselection);
                         cannotdelete.setVisible(false); 
@@ -561,11 +608,11 @@ public class InfoStage extends Stage{
                         //We've deleted the log from our ObservableList, but now we need to get rid of it in our SQL Database.
                         String itemid = rowinfo.getID();
                         //System.out.println(itemid);
-                        //Since the date must be unique, we can use this to identify which log to delete. 
-                        String logid = finalselection.getDateLogged();
+                        String logid = finalselection.getID();
                         //System.out.println(logid);
                         kettle.deleteLog(itemid, logid);
-                        setUpdatedQuan(id);
+                        kettle.setUpdatedQuan(id);
+                        sortByDateLogged();
                     } 
                     else {
                         cannotdelete.setText(" * WARNING: A different log has been selected for deletion.");
@@ -585,7 +632,7 @@ public class InfoStage extends Stage{
          //Synchronizing the chart to the log table.
         XYChart.Series series = new XYChart.Series();
         linechart.getData().clear();
-        ObservableList<Log> chartinfo = rowinfo.getLogData();
+        ObservableList<Log> chartinfo = kettle.getConsumption(rowinfo.getLogData());
         int length = chartinfo.size();
         
         for (int i = 0; i < length; i++) {
@@ -603,11 +650,21 @@ public class InfoStage extends Stage{
 
     }
 
+    //This method will sort the table so that the most recent logs appear at the top.
     public void sortByDateLogged(){
-        logtable.getSortOrder().add(dateloggedcol);
+
+        ObservableList<Log> currentloglist = kettle.getLogs(id);
+        ObservableList<Log> sortedloglist = kettle.sortLogsByDate(currentloglist);
+        Collections.reverse(sortedloglist);
+        //most recent logs are at the FRONT now since we reversed the list. 
+        //We need to deal with cases where certain dates have both consumption and reorder logs. The consumption log should be FIRST.
+
+        logtable.setItems(sortedloglist);
+
+        /*logtable.getSortOrder().add(dateloggedcol);
         dateloggedcol.setSortType(TableColumn.SortType.DESCENDING);
         dateloggedcol.setSortable(true);
-        logtable.sort();
+        logtable.sort();*/
     }
 
     //This method takes in a string and determines if it's a date in YYYY-MM-DD form.
@@ -629,9 +686,9 @@ public class InfoStage extends Stage{
 
     public boolean dateExists(String date, String id){
         //get list of dates
-        //loop through all dates, compare to date
+        //loop through all CONSUMPTION-TYPE dates, compare to date
         
-        ObservableList<Log>logData = kettle.getLogs(id);
+        ObservableList<Log>logData = kettle.getConsumption(kettle.getLogs(id));
 
         for(int i = 0; i<logData.size(); i++){
             if(logData.get(i).getDateLogged().equals(date)){
@@ -642,62 +699,28 @@ public class InfoStage extends Stage{
 
     }
 
-    //This is a method that will make the quantity of the item the quantity of the most recent log. 
-    public void setUpdatedQuan(String id){
 
-        ObservableList<Log>logData = kettle.getLogs(id);
-        ArrayList<Integer> datelist = new ArrayList<>();
+    //this method takes in a string and determines if it's a valid reorder quantity of form "REORDER:+ X", where X is an integer
+    public boolean validReorderQuan(String reorderquan) {
 
-        //Here's a way where we can verify a log list is what we expect it to be.
-        /*for (int i = 0; i < logData.size(); i++) {
-            System.out.println((logData.get(i)).getDateLogged());
-            System.out.println((logData.get(i)).getQuanLogged());
-        }*/
+        String firstpart = reorderquan.substring(0, Math.min(10, reorderquan.length()));
+        System.out.println(firstpart + "hello");
+        //int lengthofinteger = reorderquan.length() - 10; //length of the quantity user entered
 
-        //Now we need to find the MOST RECENT date in this log list. 
-        for (int i = 0; i < logData.size(); i++){
-            String logdate = (logData.get(i)).getDateLogged(); //EX: 2019-02-27
-            //Turn this date into an integer by remocing the dashes. 
-            logdate = logdate.replace("-", "");
-            System.out.println(logdate);
-            int dateint = Integer.parseInt(logdate);
-            datelist.add(dateint);
-        }
-        //Finding the most recent is equivalent to finding the largest one of these numbers.
-        int mostrecentint = getMax(datelist);
-        String mostrecentstring = String.valueOf(mostrecentint); //EX: 20190227
-        StringBuilder sb = new StringBuilder(mostrecentstring);
-        sb.insert(4, "-"); //2019-0227
-        sb.insert(7, "-"); //2019-02-27
-        String finaldate = sb.toString();
-        System.out.println(finaldate);
-
-        Item item = kettle.getItem(id);
-
-        System.out.println("Your id is " + id);
-        System.out.println("Your most recent date is " + finaldate);
-
-        String newQuan = kettle.getNewQuan(id, finaldate);
-        item.setQuantity(newQuan);
-
-        //Item's Quantity is now changed. But we need to make the same change in the SQL database.
-        kettle.editInfoTable(item.getID(), item.getName(), item.getStatus(), newQuan, item.getMinimum(), item.getDelivery(), item.getDesc(), 0, item.getDateAdded()); 
-
-        //We also need to reset the table's data.
-        kettle.setData(placeholder, 1);
-
-    }
-
-    //This method takes in a list of numbers (lon) and returns the max.
-    public int getMax(ArrayList<Integer> lon){
-        int max = Integer.MIN_VALUE;
-        for(int i = 0; i < lon.size(); i++){
-            if(lon.get(i) > max){
-                max = lon.get(i);
+        if (!firstpart.equals("REORDER: +")) {
+            return false;
+        } else {
+            String intquantity = reorderquan.substring(reorderquan.lastIndexOf('+') + 1); //everything after the plus sign, so just the number
+            System.out.println(intquantity + "hello");
+            if (!intquantity.chars().allMatch( Character::isDigit )) {
+                return false;
+            } else {
+                return true;
             }
+
         }
-        return max;
     }
+
 
     public class InfoHandler implements EventHandler<ActionEvent>{
         @Override
