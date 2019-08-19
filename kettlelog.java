@@ -13,6 +13,7 @@ import java.sql.Statement;
 import javafx.collections.*;
 import javafx.application.Application;
 import java.text.*;
+import java.time.temporal.ChronoUnit;
 
 public class Kettlelog extends Application {
     @SuppressWarnings("unchecked")
@@ -602,23 +603,42 @@ public class Kettlelog extends Application {
         return consumptiononly;
     }
 
-    //this method takes in an item's list of logs and determines its average daily consumption according to a formula.
-    //==================================================================================
-    // FORMULA: (Starting Inventory + Reordered Amount - Final Inventory) / Days Elapsed
-    //==================================================================================
+    //========================================================================================
+    // ADC FORMULA: (Starting Inventory + Reordered Amount - Final Inventory) / Days Elapsed
+    //========================================================================================
     public void getADC(String id) {
         //First, let's get our loglist, sort it, and remove the useless reorders.
         ObservableList<Log> loglist = getLogs(id);
+        //If there's only one consumption-type log in our loglist, return 0 always.
+        if (onlyOneConsumption(loglist)) {
+            System.out.println("THERE IS ONLY ONE CONSUMPTION LOG, ADC IS 0.0.");
+        }
         loglist = sortLogsByDate(loglist); //logs are now sorted from oldest to newest
         loglist = trimLogList(loglist); //all useless reorders removed.
         int length = loglist.size();
+        Item currentitem = getItem(id);
 
-        //1. The first step is to calculate our Starting Inventory.
         int startinv = getStartInv(loglist);
         System.out.println("Your starting inventory is " + startinv);
 
         int reorderamount = getReorderedAmount(loglist);
         System.out.println("Your total reordered amount is " + reorderamount);
+
+        int finalinv = Integer.parseInt(currentitem.getQuantity());
+        System.out.println("Your final inventory is " + finalinv);
+
+        long daysbetween = getElapsedDays(loglist);
+        System.out.println("The number of days elapsed is " + daysbetween);
+
+        //Now that we have the four numbers we need, let's get our ADC.
+        int numint = startinv + reorderamount - finalinv;
+        double numerator = (double) numint; //casting to double.
+        double adc = numerator / daysbetween;
+
+        DecimalFormat newFormat = new DecimalFormat("#.###");
+        adc =  Double.valueOf(newFormat.format(adc));
+
+        System.out.println("Your ADC is " + adc);
 
     }
 
@@ -682,6 +702,37 @@ public class Kettlelog extends Application {
         }
 
         return reordertotal;
+    }
+
+    //this method takes in a trimmed, sorted loglist and finds the number of days elapsed.
+    public long getElapsedDays(ObservableList<Log> loglist) {
+        int last = loglist.size() - 1;
+        //We need to find our oldest and newest dates first.
+        Log firstlog = loglist.get(0);
+        Log lastlog = loglist.get(last);
+
+        String firststring = firstlog.getDateLogged();
+        String laststring = lastlog.getDateLogged();
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        java.util.Date firstdate = null;
+        java.util.Date lastdate = null;
+
+        try {
+            firstdate=format.parse(firststring);
+            lastdate=format.parse(laststring);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        long daysbetween = ChronoUnit.DAYS.between(firstdate.toInstant(), lastdate.toInstant());
+        return daysbetween;
+    }
+
+    //this method determines if there is only one consumption-type log in a loglist.
+    public boolean onlyOneConsumption(ObservableList<Log> loglist) {
+        loglist = getConsumption(loglist);
+        return (loglist.size()==1);
     }
 
     //method that updates final quantity, ADC, ROP, ROD all at once.
