@@ -79,6 +79,7 @@ public class AddStage extends Stage{
     private static String addtip = "The date that you want logging to begin on. This date cannot be changed later.";
     private static String edittip = "The date you wish this log to correspond to.";
     private static Tooltip helptip = new Tooltip();
+    private static Tooltip reordertip = new Tooltip("Add Reorder");
     private static Button helpBtn = new Button();
     private static BorderPane abase = new BorderPane();
     private static AnchorPane addtop = new AnchorPane();
@@ -385,6 +386,9 @@ public class AddStage extends Stage{
                 reorderImgView.setSmooth(true);
                 reorderImgView.setCache(true); 
                 reorderbtn.setGraphic(reorderImgView);
+
+            reordertip.setShowDelay(new javafx.util.Duration(100.0));
+            reorderbtn.setTooltip(reordertip); 
 
             AnchorPane.setBottomAnchor(reorderbtn, 35.0);
             AnchorPane.setLeftAnchor(reorderbtn, 285.0);
