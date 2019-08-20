@@ -154,4 +154,38 @@ public class InsertData {
         }
 
     }
+
+    public void deleteNotif(String notifId){
+        System.out.println("Deleting notification with id: "+notifId);
+        String command = "DELETE FROM notifData WHERE notifId = '" + notifId +"'";
+
+        try {
+            String filename = "notifications.db";
+            Connection conn = kettle.getDataBase(filename);
+            Statement stmt = conn.createStatement();
+            stmt.execute(command);
+            stmt.close();
+            conn.close();
+
+        } catch (SQLException e) {
+            System.out.println("deleteNotif: "+e.getMessage());
+        }
+    }
+
+    public void updateNotifReadStatus(int status, String notifId){
+        //find file with that id
+        Connection conn = kettle.getDataBase("notifications.db");
+
+        try{
+            String cmd = "UPDATE notifData SET readStatus = " + status + " WHERE notifId = '" + notifId +"';";
+            Statement stmt = conn.createStatement();
+            stmt.execute(cmd);
+            stmt.close();
+            conn.close();
+            System.out.println("updated notif read status for: "+notifId);
+        }
+        catch(SQLException e){
+            System.out.println("UpdateNotifStatus: "+e.getMessage());
+        }
+    }
 }

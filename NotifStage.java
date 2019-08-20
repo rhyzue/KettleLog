@@ -125,10 +125,18 @@ public class NotifStage extends Stage{
 
     public void updateNotifStage(List<Notif> kettleNotifs){
         
-        for(int i = 0; i< kettleNotifs.size(); i++){
-            //SET ALL NOTIF DATA TO KETTLE NOTIF DATA
-
-            notifList.get(i).setMessage(kettleNotifs.get(i).getMessage());
+        for(int i = 0; i<20; i++){
+            if(i<kettleNotifs.size()){
+                //SET ALL NOTIF DATA TO KETTLE NOTIF DATA
+                notifList.get(i).setMessage(kettleNotifs.get(i).getMessage());
+                notifList.get(i).setItemId(kettleNotifs.get(i).getItemId());
+                notifList.get(i).setReadStatus(kettleNotifs.get(i).getReadStatus());
+                notifList.get(i).setNotifId(kettleNotifs.get(i).getNotifId());
+                notifList.get(i).setNotifVisible(true);
+            }
+            else{
+                notifList.get(i).setNotifVisible(false);
+            }
         }
 
     }
@@ -141,6 +149,27 @@ public class NotifStage extends Stage{
 
             if(itemClicked.equals("closeBtn")){
                 kettle.hideNotifStage();
+                //get list of items to delete
+                List<Notif> notifsToDelete = new ArrayList<Notif>();
+                List<Notif> notifsToUpdate = new ArrayList<Notif>();
+                for(int i = 0; i<notifList.size(); i++){
+                    Notif curNotif = notifList.get(i);
+                    //if item has been deleted, add it to a list
+                    if(curNotif.getReadStatus()==-1){
+                        notifsToDelete.add(curNotif);
+                        curNotif.setReadStatus(-2);
+                    }
+                    //update the read status of the db notifs if read status is valid
+                    else if(curNotif.getReadStatus()==0||curNotif.getReadStatus()==1){
+                        notifsToUpdate.add(curNotif);
+                    }
+                } 
+                if(notifsToDelete.size()>0){
+                    kettle.deleteNotifs(notifsToDelete);
+                }
+                if(notifsToUpdate.size()>0){
+                    kettle.updateNotifReadStatus(notifsToUpdate);
+                }
             }
             else if(itemClicked.equals("clearBtn")){
                 for(int i = 0; i<notifList.size(); i++){

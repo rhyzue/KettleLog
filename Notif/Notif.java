@@ -27,9 +27,19 @@ public class Notif {
     private int readStatus;
     private String notifId;
 
+    /*
+        readStatus:
+        0=unread
+        1=read
+        -1=need to delete
+        -2=empty
+
+    */
+
 	public Notif(){
         this.linkId = "No ID given";
         this.hb = makeNotifBox();
+        this.readStatus = -2;
     }
 
     public Notif(String messageStr, String linkId, int readStatus, String notifId){
@@ -114,7 +124,15 @@ public class Notif {
 
     public void setReadStatus(int readStatus){
         this.readStatus = readStatus;
-        hb.setVisible(readStatus==1);
+
+        if(readStatus==1){//read
+            hb.setOpacity(0.5);
+            readBtn.setText("Mark Unread");
+        }
+        else if(readStatus==0){//unread
+            hb.setOpacity(1);
+            readBtn.setText("Mark Read");
+        }
     }
 
 
@@ -135,17 +153,16 @@ public class Notif {
 
             switch(itemClicked){
             	case "readBtn":
-	            	if(hb.getOpacity()==0.5){
-	                    hb.setOpacity(1);
-	                    readBtn.setText("Mark Read");
+	            	if(readStatus==0){
+	                    setReadStatus(1);
 	                }
-	                else{
-	                    hb.setOpacity(0.5);
-	                    readBtn.setText("Mark Unread");
+	                else if (readStatus==1){
+                        setReadStatus(0);
 	                }
             		break;
             	case "delBtn":
             		hb.setVisible(false);
+                    readStatus = -1;
             		break;
 	            default:
 	            	System.out.println("other");

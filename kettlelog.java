@@ -62,7 +62,7 @@ public class Kettlelog extends Application {
     public void start(Stage setup) {
         loadData(); //will load data and notif data if it exists
         //app.addNotification("Welcome to Kettlelog!", "None", 0, java.util.UUID.randomUUID().toString());
-        generateNotifsIfNeeded();
+        //generateNotifsIfNeeded();
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.show();
         primaryStage.updatePrimaryStage(data);
@@ -252,6 +252,38 @@ public class Kettlelog extends Application {
 		notifStage.updateNotifStage(notifList);
     }
 
+    public void deleteNotifs(List<Notif> notifsToDelete){
+    	System.out.println("number to delete: "+notifsToDelete.size());
+    	System.out.println("number before deleting: "+notifList.size());
+    	for(int i = 0; i<notifsToDelete.size(); i++){
+    		String notifId = notifsToDelete.get(i).getNotifId();
+	    	app.deleteNotif(notifId);
+	    	//notifList.remove(notifsToDelete.get(i));
+	    	for(int j = 0; j<notifList.size(); j++){
+	    		if((notifList.get(j).getNotifId()).equals(notifId)){
+	    			notifList.remove(j);
+	    			break;
+	    		}
+	    	}
+	    }
+	    System.out.println("after deleting size: "+notifList.size());
+    	notifStage.updateNotifStage(notifList);
+    }
+
+    public void updateNotifReadStatus(List<Notif> nfList){
+    	for(int x = 0; x<nfList.size(); x++){
+    		Notif nf = nfList.get(x);
+	    	app.updateNotifReadStatus(nf.getReadStatus(), nf.getNotifId());
+	    	for(int i = 0; i<notifList.size(); i++){
+	    		Notif curNf = notifList.get(i);
+	    		if((curNf.getNotifId()).equals(nf.getNotifId())){
+	    			curNf.setReadStatus(nf.getReadStatus());
+	    		}
+	    	}
+	    }
+    	notifStage.updateNotifStage(notifList);
+    }
+
     //================================================================================
     // MISCELLANEOUS
     //================================================================================
@@ -383,7 +415,6 @@ public class Kettlelog extends Application {
         try {
             String url = "jdbc:sqlite:./db/kettledb/" + dbName;
             conn = DriverManager.getConnection(url);
-            System.out.println(dbName+": Connection to SQLite has been established.");
             
         } catch (SQLException e) {
             System.out.println("getDataBase: "+e.getMessage());
