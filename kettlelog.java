@@ -40,7 +40,7 @@ public class Kettlelog extends Application {
     private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
     private static List<Notif> notifList = new ArrayList<Notif>();
     private static ObservableList<Item> itemsToDelete;
-    private static Item empty = new Item("emptyID", "", "", "", "", "", "", false, false, "", "", emptylist);
+    private static Item empty = new Item("emptyID", "", "", "", "", "", "", false, false, "", "", emptylist, "0.0");
 
     public static PrimaryStage primaryStage = new PrimaryStage();
     private static InfoStage infoStage = new InfoStage();
@@ -217,7 +217,7 @@ public class Kettlelog extends Application {
     //method that updates final quantity, ADC, ROP, ROD all at once.
     public void updateEverything(String id){
         alg.setUpdatedQuan(id);
-        alg.getADC(id);
+        alg.setCalculations(id);
 
     }
 
@@ -345,7 +345,7 @@ public class Kettlelog extends Application {
                 //3. Then, we need to populate the database tables with the information. 
                 // The zero is referring to the starred. When a brand new item is added, the item is obviously not starred so it will be 0. 
                 // 0 -> Not Starred, 1 -> Starred
-                app.insertinfo(added.getID(), added.getName(), added.getStatus(), added.getQuantity(), added.getMinimum(), added.getDelivery(), added.getDesc(), 0, added.getDateAdded());
+                app.insertinfo(added.getID(), added.getName(), added.getStatus(), added.getQuantity(), added.getMinimum(), added.getDelivery(), added.getDesc(), 0, added.getDateAdded(), added.getADC());
                 app.insertlogs(added.getID(), added.getID(), "CONSUMPTION", added.getDate(), added.getQuantity());
 
                 //4.Add it our data's observablelist so that we can display it in the table. 
@@ -439,7 +439,8 @@ public class Kettlelog extends Application {
             + "deliverytime text not null,"
             + "description text not null,"
             + "starred int not null,"
-            + "dateadded text not null"
+            + "dateadded text not null,"
+            + "adc text not null"
             + ");";
 
         //Creating the log table in the same database. 
@@ -499,8 +500,8 @@ public class Kettlelog extends Application {
     }
 
     //Method that edits the information table for a specific database. 
-    public static void editInfoTable(String id, String name, String status, String quantity, String minimum, String delivery, String desc, int starbool, String dateadded) {
-        app.editinfo(id, name, status, quantity, minimum, delivery, desc, starbool, dateadded);
+    public static void editInfoTable(String id, String name, String status, String quantity, String minimum, String delivery, String desc, int starbool, String dateadded, String adc) {
+        app.editinfo(id, name, status, quantity, minimum, delivery, desc, starbool, dateadded, adc);
     }
 
     //This method will delete a single log from the SQL Database for an item.
@@ -677,6 +678,7 @@ public class Kettlelog extends Application {
                     it.setDesc(mainData.getString("description"));
                     it.setStarred(mainData.getInt("starred")==1); //1=1, true, 0=1, false
                     it.setDateAdded(mainData.getString("dateadded"));
+                    it.setADC(mainData.getString("adc"));
                     it.setChecked(false);
                 }
 
