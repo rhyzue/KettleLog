@@ -27,7 +27,6 @@ public class Algorithm {
     //================================================================================
     // CALCULATIONS & ALGORITHM
     //================================================================================
-
     //this method gets the item of a corresponding ID
     public Item getItem(String id){
         for (int i = 0; i < data.size(); i++){
@@ -160,7 +159,6 @@ public class Algorithm {
         return max;
     }
 
-
  	//This method takes in a list of logs and sorts it so that the most recent ones are at the end of the list.
     public static ObservableList<Log> sortLogsByDate(ObservableList<Log> loglist) {
 
@@ -248,8 +246,11 @@ public class Algorithm {
         long daysbetween = getElapsedDays(loglist);
         System.out.println("The number of days elapsed is " + daysbetween);
 
+        int unloggedincrease = getUnloggedReorderAmount(loglist);
+        System.out.println("Your unlogged increase amount is " + unloggedincrease);
+
         //Now that we have the four numbers we need, let's get our ADC.
-        int numint = startinv + reorderamount - finalinv;
+        int numint = startinv + (reorderamount + unloggedincrease) - finalinv;
         double numerator = (double) numint; //casting to double.
         double adc = numerator / daysbetween;
 
@@ -260,7 +261,7 @@ public class Algorithm {
 
     }
 
-     //helper method that will get our starting inventory given a SORTED list of logs (oldest -> newest)
+    //helper method that will get our starting inventory given a SORTED list of logs (oldest -> newest)
     public int getStartInv(ObservableList<Log> loglist) {
         //we just need to return oldest's quantity, which will be the first of our trimmed list.
         Log oldestconsumption = loglist.get(0);
@@ -292,6 +293,67 @@ public class Algorithm {
         }
 
         return reordertotal;
+    }
+
+    //We need to figure out a way to deal with un-logged reorders that result in a random increase in quantity.  
+    public int getUnloggedReorderAmount(ObservableList<Log> loglist){
+    	int total = 0;
+    	int unloggedamount = 0;
+    	int sumofreorders = 0;
+    	//the first thing we need to do is locate the indices of the consumption logs in our list. 
+    	ArrayList<Integer> indiceslist = new ArrayList<>();
+    	int length = loglist.size();
+    	for (int i = 0; i < length; i++) {
+    		Log current = loglist.get(i);
+    		if (current.getLogType().equals("CONSUMPTION")) {
+    			indiceslist.add(i);
+    		}
+    	}
+    	System.out.println(indiceslist);
+    	int numofcalc = indiceslist.size() - 1; //how many times we need to perform our mini-algorithm
+
+    	for (int x = 0; x < numofcalc; x++) {
+
+    		int firstindex = indiceslist.get(x);
+    		System.out.println("first index is " + firstindex);
+    		int nextindex = indiceslist.get(x + 1);
+    		System.out.println("next index is " + nextindex);
+
+    		Log firstlog = loglist.get(firstindex);
+    		Log nextlog = loglist.get(nextindex);
+
+    		int firstquan = Integer.parseInt(firstlog.getQuanLogged());
+    		System.out.println(firstquan);
+    		int nextquan = Integer.parseInt(nextlog.getQuanLogged());
+    		System.out.println(nextquan);
+
+    		//the next quantity is lower, so this is not a problem. 
+    		if (firstquan >= nextquan) {
+    			continue;
+    		}
+    		//need to consider the reorders in between these two.
+    		for (int j = firstindex + 1; j < nextindex; j++) {
+    			Log currentreorder = loglist.get(j);
+    			String reorderquan = currentreorder.getQuanLogged();
+	            String stringquantity = reorderquan.substring(reorderquan.lastIndexOf('+') + 1); //everything after the plus sign, so just the number
+	            int intquantity = Integer.parseInt(stringquantity);
+	            sumofreorders = sumofreorders + intquantity;
+    		}
+    		//if the first quantity and the sum of its quantity and all the reorders summed up between the first and next log is greater, we are still good
+    		if ((firstquan + sumofreorders) >= nextquan) {
+    			sumofreorders = 0;
+    			continue;
+    		}
+    		//if we've reached this point there is an unlogged increase, and we must calculate it.
+    		else {
+    			unloggedamount = nextquan - (firstquan + sumofreorders);
+    			total = total + unloggedamount;
+    			sumofreorders = 0;
+    			unloggedamount = 0;
+    		}
+    	}
+
+    	return total;
     }
 
     //this method takes in a trimmed, sorted loglist and finds the number of days elapsed.

@@ -579,7 +579,6 @@ public class Kettlelog extends Application {
                 //give main item a quantity from the last log
                 /*String lastQuanLogged = logInfo.get(logInfo.size()-1).getQuanLogged();
                 it.setQuantity(lastQuanLogged);*/
-
                 String lastDateLogged = logInfo.get(logInfo.size()-1).getDateLogged();
                 it.setDate(lastDateLogged);
 
