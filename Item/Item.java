@@ -16,11 +16,13 @@ public class Item {
         private String dateadded = null;
         private boolean checked = false;
         private ObservableList<Log> logdata = FXCollections.observableArrayList();
+        private String adc = null;
+
 
         public Item(){
         }
 
-        public Item(String id, String name, String status, String quantity, String minimum, String delivery, String desc, boolean starred, boolean checked, String date, String dateadded, ObservableList<Log> logdata) {
+        public Item(String id, String name, String status, String quantity, String minimum, String delivery, String desc, boolean starred, boolean checked, String date, String dateadded, ObservableList<Log> logdata, String adc) {
 
             this.id = id;
             this.name = name;
@@ -34,6 +36,7 @@ public class Item {
             this.date = date;
             this.dateadded = dateadded;
             this.logdata = logdata;
+            this.adc = adc;
  
         }
 
@@ -137,5 +140,12 @@ public class Item {
             return "2019-08-20";
         }
 
+        public String getADC(){
+            return adc;
+        }
+
+        public void setADC(String adc){
+            this.adc = adc;
+        }
 
 }

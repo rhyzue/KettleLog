@@ -291,16 +291,15 @@ public class AlertStage extends Stage{
                         //Adding the log to our SQL Database's Log table
                         kettleclass.addLog(rowinfo.getID(), logid, logtype, reorderdate, reorderquan);
 
-                        //Editing our SQL Database's Info table
-                        kettleclass.editInfoTable(rowinfo.getID(), rowinfo.getName(), rowinfo.getStatus(), rowinfo.getQuantity(), rowinfo.getMinimum(), rowinfo.getDelivery(), rowinfo.getDesc(), 0, rowinfo.getDateAdded()); 
-
                         //Also, update everything since a new reorder has been added.
                         kettleclass.updateEverything(rowinfo.getID());
+
+                        //Editing our SQL Database's Info table
+                        kettleclass.editInfoTable(rowinfo.getID(), rowinfo.getName(), rowinfo.getStatus(), rowinfo.getQuantity(), rowinfo.getMinimum(), rowinfo.getDelivery(), rowinfo.getDesc(), 0, rowinfo.getDateAdded(), rowinfo.getADC()); 
 
                         //Also, update the table from infostage.
                         InfoStage infoStage = kettleclass.getInfoStage();
                         
-
                         //if the user confirms the reorder log, we want to hide both the addstage and primarystage opaque's layers
                         kettleclass.hideAlertStage(0);
                         AddStage addStage = kettleclass.getAddStage();

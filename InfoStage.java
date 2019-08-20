@@ -535,6 +535,7 @@ public class InfoStage extends Stage{
 
         infolabel.setText(rowinfo.getName());
         datelabel.setText(rowinfo.getDateAdded());
+        adclabel.setText(rowinfo.getADC());
 
         //Setting the description to the be the same. 
         if (rowinfo.getDesc().trim().length() <= 0) {
@@ -620,6 +621,7 @@ public class InfoStage extends Stage{
                         String logid = finalselection.getID();
                         //System.out.println(logid);
                         kettle.deleteLog(itemid, logid);
+                        //update everything since a log has been deleted.
                         kettle.updateEverything(id);
                         sortByDateLogged();
                     } 

@@ -141,7 +141,7 @@ public class Algorithm {
         item.setQuantity(newQuan);
 
         //Item's Quantity is now changed. But we need to make the same change in the SQL database.
-        kettle.editInfoTable(item.getID(), item.getName(), item.getStatus(), newQuan, item.getMinimum(), item.getDelivery(), item.getDesc(), 0, item.getDateAdded()); 
+        kettle.editInfoTable(item.getID(), item.getName(), item.getStatus(), newQuan, item.getMinimum(), item.getDelivery(), item.getDesc(), 0, item.getDateAdded(), item.getADC()); 
 
         //We also need to reset the table's data.
         kettle.setData(placeholder, 1);
@@ -218,47 +218,69 @@ public class Algorithm {
         return loglist;
     }
 
-    //========================================================================================
-    // ADC FORMULA: (Starting Inventory + Reordered Amount - Final Inventory) / Days Elapsed
-    //========================================================================================
+    //====================================================================================
+    //CALCULATIONS: ADC, ROP, ROD
+    //====================================================================================
+    public void setCalculations(String id) {
+        Item item = getItem(id);
+        
+        String[] calcinfo = getCalculations(id);
+        String adc = calcinfo[0];
 
-    public void getADC(String id) {
+        //changing the ADC of our item.
+        item.setADC(adc);
+
+        //Item's ADC is now changed. But we need to make the same change in the SQL database.
+        kettle.editInfoTable(item.getID(), item.getName(), item.getStatus(), item.getQuantity(), item.getMinimum(), item.getDelivery(), item.getDesc(), 0, item.getDateAdded(), adc); 
+    }
+
+    //return an array of 3 strings, ADC, ROP and ROD.
+    public String[] getCalculations(String id) {
+        String[] calcs = new String[3];
         //First, let's get our loglist, sort it, and remove the useless reorders.
         ObservableList<Log> loglist = kettle.getLogs(id);
         //If there's only one consumption-type log in our loglist, return 0 always.
         if (onlyOneConsumption(loglist)) {
-            System.out.println("THERE IS ONLY ONE CONSUMPTION LOG, ADC IS 0.0.");
+            calcs[0] = "0.0";
+            return calcs;
+
+        } else {
+            loglist = sortLogsByDate(loglist); //logs are now sorted from oldest to newest
+            loglist = trimLogList(loglist); //all useless reorders removed.
+            int length = loglist.size();
+            Item currentitem = getItem(id);
+
+            int startinv = getStartInv(loglist);
+            System.out.println("Your starting inventory is " + startinv);
+
+            int reorderamount = getReorderedAmount(loglist);
+            System.out.println("Your total logged reordered amount is " + reorderamount);
+
+            int finalinv = Integer.parseInt(currentitem.getQuantity());
+            System.out.println("Your final inventory is " + finalinv);
+
+            long daysbetween = getElapsedDays(loglist);
+            System.out.println("The number of days elapsed is " + daysbetween);
+
+            int unloggedincrease = getUnloggedReorderAmount(loglist);
+            System.out.println("Your unlogged increase amount is " + unloggedincrease);
+
+            //========================================================================================
+            // ADC FORMULA: (Starting Inventory + Reordered Amount - Final Inventory) / Days Elapsed
+            //========================================================================================
+            int numint = startinv + (reorderamount + unloggedincrease) - finalinv;
+            double numerator = (double) numint; //casting to double.
+            double adc = numerator / daysbetween;
+
+            DecimalFormat newFormat = new DecimalFormat("#.###");
+            adc =  Double.valueOf(newFormat.format(adc));
+            String adcstring = String.valueOf(adc);
+            System.out.println("Your ADC is " + adcstring);
+
+            calcs[0] = adcstring;
+
+            return calcs;
         }
-        loglist = sortLogsByDate(loglist); //logs are now sorted from oldest to newest
-        loglist = trimLogList(loglist); //all useless reorders removed.
-        int length = loglist.size();
-        Item currentitem = getItem(id);
-
-        int startinv = getStartInv(loglist);
-        System.out.println("Your starting inventory is " + startinv);
-
-        int reorderamount = getReorderedAmount(loglist);
-        System.out.println("Your total reordered amount is " + reorderamount);
-
-        int finalinv = Integer.parseInt(currentitem.getQuantity());
-        System.out.println("Your final inventory is " + finalinv);
-
-        long daysbetween = getElapsedDays(loglist);
-        System.out.println("The number of days elapsed is " + daysbetween);
-
-        int unloggedincrease = getUnloggedReorderAmount(loglist);
-        System.out.println("Your unlogged increase amount is " + unloggedincrease);
-
-        //Now that we have the four numbers we need, let's get our ADC.
-        int numint = startinv + (reorderamount + unloggedincrease) - finalinv;
-        double numerator = (double) numint; //casting to double.
-        double adc = numerator / daysbetween;
-
-        DecimalFormat newFormat = new DecimalFormat("#.###");
-        adc =  Double.valueOf(newFormat.format(adc));
-
-        System.out.println("Your ADC is " + adc);
-
     }
 
     //helper method that will get our starting inventory given a SORTED list of logs (oldest -> newest)
