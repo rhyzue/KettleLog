@@ -133,5 +133,9 @@ public class Item {
             this.logdata = logdata;
         }
 
+        public String getROD(){
+            return "2019-08-20";
+        }
+
 
 }

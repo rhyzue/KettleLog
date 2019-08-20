@@ -8,6 +8,7 @@ import java.util.*;
 import javafx.stage.*;
 import java.nio.file.*;
 import java.sql.Statement;
+import java.time.LocalDate;
 import javafx.scene.Scene;
 import java.sql.Connection;
 import javafx.collections.*;
@@ -60,12 +61,12 @@ public class Kettlelog extends Application {
     @Override
     public void start(Stage setup) {
         loadData(); //will load data and notif data if it exists
-        //app.addNotification("Welcome to Kettlelog!", "None", 0, 0);
+        //app.addNotification("Welcome to Kettlelog!", "None", 0, java.util.UUID.randomUUID().toString());
+        generateNotifsIfNeeded();
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.show();
         primaryStage.updatePrimaryStage(data);
-    
-    }
+      }
 
     //================================================================================
     // STAGE GETTERS
@@ -218,6 +219,37 @@ public class Kettlelog extends Application {
         alg.setUpdatedQuan(id);
         alg.getADC(id);
 
+    }
+
+    public void generateNotifsIfNeeded(){
+
+    	if(data.size()==0 || data.get(0).getID().equals("emptyID")){
+    		return;
+    	}
+
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		java.util.Date today = new java.util.Date();
+		String todayString = dateFormat.format(today);
+
+		//loop through all items and check the reorder date
+		for(int i = 0; i<data.size(); i++){
+			Item curItem = data.get(i);
+			if(todayString.equals(curItem.getROD())){
+				String message = "Reorder needed for: "+curItem.getName();
+				boolean duplicateNotifFound = false;
+				//check for duplicates
+				for(int j = 0; j<notifList.size(); j++){
+					if(notifList.get(j).getMessage().equals(message)){
+						duplicateNotifFound = true;
+					}
+				}
+				if(!duplicateNotifFound){
+					app.addNotification("Reorder needed for: "+curItem.getName(), curItem.getID(), 0, java.util.UUID.randomUUID().toString());
+					notifList.add(new Notif("Reorder needed for: "+curItem.getName(), curItem.getID(), 0, java.util.UUID.randomUUID().toString()));
+				}
+			}
+		}
+		notifStage.updateNotifStage(notifList);
     }
 
     //================================================================================
@@ -413,7 +445,7 @@ public class Kettlelog extends Application {
         	+ "message text not null," 
         	+ "itemId text not null,"
         	+ "readStatus int not null,"
-        	+ "notifId int primary key"
+        	+ "notifId String not null"
         	+ ");";
 
         try {
@@ -513,7 +545,7 @@ public class Kettlelog extends Application {
                 nt.setMessage(notifRS.getString("message"));
                 nt.setItemId(notifRS.getString("itemId"));
                 nt.setReadStatus(notifRS.getInt("readStatus"));
-                nt.setNotifId(notifRS.getInt("itemId"));
+                nt.setNotifId(notifRS.getString("notifId"));
                 notifList.add(nt);
             }
 

@@ -129,7 +129,7 @@ public class InsertData {
             }         
     }
 
-    public void addNotification(String message, String itemId, int readStatus, int notifId){
+    public void addNotification(String message, String itemId, int readStatus, String notifId){
 
         String command = "INSERT INTO notifData(message, itemId, readStatus, notifId) VALUES(?,?,?,?)";
 
@@ -142,7 +142,7 @@ public class InsertData {
                 v.setString(1, message);
                 v.setString(2, itemId);
                 v.setInt(3, readStatus);
-                v.setInt(4, notifId);
+                v.setString(4, notifId);
 
             v.executeUpdate();
 

@@ -25,16 +25,19 @@ public class Notif {
     private String linkId;
     private String messageStr;
     private int readStatus;
-    private int notifId;
+    private String notifId;
 
 	public Notif(){
-        this.hb = makeNotifBox();
         this.linkId = "No ID given";
+        this.hb = makeNotifBox();
     }
 
-    public Notif(String itemId){
+    public Notif(String messageStr, String linkId, int readStatus, String notifId){
+        this.messageStr = messageStr;
+        this.linkId = linkId;
+        this.readStatus = readStatus;
+        this.notifId = notifId;
     	this.hb= makeNotifBox();
-    	this.linkId=itemId;
     }
 
     public HBox makeNotifBox(){
@@ -88,25 +91,38 @@ public class Notif {
     	hb.setVisible(value);
     }
 
+    public String getMessage(){
+        return messageStr;
+    }
+
     public void setMessage(String text){
         this.messageStr = text;
     	message.setText(text);
     }
 
-    public String getMessage(){
-        return messageStr;
+    public String getItemId(){
+        return linkId;
     }
 
     public void setItemId(String linkId){
         this.linkId = linkId;
+    }
 
+    public int getReadStatus(){
+        return readStatus;
     }
 
     public void setReadStatus(int readStatus){
         this.readStatus = readStatus;
+        hb.setVisible(readStatus==1);
     }
 
-    public void setNotifId(int notifId){
+
+    public String getNotifId(){
+        return notifId;
+    }
+
+    public void setNotifId(String notifId){
         this.notifId = notifId;
     }
 

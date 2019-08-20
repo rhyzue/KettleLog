@@ -127,6 +127,7 @@ public class NotifStage extends Stage{
         
         for(int i = 0; i< kettleNotifs.size(); i++){
             //SET ALL NOTIF DATA TO KETTLE NOTIF DATA
+
             notifList.get(i).setMessage(kettleNotifs.get(i).getMessage());
         }
 
@@ -144,6 +145,7 @@ public class NotifStage extends Stage{
             else if(itemClicked.equals("clearBtn")){
                 for(int i = 0; i<notifList.size(); i++){
                     notifList.get(i).setNotifVisible(false);
+                    //
                 }
                 //also clear the db
             }
