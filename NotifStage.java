@@ -123,9 +123,12 @@ public class NotifStage extends Stage{
 
     }
 
-    public void updateNotifStage(){
-        //load notif data
+    public void updateNotifStage(List<Notif> kettleNotifs){
         
+        for(int i = 0; i< kettleNotifs.size(); i++){
+            //SET ALL NOTIF DATA TO KETTLE NOTIF DATA
+            notifList.get(i).setMessage(kettleNotifs.get(i).getMessage());
+        }
 
     }
 

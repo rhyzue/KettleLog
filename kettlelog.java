@@ -1,5 +1,6 @@
 import Log.*;
 import Item.*;
+import Notif.*;
 import java.io.*;
 import java.sql.*;
 import java.text.*;
@@ -36,6 +37,7 @@ public class Kettlelog extends Application {
 
     private static ObservableList<Item> data = FXCollections.observableArrayList();
     private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
+    private static List<Notif> notifList = new ArrayList<Notif>();
     private static ObservableList<Item> itemsToDelete;
     private static Item empty = new Item("emptyID", "", "", "", "", "", "", false, false, "", "", emptylist);
 
@@ -57,8 +59,8 @@ public class Kettlelog extends Application {
  
     @Override
     public void start(Stage setup) {
-        loadData();
-        app.addNotification("Welcome to Kettlelog!", "None", 0, 0);
+        loadData(); //will load data and notif data if it exists
+        //app.addNotification("Welcome to Kettlelog!", "None", 0, 0);
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.show();
         primaryStage.updatePrimaryStage(data);
@@ -119,7 +121,8 @@ public class Kettlelog extends Application {
 
     public void showNotifStage() {
         primaryStage.showOpaqueLayer();
-        //notifStage.updateNotifStage();
+        //loadNotifData();
+        notifStage.updateNotifStage(notifList);
 
         notifStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250); //250 is width divided by 2
         notifStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 250) + extraheight); 
@@ -493,6 +496,36 @@ public class Kettlelog extends Application {
         }
     }
 
+    public void loadNotifData(){
+    	System.out.println("Loading notif data...");
+    	try{
+            //connect to the db
+            Connection conn = getDataBase("notifications.db");
+            Statement stmt = conn.createStatement();
+
+            String command = "SELECT * FROM notifData"; //Call one table "Data", 2nd table "Log"
+            ResultSet notifRS = stmt.executeQuery(command);
+
+            int index = 0;
+
+            while (notifRS.next()) { //only one row in mainData
+            	Notif nt = new Notif();
+                nt.setMessage(notifRS.getString("message"));
+                nt.setItemId(notifRS.getString("itemId"));
+                nt.setReadStatus(notifRS.getInt("readStatus"));
+                nt.setNotifId(notifRS.getInt("itemId"));
+                notifList.add(nt);
+            }
+
+            stmt.close();
+            conn.close();
+            System.out.println("notif data loaded successfully");
+        }
+        catch (SQLException e) {
+            System.out.println("loadNotifData: "+e.getMessage());
+        }
+    }
+
     //the purpose of this method is to take data from a .db database and load it into our code. 
     //two observablelists need to be created from the two tables in the database (ObservableList<Item>, ObservableList<Log>)
 
@@ -519,24 +552,46 @@ public class Kettlelog extends Application {
             String dbName = dblist[i].getName();
             System.out.println("Loading data");
             System.out.println(dbName);
+            
 
-            if(dbName.equals(".gitignore")|| dbName.equals("notifications.db")){
-                if(dbName.equals("notifications.db")){
+            if(dbName.equals(".gitignore")){
+            	System.out.println("Skipping .gitignore");
+            	i++;
+            	if(i<dblist.length){
+	                dbName = dblist[i].getName();
+	                System.out.println("Next: "+dbName);
+            	}
+            }
+            if(dbName.equals("notifications.db")){
+            	hasNotifDB = true;
+            	System.out.println("notif db found");
+            	loadNotifData();
+            	i++;
+            	if(i<dblist.length){
+	                dbName = dblist[i].getName();
+	                System.out.println("Next: "+dbName);
+	                if(dbName.equals(".gitignore")){
+	                	System.out.println("Skipping .gitignore");
+	                	i++;
+	                }
+            	}
+            }
+
+            if(i>=dblist.length && data.size()==0){ //we have reached the end of our files and there is no data
+                data.add(empty);
+                if(!hasNotifDB){ //if there is also no notifications
+                	createNotifDB();
                 	hasNotifDB = true;
                 }
-                i++;
-                if(i==dblist.length && data.size()==0){
-                    System.out.println("no files!");
-                    data.add(empty);
-                    return;
-                }
-                if(i<dblist.length){
-                    dbName = dblist[i].getName();
-                    System.out.println(dbName);
-                }
-                else{
-                    return;
-                }
+                return;
+            }
+
+            if(i<dblist.length){
+                dbName = dblist[i].getName();
+                System.out.println("Next: "+dbName);
+            }
+            else{
+                return;
             }
 
             try{

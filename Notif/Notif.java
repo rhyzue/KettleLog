@@ -89,7 +89,25 @@ public class Notif {
     }
 
     public void setMessage(String text){
+        this.messageStr = text;
     	message.setText(text);
+    }
+
+    public String getMessage(){
+        return messageStr;
+    }
+
+    public void setItemId(String linkId){
+        this.linkId = linkId;
+
+    }
+
+    public void setReadStatus(int readStatus){
+        this.readStatus = readStatus;
+    }
+
+    public void setNotifId(int notifId){
+        this.notifId = notifId;
     }
 
 
