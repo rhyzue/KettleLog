@@ -5,6 +5,7 @@ import java.sql.*;
 import java.text.*;
 import java.util.*;
 import javafx.stage.*;
+import java.lang.Math;
 import java.nio.file.*;
 import java.sql.Statement;
 import javafx.scene.Scene;
@@ -218,12 +219,76 @@ public class Algorithm {
         return loglist;
     }
 
+
+    //This method will set the status of an item to be its most recent version.
+    public void setUpdatedStatus(String id) {
+
+
+    }
+
+    //method that will get the most updated status according to an algorithm
+    /*public String getUpdatedStatus(String id) {
+        String status = "emptyplaceholder";
+        //if the reorderpoint and reorderdate is not known ("N/A"), the status should be "New"
+        Item item = getItem(id);
+        String reorderpointstr = item.getROP();
+        String safetystr = item.getMinimum();
+        String currentquanstr = item.getQuantity();
+        String adcstr = item.getADC();
+        //check if we even know the reorder point first.
+        if (reorderpointstr.equals("N/A")) {
+            status = "New";
+            return status;
+        }
+
+        int reorder = Integer.parseInt(reorderpointstr);
+        int safety = Integer.parseInt(safetystr);
+        int current = Integer.parseInt(currentquanstr);
+        double adc = Double.parseDouble(adcstr);
+
+        System.out.println("You currently have " + current);
+        System.out.println("Your minimum is " + safety);
+        System.out.println("Your reorder point is " + reorder);
+
+        //This means that the user does not have to place a reorder just yet. 
+        //1. Two weeks time before reorder point is hit = VERY GOOD
+        //2. One weeks time before reorder point is hit = GOOD
+        //3. 3-6 days before is MODERATE.
+        //4. 1-2 days before reorder point is hit = REORDER SOON
+        if (current > reorder) {
+            int i = current - reorder;
+            System.out.println("Number between current and reorder is + " + i);
+            double daysbetween = (double) i;
+            double buffer = daysbetween / adc;
+            //int days = (int) Math.round(between);
+            System.out.println("Number of days before reorderpoint is hit is + " + buffer);
+            if (buffer >= 14.0) {
+                status = "Very Good";
+                return status;
+            } else if (buffer >= 7.0) {
+                status = "Good";
+                return status;
+            } else if (buffer > 2.0) {
+                status = "Moderate";
+                return status;
+            } else {
+                status = "REORDER SOON";
+                return status;
+            }
+        }
+
+        else {
+            status = "REORDER NEEDED";
+            return status;
+        }
+    }*/
+
     //====================================================================================
     //CALCULATIONS: ADC, ROP, ROD
     //====================================================================================
     public void setCalculations(String id) {
         Item item = getItem(id);
-        
+
         String[] calcinfo = getCalculations(id);
         String adc = calcinfo[0];
 
