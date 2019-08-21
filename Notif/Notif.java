@@ -11,7 +11,11 @@ import javafx.scene.control.*;
 public class Notif {
 
 	private HBox hb;
-    private Button readBtn = new Button("Mark read");
+    private Button readBtn = new Button();
+    private Image read = new Image("./Misc/Read.png");
+    private Image unread = new Image("./Misc/Unread.png");
+    private ImageView readImg = new ImageView();
+    private Tooltip readTP = new Tooltip("Mark read");
     private Label message = new Label("Message");
     private Button linkBtn = new Button();
     private Image linkBtnImg = new Image("./Misc/link.png");
@@ -54,11 +58,20 @@ public class Notif {
     	hb = new HBox(10);
     	NotifHandler notifHandler = new NotifHandler();
 
-        readBtn.setPrefWidth(100);
+        readBtn.setStyle("-fx-background-color: transparent;");             
+            readImg.setImage(read);
+            readImg.setFitWidth(20);
+            readImg.setPreserveRatio(true);
+            readImg.setSmooth(true);
+            readImg.setCache(true); 
+        readBtn.setGraphic(readImg);
+
+        readTP.setShowDelay(new javafx.util.Duration(100.0));
+        readBtn.setTooltip(readTP);
         readBtn.setId("readBtn"); 
         readBtn.setOnAction(notifHandler);
 
-        message.setPrefWidth(250.0);
+        message.setPrefWidth(275.0);
         message.setPrefHeight(30.0);
 
         linkBtn.setStyle("-fx-background-color: transparent;");             
@@ -127,11 +140,13 @@ public class Notif {
 
         if(readStatus==1){//read
             hb.setOpacity(0.5);
-            readBtn.setText("Mark Unread");
+            readImg.setImage(unread);
+            readTP.setText("Mark unread");
         }
         else if(readStatus==0){//unread
             hb.setOpacity(1);
-            readBtn.setText("Mark Read");
+            readImg.setImage(read);
+            readTP.setText("Mark read");
         }
     }
 
@@ -153,11 +168,11 @@ public class Notif {
 
             switch(itemClicked){
             	case "readBtn":
-	            	if(readStatus==0){
-	                    setReadStatus(1);
+	            	if(readStatus==0){ //if unread, mark as read
+	                    setReadStatus(1); 
 	                }
 	                else if (readStatus==1){
-                        setReadStatus(0);
+                        setReadStatus(0); 
 	                }
             		break;
             	case "delBtn":
