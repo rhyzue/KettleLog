@@ -2,6 +2,7 @@ import Log.*;
 import Item.*;
 import java.time.*; 
 import java.util.*;
+import javafx.util.*;
 import javafx.stage.*;
 import javafx.event.*;
 import javafx.geometry.*;
@@ -39,13 +40,15 @@ public class InfoStage extends Stage{
     private static double infoheight = 700;
     private static double scrollheight = 2000;
     private static double distancedown = 40.0;
+    private static double tooltipduration = 75.0;
     private static String infostriphex = "#004545;";
     private static String infomidhex = "#b8d6d6;";
     private static Button help1 = new Button();
     private static Button help2 = new Button();
     private static Button refresh = new Button();
-    private static Tooltip helptip1 = new Tooltip("When the current quantity of this item reaches this estimated number, a reorder must be placed.");
+    private static Tooltip helptip1 = new Tooltip("When the current quantity of this item reaches this number, a reorder must be placed.");
     private static Tooltip helptip2 = new Tooltip("The approximate date you should place a reorder.");
+    private static Tooltip refreshtip = new Tooltip("Refresh Graph");
     private static Separator line1 = new Separator();
     private static Separator line2 = new Separator();
     private static Separator line3 = new Separator();
@@ -178,6 +181,7 @@ public class InfoStage extends Stage{
         //Help Button for Estimated Reorder Point
         helptip1.setPrefWidth(150);
         helptip1.setWrapText(true);
+        helptip1.setShowDelay(new javafx.util.Duration(tooltipduration));
         helpImg.setImage(helpBtnImg);
         helpImg.setFitWidth(20);
         helpImg.setPreserveRatio(true);
@@ -212,6 +216,7 @@ public class InfoStage extends Stage{
         //Help Button for Estimated Reorder Date
         helptip2.setPrefWidth(150);
         helptip2.setWrapText(true);
+        helptip2.setShowDelay(new javafx.util.Duration(tooltipduration));
         helpImg2.setImage(helpBtnImg2);
         helpImg2.setFitWidth(20);
         helpImg2.setPreserveRatio(true);
@@ -253,7 +258,8 @@ public class InfoStage extends Stage{
         graphtext.setFont(new Font(16));
 
         //Refresh Button
-        refresh.setTooltip(new Tooltip("Refresh Graph"));
+        refreshtip.setShowDelay(new javafx.util.Duration(tooltipduration));
+        refresh.setTooltip(refreshtip);
         Image refreshImg = new Image("./Misc/refresh.png");
         ImageView refreshImgView = new ImageView();
             refresh.setStyle("-fx-background-color: transparent;");             
@@ -557,6 +563,7 @@ public class InfoStage extends Stage{
             String datewithyear = (chartinfo.get(i)).getDateLogged();
             //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
             String date = (datewithyear.substring(5)).replace("-", "/");
+            //However, we want to check the year to make sure it is the current year.
             //System.out.println(date);
             String quanstring = (chartinfo.get(i)).getQuanLogged();
             //System.out.println(quanstring);

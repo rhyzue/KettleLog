@@ -4,6 +4,7 @@ import java.time.*;
 import java.util.*;
 import javafx.stage.*;
 import javafx.event.*;
+import javafx.util.*;
 import javafx.scene.Scene;
 import javafx.scene.text.*;
 import java.time.LocalDate;
@@ -34,6 +35,7 @@ public class AddStage extends Stage{
     private static double addw_to_h = 0.85;
     private static double addheight = addwidth / addw_to_h;
     private static double numbertextwidth = 100.0;; 
+    private static double tooltipduration = 75.0;
     private static String tbcolour = "#006733;";
     private static String midcolour = "#d5f0e2;";
 
@@ -76,8 +78,8 @@ public class AddStage extends Stage{
     private static Label nolabel = new Label("No");
     private static ToggleGroup radioGroup = new ToggleGroup();
     private static RadioButton nobox = new RadioButton();
-    private static String addtip = "The date that you want logging to begin on. This date cannot be changed later.";
-    private static String edittip = "The date you wish this log to correspond to.";
+    private static String addtip = "The date that you want logging to begin on.";
+    private static String edittip = "The date you want this log to correspond to.";
     private static Tooltip helptip = new Tooltip();
     private static Tooltip reordertip = new Tooltip("Add Reorder");
     private static Button helpBtn = new Button();
@@ -169,6 +171,7 @@ public class AddStage extends Stage{
         helpBtn.setStyle("-fx-background-color: transparent;");  
         helptip.setPrefWidth(150);
         helptip.setWrapText(true);  
+        helptip.setShowDelay(new javafx.util.Duration(tooltipduration));
         helpBtn.setTooltip(helptip);     
         AnchorPane.setRightAnchor(helpBtn, 175.0);
         AnchorPane.setBottomAnchor(helpBtn, 8.0);
@@ -387,7 +390,7 @@ public class AddStage extends Stage{
                 reorderImgView.setCache(true); 
                 reorderbtn.setGraphic(reorderImgView);
 
-            reordertip.setShowDelay(new javafx.util.Duration(100.0));
+            reordertip.setShowDelay(new javafx.util.Duration(tooltipduration));
             reorderbtn.setTooltip(reordertip); 
 
             AnchorPane.setBottomAnchor(reorderbtn, 35.0);

@@ -26,9 +26,8 @@ public class Algorithm {
     }
 
     //================================================================================
-    // CALCULATIONS & ALGORITHM
+    // HELPERS
     //================================================================================
-    //this method gets the item of a corresponding ID
     public Item getItem(String id){
         for (int i = 0; i < data.size(); i++){
             //when we eventually find a match, return that item
@@ -39,7 +38,79 @@ public class Algorithm {
         return null;
     }
 
-    //This method determines which quantity should be set for the item.
+    //This method takes in a list of numbers (lon) and returns the max.
+    public int getMax(ArrayList<Integer> lon){
+        int max = Integer.MIN_VALUE;
+        for(int i = 0; i < lon.size(); i++){
+            if(lon.get(i) > max){
+                max = lon.get(i);
+            }
+        }
+        return max;
+    }
+
+    //This method takes in a list of logs and sorts it so that the most recent ones are at the end of the list.
+    public static ObservableList<Log> sortLogsByDate(ObservableList<Log> loglist) {
+
+        Collections.sort(loglist, new Comparator<Log>() {
+
+            public int compare(Log log1, Log log2) {
+
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                java.util.Date date1 = null;
+                java.util.Date date2 = null;
+
+                try {
+                    date1=format.parse(log1.getDateLogged());
+                    date2=format.parse(log2.getDateLogged());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                int firstcomp = date1.compareTo(date2);
+                if (firstcomp != 0) {
+                   return firstcomp;
+                } 
+                //If multiple logs share the same date, we need to then put the reorders first so that when we reverse, consumption is first.
+                String type1 = log1.getLogType();
+                String type2 = log2.getLogType();
+                return -type1.compareTo(type2);
+        }});
+
+        return loglist;
+    }
+
+    //this method takes in an observablelist and trims it so that all useless reorder logs are removed. 
+    //Reorder logs are considered useless if they are before the first consumption-type log.
+    public ObservableList<Log> trimLogList(ObservableList<Log> loglist){
+        int length = loglist.size();
+        int index = 0;
+        //Search through our loglist and find the first consumption log. 
+        for (int i = 0; i < length; i++) {
+            Log current = loglist.get(i);
+            if ((current.getLogType()).equals("CONSUMPTION")) {
+                index = i;
+                break;
+            }
+        }
+
+        ArrayList<Log> logAL = new ArrayList<Log>(loglist.subList(index, length));
+        loglist = FXCollections.observableArrayList(logAL);
+        //the length of the loglist has been changed so we need to factor that in.
+        int length2 = loglist.size();
+
+        System.out.println("ABOUT TO PRINT OUT THE TRIMMED LIST.");
+        for (int x = 0; x < length2; x++) {
+            System.out.println((loglist.get(x)).getDateLogged());
+            System.out.println((loglist.get(x)).getQuanLogged());
+        }
+
+        return loglist;
+    }
+
+    //================================================================================
+    // UPDATERS
+    //================================================================================
     public String getNewQuan(String id, String mostrecentdate){
         int added = 0;
         Item rowinfo = getItem(id);
@@ -151,77 +222,6 @@ public class Algorithm {
 
     }
 
-    //This method takes in a list of numbers (lon) and returns the max.
-    public int getMax(ArrayList<Integer> lon){
-        int max = Integer.MIN_VALUE;
-        for(int i = 0; i < lon.size(); i++){
-            if(lon.get(i) > max){
-                max = lon.get(i);
-            }
-        }
-        return max;
-    }
-
- 	//This method takes in a list of logs and sorts it so that the most recent ones are at the end of the list.
-    public static ObservableList<Log> sortLogsByDate(ObservableList<Log> loglist) {
-
-        Collections.sort(loglist, new Comparator<Log>() {
-
-            public int compare(Log log1, Log log2) {
-
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                java.util.Date date1 = null;
-                java.util.Date date2 = null;
-
-                try {
-                    date1=format.parse(log1.getDateLogged());
-                    date2=format.parse(log2.getDateLogged());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                int firstcomp = date1.compareTo(date2);
-                if (firstcomp != 0) {
-                   return firstcomp;
-                } 
-                //If multiple logs share the same date, we need to then put the reorders first so that when we reverse, consumption is first.
-                String type1 = log1.getLogType();
-                String type2 = log2.getLogType();
-                return -type1.compareTo(type2);
-        }});
-
-        return loglist;
-    }
-
-    //this method takes in an observablelist and trims it so that all useless reorder logs are removed. 
-    //Reorder logs are considered useless if they are before the first consumption-type log.
-    public ObservableList<Log> trimLogList(ObservableList<Log> loglist){
-        int length = loglist.size();
-        int index = 0;
-        //Search through our loglist and find the first consumption log. 
-        for (int i = 0; i < length; i++) {
-            Log current = loglist.get(i);
-            if ((current.getLogType()).equals("CONSUMPTION")) {
-                index = i;
-                break;
-            }
-        }
-
-        ArrayList<Log> logAL = new ArrayList<Log>(loglist.subList(index, length));
-        loglist = FXCollections.observableArrayList(logAL);
-        //the length of the loglist has been changed so we need to factor that in.
-        int length2 = loglist.size();
-
-        System.out.println("ABOUT TO PRINT OUT THE TRIMMED LIST.");
-        for (int x = 0; x < length2; x++) {
-            System.out.println((loglist.get(x)).getDateLogged());
-            System.out.println((loglist.get(x)).getQuanLogged());
-        }
-
-        return loglist;
-    }
-
-
     //This method will set the status of an item to be its most recent version.
     public void setUpdatedStatus(String id) {
         Item item = getItem(id);
@@ -285,7 +285,7 @@ public class Algorithm {
                 status = "Moderate";
                 return status;
             } else {
-                status = "REORDER SOON";
+                status = "Reorder Soon";
                 return status;
             }
         }

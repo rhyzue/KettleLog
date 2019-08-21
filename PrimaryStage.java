@@ -40,6 +40,7 @@ public class PrimaryStage extends Stage{
     private static double w = 1024;
     private static double h = w / w_to_h;
     private static double spacefromtable = 7.5;
+    private static double tooltipduration = 75.0;
 
     //UI Items
 	private static TextField searchbar = new TextField();
@@ -49,7 +50,6 @@ public class PrimaryStage extends Stage{
     private static Button addBtn = new Button();
     private static Button notifBtn = new Button();
     private static AnchorPane topBar = new AnchorPane();
-    private ComboBox<String> optionBox;
     private static TranslateTransition tt = new TranslateTransition();
     private static PauseTransition pt = new PauseTransition();
     private static SequentialTransition st;
@@ -69,6 +69,7 @@ public class PrimaryStage extends Stage{
 
     private static TableColumn<Item, String>[] itemArray = (TableColumn<Item, String>[]) new TableColumn[titles.length];
     private static BorderPane base = new BorderPane();
+    private ComboBox<String> optionBox;
 
     //Handler eventHandler = new Handler();
     Kettlelog kettle = new Kettlelog();
@@ -159,7 +160,7 @@ public class PrimaryStage extends Stage{
 
         //ADD BUTTON
         Tooltip addTP = new Tooltip("Add Item");
-        addTP.setShowDelay(new javafx.util.Duration(100.0));
+        addTP.setShowDelay(new javafx.util.Duration(tooltipduration));
         addBtn.setTooltip(addTP);
         addBtn.setId("addBtn");
         Image addIcon = new Image("./Misc/addBtnIcon.png");
@@ -175,7 +176,7 @@ public class PrimaryStage extends Stage{
 
         //REMOVE BUTTON
         Tooltip rmTP = new Tooltip("Remove Item");
-        rmTP.setShowDelay(new javafx.util.Duration(100.0));
+        rmTP.setShowDelay(new javafx.util.Duration(tooltipduration));
         removeBtn.setTooltip(rmTP);
         removeBtn.setId("removeBtn"); 
         removeBtn.setDisable(true);
@@ -192,7 +193,7 @@ public class PrimaryStage extends Stage{
 
         //Notification
         Tooltip notifTP = new Tooltip("Notifications");
-        notifTP.setShowDelay(new javafx.util.Duration(100.0));
+        notifTP.setShowDelay(new javafx.util.Duration(tooltipduration));
         notifBtn.setTooltip(notifTP);
         notifBtn.setId("notifBtn"); 
         
