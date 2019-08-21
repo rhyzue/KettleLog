@@ -30,6 +30,7 @@ public class Notif {
     private String messageStr;
     private int readStatus;
     private String notifId;
+    private String dateGenerated;
 
     /*
         readStatus:
@@ -37,20 +38,22 @@ public class Notif {
         1=read
         -1=need to delete
         -2=empty
+        -3= reorder date is today and notif has been deleted
 
     */
 
 	public Notif(){
-        this.linkId = "No ID given";
+        this.linkId = "N/A";
         this.hb = makeNotifBox();
         this.readStatus = -2;
     }
 
-    public Notif(String messageStr, String linkId, int readStatus, String notifId){
+    public Notif(String messageStr, String linkId, int readStatus, String notifId, String dateGenerated){
         this.messageStr = messageStr;
         this.linkId = linkId;
         this.readStatus = readStatus;
         this.notifId = notifId;
+        this.dateGenerated = dateGenerated;
     	this.hb= makeNotifBox();
     }
 
@@ -86,6 +89,13 @@ public class Notif {
         linkBtn.setTooltip(linkTP);   
         linkBtn.setId("linkBtn");
         linkBtn.setOnAction(notifHandler);
+
+        if(linkId.equals("N/A")){
+            linkBtn.setDisable(true);
+        }
+        else{
+            linkBtn.setDisable(false);
+        }
 
         delBtn.setStyle("-fx-background-color: transparent;");             
             delImg.setImage(delBtnImg);
@@ -129,6 +139,12 @@ public class Notif {
 
     public void setItemId(String linkId){
         this.linkId = linkId;
+        if(linkId.equals("N/A")){
+            linkBtn.setDisable(true);
+        }
+        else{
+            linkBtn.setDisable(false);
+        }
     }
 
     public int getReadStatus(){
@@ -157,6 +173,14 @@ public class Notif {
 
     public void setNotifId(String notifId){
         this.notifId = notifId;
+    }
+
+    public String getDateGenerated(){
+        return dateGenerated;
+    }
+
+    public void setDateGenerated(String dateGenerated){
+        this.dateGenerated = dateGenerated;
     }
 
 

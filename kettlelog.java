@@ -50,6 +50,7 @@ public class Kettlelog extends Application {
     private static Algorithm alg = new Algorithm();
     private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
     private static NotifStage notifStage = new NotifStage();
+    private static NotifComparator notifComparator = new NotifComparator();
 
     //================================================================================
     // METHODS
@@ -63,6 +64,8 @@ public class Kettlelog extends Application {
         loadData(); //will load data and notif data if it exists
         //app.addNotification("Welcome to Kettlelog!", "None", 0, java.util.UUID.randomUUID().toString());
         generateNotifsIfNeeded();
+        //sorting by most recent
+        notifList.sort(notifComparator.reversed());
         primaryStage.updateNotifIcon();
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.updatePrimaryStage(data);
@@ -231,42 +234,84 @@ public class Kettlelog extends Application {
     	if(data.size()==0 || data.get(0).getID().equals("emptyID")){
     		return;
     	}
-
+        
     	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		java.util.Date today = new java.util.Date();
 		String todayString = dateFormat.format(today);
+        List<Notif> notifsToAdd = new ArrayList<Notif>();
 
 		//loop through all items and check the reorder date
 		for(int i = 0; i<data.size(); i++){
 			Item curItem = data.get(i);
-            System.out.println("Checking if reorder is needed for: "+curItem.getName());
+            //String todayString = "2019-08-0"+i;
 
             //if the date today is equal to the reorder date
 			if(todayString.equals(curItem.getROD())){
 				String message = "Reorder needed for: "+curItem.getName();
-				boolean duplicateNotifFound = false;
-				//check for duplicates
-				for(int j = 0; j<notifList.size(); j++){
-					if(notifList.get(j).getMessage().equals(message)){
-						duplicateNotifFound = true;
-                        System.out.println("Notif already exists");
-					}
-				}
+                String randomId = java.util.UUID.randomUUID().toString();
+
+                Notif nf = new Notif(message, curItem.getID(), 0, randomId, todayString);
+				boolean duplicateNotifFound = duplicateExists(nf);
                 //there is no duplicate
 				if(!duplicateNotifFound){
-                    System.out.println("Adding notification");
-                    String randomId = java.util.UUID.randomUUID().toString();
-					app.addNotification("Reorder needed for: "+curItem.getName(), curItem.getID(), 0, randomId);
-					notifList.add(new Notif("Reorder needed for: "+curItem.getName(), curItem.getID(), 0, randomId));
+                    //add it to a list to generate later
+					notifsToAdd.add(new Notif("Reorder needed for: "+curItem.getName(), curItem.getID(), 0, randomId, todayString));
 				}
 			}
 		}
+        System.out.println("Number of notifs: "+notifsToAdd.size());
+
+        if(notifsToAdd.size()>20){
+
+            String nfId = java.util.UUID.randomUUID().toString();
+            Notif n = new Notif("Reorder needed for 20+ items", "N/A", 0, nfId, todayString);
+            //if there is 20+ items that need reordering, generate a new notif
+            if(!duplicateExists(n)){
+                app.addNotification(n);
+                notifList.add(n);
+            }
+        }
+        else{
+            //else just add it normally
+            for(int k = 0; k<notifsToAdd.size(); k++){
+                Notif curNf = notifsToAdd.get(k);
+                app.addNotification(curNf);
+                notifList.add(curNf);
+            }
+        }
+        notifsToAdd.clear();
+        //Account for already existing notifs
+        checkNotifOverflow();
 		notifStage.updateNotifStage(notifList);
     }
 
+    public void checkNotifOverflow(){
+        List<Notif> notifsToDelete = new ArrayList<Notif>();
+        //if there are more than 20 notifs
+        if(notifList.size()>20){
+            int numToDelete = 20-notifList.size();
+            for(int i = 0; i<numToDelete; i++){
+                notifsToDelete.add(notifList.get(notifList.size()-1-i)); //delete last few notifs
+            }
+            deleteNotifs(notifsToDelete);
+        }
+    }
+
+    public boolean duplicateExists(Notif pdNf){//potenial duplicate notification
+        for(int j = 0; j<notifList.size(); j++){
+            String pdMsg = pdNf.getMessage();
+            String pdItemId = pdNf.getItemId();
+            String pdDA = pdNf.getDateGenerated();
+            Notif existNf = notifList.get(j);
+            if(existNf.getMessage().equals(pdMsg) && (existNf.getItemId()).equals(pdItemId) && existNf.getDateGenerated().equals(pdDA)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void deleteNotifs(List<Notif> notifsToDelete){
-    	System.out.println("number to delete: "+notifsToDelete.size());
-    	System.out.println("number before deleting: "+notifList.size());
     	for(int i = 0; i<notifsToDelete.size(); i++){
     		String notifId = notifsToDelete.get(i).getNotifId();
 	    	app.deleteNotif(notifId);
@@ -278,9 +323,14 @@ public class Kettlelog extends Application {
 	    		}
 	    	}
 	    }
-	    System.out.println("after deleting size: "+notifList.size());
     	notifStage.updateNotifStage(notifList);
     }
+/*
+    public void testGenNotifs(){
+        for(int i = 0; i<21; i++){
+
+        }
+    }*/
 
     public void updateNotifReadStatus(List<Notif> nfList){
     	for(int x = 0; x<nfList.size(); x++){
@@ -304,6 +354,10 @@ public class Kettlelog extends Application {
             }
         }
         return false;
+    }
+
+    public List<Notif> getNotifList(){
+        return notifList;
     }
 
     //================================================================================
@@ -499,7 +553,8 @@ public class Kettlelog extends Application {
         	+ "message text not null," 
         	+ "itemId text not null,"
         	+ "readStatus int not null,"
-        	+ "notifId String not null"
+        	+ "notifId String not null,"
+            + "dateGenerated String not null"
         	+ ");";
 
         try {
@@ -600,6 +655,7 @@ public class Kettlelog extends Application {
                 nt.setItemId(notifRS.getString("itemId"));
                 nt.setReadStatus(notifRS.getInt("readStatus"));
                 nt.setNotifId(notifRS.getString("notifId"));
+                nt.setDateGenerated(notifRS.getString("dateGenerated"));
                 notifList.add(nt);
             }
 
@@ -653,7 +709,6 @@ public class Kettlelog extends Application {
             	i++;
             	if(i<dblist.length){
 	                dbName = dblist[i].getName();
-	                System.out.println("Next: "+dbName);
 	                if(dbName.equals(".gitignore")){
 	                	System.out.println("Skipping .gitignore");
 	                	i++;

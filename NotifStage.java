@@ -132,6 +132,7 @@ public class NotifStage extends Stage{
                 notifList.get(i).setItemId(kettleNotifs.get(i).getItemId());
                 notifList.get(i).setReadStatus(kettleNotifs.get(i).getReadStatus());
                 notifList.get(i).setNotifId(kettleNotifs.get(i).getNotifId());
+                notifList.get(i).setDateGenerated(kettleNotifs.get(i).getDateGenerated());
                 notifList.get(i).setNotifVisible(true);
             }
             else{
@@ -164,11 +165,11 @@ public class NotifStage extends Stage{
                         notifsToUpdate.add(curNotif);
                     }
                 } 
-                if(notifsToDelete.size()>0){
-                    kettle.deleteNotifs(notifsToDelete);
-                }
                 if(notifsToUpdate.size()>0){
                     kettle.updateNotifReadStatus(notifsToUpdate);
+                }
+                if(notifsToDelete.size()>0){
+                    kettle.deleteNotifs(notifsToDelete);
                 }
                 kettle.primaryStage.updateNotifIcon();
             }

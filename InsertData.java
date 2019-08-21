@@ -1,5 +1,6 @@
 import Log.*;
 import Item.*; 
+import Notif.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -132,9 +133,14 @@ public class InsertData {
             }         
     }
 
-    public void addNotification(String message, String itemId, int readStatus, String notifId){
+    public void addNotification(Notif notif){
+        String message = notif.getMessage();
+        String itemId = notif.getItemId();
+        int readStatus = notif.getReadStatus();
+        String notifId = notif.getNotifId();
+        String dateGenerated = notif.getDateGenerated();
 
-        String command = "INSERT INTO notifData(message, itemId, readStatus, notifId) VALUES(?,?,?,?)";
+        String command = "INSERT INTO notifData(message, itemId, readStatus, notifId, dateGenerated) VALUES(?,?,?,?,?)";
 
         try {
             String filename = "notifications.db";
@@ -146,6 +152,7 @@ public class InsertData {
                 v.setString(2, itemId);
                 v.setInt(3, readStatus);
                 v.setString(4, notifId);
+                v.setString(5, dateGenerated);
 
             v.executeUpdate();
 
@@ -153,7 +160,7 @@ public class InsertData {
             conn.close();
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("addNotification: "+e.getMessage());
         }
 
     }
