@@ -71,7 +71,7 @@ public class Notif {
         readBtn.setId("readBtn"); 
         readBtn.setOnAction(notifHandler);
 
-        message.setPrefWidth(275.0);
+        message.setPrefWidth(285.0);
         message.setPrefHeight(30.0);
 
         linkBtn.setStyle("-fx-background-color: transparent;");             
