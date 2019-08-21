@@ -40,7 +40,7 @@ public class Kettlelog extends Application {
     private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
     private static List<Notif> notifList = new ArrayList<Notif>();
     private static ObservableList<Item> itemsToDelete;
-    private static Item empty = new Item("emptyID", "", "", "", "", "", "", false, false, "", "", emptylist, "0.0");
+    private static Item empty = new Item("emptyID", "", "", "", "", "", "", false, false, "", "", emptylist, "0.0", "N/A", "N/A");
 
     public static PrimaryStage primaryStage = new PrimaryStage();
     private static InfoStage infoStage = new InfoStage();
@@ -222,13 +222,13 @@ public class Kettlelog extends Application {
     public void updateEverything(String id){
         alg.setUpdatedQuan(id);
         alg.setCalculations(id);
+        alg.setUpdatedStatus(id);
 
     }
 
     //================================================================================
     // NOTIFICATION MANAGEMENT
     //================================================================================
-
     public void generateNotifsIfNeeded(){
 
     	if(data.size()==0 || data.get(0).getID().equals("emptyID")){
@@ -421,7 +421,10 @@ public class Kettlelog extends Application {
                 //3. Then, we need to populate the database tables with the information. 
                 // The zero is referring to the starred. When a brand new item is added, the item is obviously not starred so it will be 0. 
                 // 0 -> Not Starred, 1 -> Starred
-                app.insertinfo(added.getID(), added.getName(), added.getStatus(), added.getQuantity(), added.getMinimum(), added.getDelivery(), added.getDesc(), 0, added.getDateAdded(), added.getADC());
+                app.insertinfo(added.getID(), added.getName(), added.getStatus(), added.getQuantity(), 
+                    added.getMinimum(), added.getDelivery(), added.getDesc(), 0, 
+                    added.getDateAdded(), added.getADC(), added.getROP(), added.getROD());
+
                 app.insertlogs(added.getID(), added.getID(), "CONSUMPTION", added.getDate(), added.getQuantity());
 
                 //4.Add it our data's observablelist so that we can display it in the table. 
@@ -493,7 +496,7 @@ public class Kettlelog extends Application {
             conn = DriverManager.getConnection(url);
             
         } catch (SQLException e) {
-            System.out.println("getDataBase: "+e.getMessage());
+            System.out.println("getDataBase: "+ e.getMessage());
         }
 
         return conn;
@@ -516,7 +519,9 @@ public class Kettlelog extends Application {
             + "description text not null,"
             + "starred int not null,"
             + "dateadded text not null,"
-            + "adc text not null"
+            + "adc text not null,"
+            + "rop text not null,"
+            + "rod text not null"
             + ");";
 
         //Creating the log table in the same database. 
@@ -577,8 +582,11 @@ public class Kettlelog extends Application {
     }
 
     //Method that edits the information table for a specific database. 
-    public static void editInfoTable(String id, String name, String status, String quantity, String minimum, String delivery, String desc, int starbool, String dateadded, String adc) {
-        app.editinfo(id, name, status, quantity, minimum, delivery, desc, starbool, dateadded, adc);
+    public static void editInfoTable(String id, String name, String status, String quantity, 
+        String minimum, String delivery, String desc, int starbool, String dateadded, 
+        String adc, String rop, String rod) {
+
+        app.editinfo(id, name, status, quantity, minimum, delivery, desc, starbool, dateadded, adc, rop, rod);
     }
 
     //This method will delete a single log from the SQL Database for an item.
@@ -754,6 +762,8 @@ public class Kettlelog extends Application {
                     it.setStarred(mainData.getInt("starred")==1); //1=1, true, 0=1, false
                     it.setDateAdded(mainData.getString("dateadded"));
                     it.setADC(mainData.getString("adc"));
+                    it.setROP(mainData.getString("rop"));
+                    it.setROD(mainData.getString("rod"));
                     it.setChecked(false);
                 }
 
@@ -787,7 +797,7 @@ public class Kettlelog extends Application {
                 conn.close();
             }
             catch (SQLException e) {
-                System.out.println("loadData: "+e.getMessage());
+                System.out.println("loadData: "+ e.getMessage());
             }
         }
 

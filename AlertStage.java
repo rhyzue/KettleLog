@@ -295,7 +295,10 @@ public class AlertStage extends Stage{
                         kettleclass.updateEverything(rowinfo.getID());
 
                         //Editing our SQL Database's Info table
-                        kettleclass.editInfoTable(rowinfo.getID(), rowinfo.getName(), rowinfo.getStatus(), rowinfo.getQuantity(), rowinfo.getMinimum(), rowinfo.getDelivery(), rowinfo.getDesc(), 0, rowinfo.getDateAdded(), rowinfo.getADC()); 
+                        kettleclass.editInfoTable(rowinfo.getID(), rowinfo.getName(), 
+                            rowinfo.getStatus(), rowinfo.getQuantity(), rowinfo.getMinimum(), 
+                            rowinfo.getDelivery(), rowinfo.getDesc(), 0, rowinfo.getDateAdded(), 
+                            rowinfo.getADC(), rowinfo.getROP(), rowinfo.getROD()); 
 
                         //Also, update the table from infostage.
                         InfoStage infoStage = kettleclass.getInfoStage();

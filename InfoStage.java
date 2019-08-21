@@ -536,6 +536,8 @@ public class InfoStage extends Stage{
         infolabel.setText(rowinfo.getName());
         datelabel.setText(rowinfo.getDateAdded());
         adclabel.setText(rowinfo.getADC());
+        erplabel.setText(rowinfo.getROP());
+        erdlabel.setText(rowinfo.getROD());
 
         //Setting the description to the be the same. 
         if (rowinfo.getDesc().trim().length() <= 0) {
@@ -555,9 +557,9 @@ public class InfoStage extends Stage{
             String datewithyear = (chartinfo.get(i)).getDateLogged();
             //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
             String date = (datewithyear.substring(5)).replace("-", "/");
-            System.out.println(date);
+            //System.out.println(date);
             String quanstring = (chartinfo.get(i)).getQuanLogged();
-            System.out.println(quanstring);
+            //System.out.println(quanstring);
             int quantity = Integer.parseInt(quanstring);
             series.getData().add(new XYChart.Data(date, quantity));
         }
@@ -650,9 +652,9 @@ public class InfoStage extends Stage{
             String datewithyear = (chartinfo.get(i)).getDateLogged();
             //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
             String date = (datewithyear.substring(5)).replace("-", "/");
-            System.out.println(date);
+            //System.out.println(date);
             String quanstring = (chartinfo.get(i)).getQuanLogged();
-            System.out.println(quanstring);
+            //System.out.println(quanstring);
             int quantity = Integer.parseInt(quanstring);
             series.getData().add(new XYChart.Data(date, quantity));
         }

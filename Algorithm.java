@@ -142,7 +142,9 @@ public class Algorithm {
         item.setQuantity(newQuan);
 
         //Item's Quantity is now changed. But we need to make the same change in the SQL database.
-        kettle.editInfoTable(item.getID(), item.getName(), item.getStatus(), newQuan, item.getMinimum(), item.getDelivery(), item.getDesc(), 0, item.getDateAdded(), item.getADC()); 
+        kettle.editInfoTable(item.getID(), item.getName(), item.getStatus(), newQuan, 
+            item.getMinimum(), item.getDelivery(), item.getDesc(), 0, item.getDateAdded(), 
+            item.getADC(), item.getROP(), item.getROD()); 
 
         //We also need to reset the table's data.
         kettle.setData(placeholder, 1);
@@ -222,26 +224,37 @@ public class Algorithm {
 
     //This method will set the status of an item to be its most recent version.
     public void setUpdatedStatus(String id) {
+        Item item = getItem(id);
+        String status = getUpdatedStatus(id);
+        System.out.println("your new status is " + status);
 
+        //Changing the item's status using the setter.
+        item.setStatus(status);
+
+        //Making the same change in the SQL Database.
+        kettle.editInfoTable(item.getID(), item.getName(), status, item.getQuantity(), 
+            item.getMinimum(), item.getDelivery(), item.getDesc(), 0, 
+            item.getDateAdded(), item.getADC(), item.getROP(), item.getROD()); 
 
     }
 
     //method that will get the most updated status according to an algorithm
-    /*public String getUpdatedStatus(String id) {
-        String status = "emptyplaceholder";
-        //if the reorderpoint and reorderdate is not known ("N/A"), the status should be "New"
+    public String getUpdatedStatus(String id) {
+
+        String status = "";
         Item item = getItem(id);
         String reorderpointstr = item.getROP();
         String safetystr = item.getMinimum();
         String currentquanstr = item.getQuantity();
         String adcstr = item.getADC();
+
         //check if we even know the reorder point first.
         if (reorderpointstr.equals("N/A")) {
-            status = "New";
+            status = "More Info Needed";
             return status;
         }
 
-        int reorder = Integer.parseInt(reorderpointstr);
+        int reorder = Integer.parseInt(reorderpointstr); 
         int safety = Integer.parseInt(safetystr);
         int current = Integer.parseInt(currentquanstr);
         double adc = Double.parseDouble(adcstr);
@@ -250,10 +263,9 @@ public class Algorithm {
         System.out.println("Your minimum is " + safety);
         System.out.println("Your reorder point is " + reorder);
 
-        //This means that the user does not have to place a reorder just yet. 
         //1. Two weeks time before reorder point is hit = VERY GOOD
         //2. One weeks time before reorder point is hit = GOOD
-        //3. 3-6 days before is MODERATE.
+        //3. 3-6 days before reorder point is hit = MODERATE.
         //4. 1-2 days before reorder point is hit = REORDER SOON
         if (current > reorder) {
             int i = current - reorder;
@@ -262,6 +274,7 @@ public class Algorithm {
             double buffer = daysbetween / adc;
             //int days = (int) Math.round(between);
             System.out.println("Number of days before reorderpoint is hit is + " + buffer);
+
             if (buffer >= 14.0) {
                 status = "Very Good";
                 return status;
@@ -281,7 +294,7 @@ public class Algorithm {
             status = "REORDER NEEDED";
             return status;
         }
-    }*/
+    }
 
     //====================================================================================
     //CALCULATIONS: ADC, ROP, ROD
@@ -300,11 +313,13 @@ public class Algorithm {
 
         //changing the ADC of our item.
         item.setADC(adc);
-        //item.setROP(rop);
-        //item.setROD(rod);
+        item.setROP(rop);
+        item.setROD(rod);
 
         //Item's ADC, ROP, and ROD is now changed. But we need to make the same change in the SQL database.
-        kettle.editInfoTable(item.getID(), item.getName(), item.getStatus(), item.getQuantity(), item.getMinimum(), item.getDelivery(), item.getDesc(), 0, item.getDateAdded(), adc); 
+        kettle.editInfoTable(item.getID(), item.getName(), item.getStatus(), 
+            item.getQuantity(), item.getMinimum(), item.getDelivery(), 
+            item.getDesc(), 0, item.getDateAdded(), adc, rop, rod); 
     }
 
     //This method will return an array of 3 strings. 
@@ -317,6 +332,8 @@ public class Algorithm {
         String[] calcs = new String[3];
         //First, let's get our loglist, sort it, and remove the useless reorders.
         ObservableList<Log> loglist = kettle.getLogs(id);
+        ObservableList<Log> onlyconsumption = kettle.getConsumption(loglist);
+        int numOfCons = onlyconsumption.size();
 
         loglist = sortLogsByDate(loglist); //logs are now sorted from oldest to newest
         loglist = trimLogList(loglist); //all useless reorders removed.
@@ -324,8 +341,14 @@ public class Algorithm {
         Item currentitem = getItem(id);
         double adc = 0.0;
 
+        int shipping = Integer.parseInt(currentitem.getDelivery());
+            System.out.println("Your shipping time is " + shipping);
+
+        int minimum = Integer.parseInt(currentitem.getMinimum());
+            System.out.println("Your safety stock is " + minimum);
+
         int startinv = getStartInv(loglist);
-                System.out.println("Your starting inventory is " + startinv);
+            System.out.println("Your starting inventory is " + startinv);
 
         int reorderamount = getReorderedAmount(loglist);
             System.out.println("Your total logged reordered amount is " + reorderamount);
@@ -362,19 +385,20 @@ public class Algorithm {
         //========================================================================================
         // REORDER POINT: (ADC X SHIPPING TIME) + MINIMUM
         //========================================================================================
-        //if less than 3 logs, this should be N/A
+        //If there are less than 3 logs, we don't have enough data for a reorder point.
+        if (numOfCons < 3) {
+            System.out.println("You have less than 3 non-reorder type logs.");
+            String moreinfo = "N/A";
+            calcs[1] = moreinfo;
 
-        int shipping = Integer.parseInt(currentitem.getDelivery());
-            System.out.println("Your shipping time is " + shipping);
-        int minimum = Integer.parseInt(currentitem.getMinimum());
-            System.out.println("Your safety stock is " + minimum);
+        } else {
+            double adcShipProduct = adc * shipping;
+            int adcShipInt = (int) Math.round(adcShipProduct);
+            int rop = adcShipInt + minimum;
+            String ropstring = Integer.toString(rop);
 
-        double adcShipProduct = adc * shipping;
-        int adcShipInt = (int) Math.round(adcShipProduct);
-        int rop = adcShipInt + minimum;
-        String ropstring = Integer.toString(rop);
-
-        calcs[1] = ropstring;
+            calcs[1] = ropstring;
+        }
 
         //========================================================================================
         // REORDER DATE = TODAY'S DATE + [(QUANTITY - MINIMUM) / ADC] - SHIPPING TIME
@@ -395,10 +419,11 @@ public class Algorithm {
             //if added days is less than 0, the user has already missed their reorder date.
             String rodstring = "OVERDUE";
             calcs[2] = rodstring;
-            System.out.println("OVERDUEOVERDUEOVERDUE");
+            System.out.println("OVERDUE DATE!");
         } 
 
-        else if (adc == 0) {
+        //Cannot divide by 0, and non-reorder type logs should be 3 or greater.
+        else if ((adc == 0) || (numOfCons < 3)) {
             String notapplicable = "N/A";
             calcs[2] = notapplicable;
         }
@@ -479,23 +504,23 @@ public class Algorithm {
     			indiceslist.add(i);
     		}
     	}
-    	System.out.println(indiceslist);
+    	System.out.println("Indices of Consumption Logs: " + indiceslist);
     	int numofcalc = indiceslist.size() - 1; //how many times we need to perform our mini-algorithm
 
     	for (int x = 0; x < numofcalc; x++) {
 
     		int firstindex = indiceslist.get(x);
-    		System.out.println("first index is " + firstindex);
+    		//System.out.println("first index is " + firstindex);
     		int nextindex = indiceslist.get(x + 1);
-    		System.out.println("next index is " + nextindex);
+    		//System.out.println("next index is " + nextindex);
 
     		Log firstlog = loglist.get(firstindex);
     		Log nextlog = loglist.get(nextindex);
 
     		int firstquan = Integer.parseInt(firstlog.getQuanLogged());
-    		System.out.println(firstquan);
+    		//System.out.println(firstquan);
     		int nextquan = Integer.parseInt(nextlog.getQuanLogged());
-    		System.out.println(nextquan);
+    		//System.out.println(nextquan);
 
     		//the next quantity is lower, so this is not a problem. 
     		if (firstquan >= nextquan) {
