@@ -137,7 +137,7 @@ public class Item {
         }
 
         public String getROD(){
-            return "2019-08-20";
+            return "2019-08-21";
         }
 
         public String getADC(){

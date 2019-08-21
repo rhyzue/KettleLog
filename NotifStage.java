@@ -170,6 +170,7 @@ public class NotifStage extends Stage{
                 if(notifsToUpdate.size()>0){
                     kettle.updateNotifReadStatus(notifsToUpdate);
                 }
+                kettle.primaryStage.updateNotifIcon();
             }
             else if(itemClicked.equals("clearBtn")){
                 for(int i = 0; i<notifList.size(); i++){

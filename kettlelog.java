@@ -62,10 +62,11 @@ public class Kettlelog extends Application {
     public void start(Stage setup) {
         loadData(); //will load data and notif data if it exists
         //app.addNotification("Welcome to Kettlelog!", "None", 0, java.util.UUID.randomUUID().toString());
-        //generateNotifsIfNeeded();
+        generateNotifsIfNeeded();
+        primaryStage.updateNotifIcon();
         itemsToDelete = FXCollections.observableArrayList(empty);
-        primaryStage.show();
         primaryStage.updatePrimaryStage(data);
+        primaryStage.show();
       }
 
     //================================================================================
@@ -221,6 +222,10 @@ public class Kettlelog extends Application {
 
     }
 
+    //================================================================================
+    // NOTIFICATION MANAGEMENT
+    //================================================================================
+
     public void generateNotifsIfNeeded(){
 
     	if(data.size()==0 || data.get(0).getID().equals("emptyID")){
@@ -234,6 +239,9 @@ public class Kettlelog extends Application {
 		//loop through all items and check the reorder date
 		for(int i = 0; i<data.size(); i++){
 			Item curItem = data.get(i);
+            System.out.println("Checking if reorder is needed for: "+curItem.getName());
+
+            //if the date today is equal to the reorder date
 			if(todayString.equals(curItem.getROD())){
 				String message = "Reorder needed for: "+curItem.getName();
 				boolean duplicateNotifFound = false;
@@ -241,11 +249,15 @@ public class Kettlelog extends Application {
 				for(int j = 0; j<notifList.size(); j++){
 					if(notifList.get(j).getMessage().equals(message)){
 						duplicateNotifFound = true;
+                        System.out.println("Notif already exists");
 					}
 				}
+                //there is no duplicate
 				if(!duplicateNotifFound){
-					app.addNotification("Reorder needed for: "+curItem.getName(), curItem.getID(), 0, java.util.UUID.randomUUID().toString());
-					notifList.add(new Notif("Reorder needed for: "+curItem.getName(), curItem.getID(), 0, java.util.UUID.randomUUID().toString()));
+                    System.out.println("Adding notification");
+                    String randomId = java.util.UUID.randomUUID().toString();
+					app.addNotification("Reorder needed for: "+curItem.getName(), curItem.getID(), 0, randomId);
+					notifList.add(new Notif("Reorder needed for: "+curItem.getName(), curItem.getID(), 0, randomId));
 				}
 			}
 		}
@@ -282,6 +294,16 @@ public class Kettlelog extends Application {
 	    	}
 	    }
     	notifStage.updateNotifStage(notifList);
+    }
+
+    public boolean hasUnreadNotif(){
+        //loop through notif list and check if there is an unread notif
+        for(int i = 0; i<notifList.size(); i++){
+            if(notifList.get(i).getReadStatus()==0){
+                return true;
+            }
+        }
+        return false;
     }
 
     //================================================================================
@@ -614,8 +636,6 @@ public class Kettlelog extends Application {
         boolean hasNotifDB = false;
         for (int i = 0; i < dblist.length; i++) { //loop through all dbs
             String dbName = dblist[i].getName();
-            System.out.println("Loading data");
-            System.out.println(dbName);
             
 
             if(dbName.equals(".gitignore")){

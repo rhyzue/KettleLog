@@ -54,6 +54,10 @@ public class PrimaryStage extends Stage{
     private static PauseTransition pt = new PauseTransition();
     private static SequentialTransition st;
 
+    private static Image notifGreen = new Image("./Misc/notifGreen.png");
+    private static Image notifRed = new Image("./Misc/notifRed.png");
+    private static ImageView notifImage = new ImageView();
+
     private static TableView<Item> table = new TableView<Item>();
     private static final String[] titles = {"Name","Status","Quantity","Minimum"};
     private static TableColumn<Item, String> buttoncolumn = new TableColumn<>("");
@@ -191,11 +195,10 @@ public class PrimaryStage extends Stage{
         notifTP.setShowDelay(new javafx.util.Duration(100.0));
         notifBtn.setTooltip(notifTP);
         notifBtn.setId("notifBtn"); 
-        Image notifIcon = new Image("./Misc/notifGreen.png");
-        ImageView notifImage = new ImageView();
+        
         notifImage.setFitHeight(35);
         notifImage.setFitWidth(35);        
-        notifImage.setImage(notifIcon);
+        notifImage.setImage(notifGreen);
         notifImage.setPreserveRatio(true);
         notifImage.setSmooth(true);
         notifImage.setCache(true); 
@@ -328,8 +331,6 @@ public class PrimaryStage extends Stage{
 
     public void updatePrimaryStage(ObservableList<Item> data){
 
-        setNotifBounce(true);
-
         if(!data.get(0).getName().equals("")){ //if empty
             AddButtonCell cell = new AddButtonCell(); 
             buttoncolumn.setCellFactory(cell);
@@ -339,6 +340,17 @@ public class PrimaryStage extends Stage{
             buttoncolumn.setCellFactory(blankCell);
         }
         table.setItems(data);
+    }
+
+    public void updateNotifIcon(){
+        if(kettle.hasUnreadNotif()){
+            setNotifBounce(true);
+            notifImage.setImage(notifRed);
+        }
+        else{
+            setNotifBounce(false);
+            notifImage.setImage(notifGreen);
+        }
     }
 
     public void enableRemoveBtn(){
