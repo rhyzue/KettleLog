@@ -291,62 +291,145 @@ public class Algorithm {
 
         String[] calcinfo = getCalculations(id);
         String adc = calcinfo[0];
+        String rop = calcinfo[1];
+        String rod = calcinfo[2];
+
+        System.out.println("Your ADC is " + adc);
+        System.out.println("Your reorder point is " + rop);
+        System.out.println("Your reorder date is " + rod);
 
         //changing the ADC of our item.
         item.setADC(adc);
+        //item.setROP(rop);
+        //item.setROD(rod);
 
-        //Item's ADC is now changed. But we need to make the same change in the SQL database.
+        //Item's ADC, ROP, and ROD is now changed. But we need to make the same change in the SQL database.
         kettle.editInfoTable(item.getID(), item.getName(), item.getStatus(), item.getQuantity(), item.getMinimum(), item.getDelivery(), item.getDesc(), 0, item.getDateAdded(), adc); 
     }
 
-    //return an array of 3 strings, ADC, ROP and ROD.
+    //This method will return an array of 3 strings. 
+    //[ADC, REORDER POINT, REORDER DATE] will the order of the indices of this array.
     public String[] getCalculations(String id) {
+
+        //========================================================================================
+        // INITIALIZATION
+        //========================================================================================
         String[] calcs = new String[3];
         //First, let's get our loglist, sort it, and remove the useless reorders.
         ObservableList<Log> loglist = kettle.getLogs(id);
-        //If there's only one consumption-type log in our loglist, return 0 always.
-        if (onlyOneConsumption(loglist)) {
-            calcs[0] = "0.0";
-            return calcs;
 
-        } else {
-            loglist = sortLogsByDate(loglist); //logs are now sorted from oldest to newest
-            loglist = trimLogList(loglist); //all useless reorders removed.
-            int length = loglist.size();
-            Item currentitem = getItem(id);
+        loglist = sortLogsByDate(loglist); //logs are now sorted from oldest to newest
+        loglist = trimLogList(loglist); //all useless reorders removed.
+        int length = loglist.size();
+        Item currentitem = getItem(id);
+        double adc = 0.0;
 
-            int startinv = getStartInv(loglist);
-            System.out.println("Your starting inventory is " + startinv);
+        int startinv = getStartInv(loglist);
+                System.out.println("Your starting inventory is " + startinv);
 
-            int reorderamount = getReorderedAmount(loglist);
+        int reorderamount = getReorderedAmount(loglist);
             System.out.println("Your total logged reordered amount is " + reorderamount);
 
-            int finalinv = Integer.parseInt(currentitem.getQuantity());
+        int finalinv = Integer.parseInt(currentitem.getQuantity());
             System.out.println("Your final inventory is " + finalinv);
 
-            long daysbetween = getElapsedDays(loglist);
+        long daysbetween = getElapsedDays(loglist);
             System.out.println("The number of days elapsed is " + daysbetween);
 
-            int unloggedincrease = getUnloggedReorderAmount(loglist);
+        int unloggedincrease = getUnloggedReorderAmount(loglist);
             System.out.println("Your unlogged increase amount is " + unloggedincrease);
 
-            //========================================================================================
-            // ADC FORMULA: (Starting Inventory + Reordered Amount - Final Inventory) / Days Elapsed
-            //========================================================================================
+        //========================================================================================
+        // ADC FORMULA: (Starting Inventory + Reordered Amount - Final Inventory) / Days Elapsed
+        //========================================================================================
+        if (onlyOneConsumption(loglist)) {
+            //If there's only one consumption-type log in our loglist, return 0 always.
+            calcs[0] = "0.0";
+
+        } else {
+
             int numint = startinv + (reorderamount + unloggedincrease) - finalinv;
             double numerator = (double) numint; //casting to double.
-            double adc = numerator / daysbetween;
+            adc = numerator / daysbetween;
 
             DecimalFormat newFormat = new DecimalFormat("#.###");
             adc =  Double.valueOf(newFormat.format(adc));
             String adcstring = String.valueOf(adc);
-            System.out.println("Your ADC is " + adcstring);
 
             calcs[0] = adcstring;
-
-            return calcs;
         }
-    }
+           
+        //========================================================================================
+        // REORDER POINT: (ADC X SHIPPING TIME) + MINIMUM
+        //========================================================================================
+        //if less than 3 logs, this should be N/A
+
+        int shipping = Integer.parseInt(currentitem.getDelivery());
+            System.out.println("Your shipping time is " + shipping);
+        int minimum = Integer.parseInt(currentitem.getMinimum());
+            System.out.println("Your safety stock is " + minimum);
+
+        double adcShipProduct = adc * shipping;
+        int adcShipInt = (int) Math.round(adcShipProduct);
+        int rop = adcShipInt + minimum;
+        String ropstring = Integer.toString(rop);
+
+        calcs[1] = ropstring;
+
+        //========================================================================================
+        // REORDER DATE = TODAY'S DATE + [(QUANTITY - MINIMUM) / ADC] - SHIPPING TIME
+        //========================================================================================
+            int quanMinDiff = finalinv - minimum;
+                System.out.println("Quantity - Minimum = " + quanMinDiff);
+
+            double quotient = quanMinDiff / adc; 
+                System.out.println("Quotient Double = " + quotient);
+
+            int quotientint = (int) Math.ceil(quotient);
+                System.out.println("Quotient Rounded = " + quotientint);
+
+            int addedDays = quotientint - shipping;
+                System.out.println("Added Days = " + addedDays);
+
+        if (addedDays < 0) {
+            //if added days is less than 0, the user has already missed their reorder date.
+            String rodstring = "OVERDUE";
+            calcs[2] = rodstring;
+            System.out.println("OVERDUEOVERDUEOVERDUE");
+        } 
+
+        else if (adc == 0) {
+            String notapplicable = "N/A";
+            calcs[2] = notapplicable;
+        }
+
+        else {
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date today = new java.util.Date();
+            String todayString = dateFormat.format(today);
+            System.out.println("Today's date is " + todayString);
+
+            Calendar cal = Calendar.getInstance();
+
+            try {
+                java.util.Date futuredate = dateFormat.parse(todayString);
+                cal.setTime(futuredate);
+            } catch (ParseException e) {
+                System.out.println("Something went wrong when trying to set calendar.");
+                e.printStackTrace();
+            }
+
+            // Here is where we can add the number of days found earlier.
+            cal.add(Calendar.DATE, addedDays);  
+            String rodstring = dateFormat.format(cal.getTime());  
+
+            calcs[2] = rodstring;
+
+        }
+
+      return calcs;
+  }
 
     //helper method that will get our starting inventory given a SORTED list of logs (oldest -> newest)
     public int getStartInv(ObservableList<Log> loglist) {

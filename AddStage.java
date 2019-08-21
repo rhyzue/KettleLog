@@ -653,6 +653,8 @@ public class AddStage extends Stage{
                             rowinfo.setDate(newdate);
 
                             kettle.clearSearchBar();
+                            //Editing things like shipping time, minimum will change reorder time and date
+                            kettle.updateEverything(rowinfo.getID());
 
                             checkhbox.setVisible(false);
                             logitem.setVisible(false);
