@@ -38,7 +38,7 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
         private static int optionSel = 0;
         private static ObservableList<Item> rowinfo = FXCollections.observableArrayList();
         private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
-        private static Item empty = new Item("emptyid", "", "", "", "", "", "", false, false, "", "", emptylist, "0.0");
+        private static Item empty = new Item("emptyid", "", "", "", "", "", "", false, false, "", "", emptylist, "0.0", "N/A", "N/A");
 
         private static Kettlelog kettle = new Kettlelog();
         private static OptionHandler optionHandler = new OptionHandler();

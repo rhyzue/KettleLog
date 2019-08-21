@@ -62,7 +62,7 @@ public class PrimaryStage extends Stage{
     private static final String[] titles = {"Name","Status","Quantity","Minimum"};
     private static TableColumn<Item, String> buttoncolumn = new TableColumn<>("");
     private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
-    private static Item empty = new Item("emptyid", "", "", "", "", "", "", false, false, "", "", emptylist, "0.0");
+    private static Item empty = new Item("emptyid", "", "", "", "", "", "", false, false, "", "", emptylist, "0.0", "N/A", "N/A");
     private static ObservableList<String> optionList = FXCollections.observableArrayList("Sort by: Starred", "Sort by: Most Recent", "Sort by: Oldest Added", "Select All", "None");
     private static String[] emptyinfo = {"", "", "", "", "", ""};
     private static ObservableList<Item> itemsToDelete;

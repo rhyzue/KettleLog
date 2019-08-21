@@ -14,9 +14,11 @@ public class InsertData {
     InsertData(){
     }
 
-    public void insertinfo(String id, String name, String status, String quantity, String minimum, String delivery, String desc, int starbool, String dateadded, String adc) {
+    public void insertinfo(String id, String name, String status, 
+        String quantity, String minimum, String delivery, String desc, 
+        int starbool, String dateadded, String adc, String rop, String rod) {
 
-        String command = "INSERT INTO info(id, name, status, quantity, minimumstock, deliverytime, description, starred, dateadded, adc) VALUES(?,?,?,?,?,?,?,?,?,?)";
+        String command = "INSERT INTO info(id, name, status, quantity, minimumstock, deliverytime, description, starred, dateadded, adc, rop, rod) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
         try {
@@ -36,6 +38,8 @@ public class InsertData {
                 v.setInt(8, starbool);
                 v.setString(9, dateadded);
                 v.setString(10, adc);
+                v.setString(11, rop);
+                v.setString(12, rod);
 
             v.executeUpdate();
 
@@ -75,7 +79,9 @@ public class InsertData {
     }
 
     //This is a method that edits the infotable for a database. 
-    public void editinfo(String id, String name, String status, String quantity, String minimum, String delivery, String desc, int starbool, String dateadded, String adc) {
+    public void editinfo(String id, String name, String status, String quantity, 
+        String minimum, String delivery, String desc, int starbool, 
+        String dateadded, String adc, String rop, String rod) {
 
         String command = "UPDATE info SET name = ?, "
                 + "status = ?, "
@@ -85,7 +91,9 @@ public class InsertData {
                 + "description = ?, "
                 + "starred = ?, "
                 + "dateadded = ?, "
-                + "adc = ? "
+                + "adc = ?, "
+                + "rop = ?, "
+                + "rod = ? "
                 + "WHERE id = " + id;
 
         try {
@@ -103,6 +111,8 @@ public class InsertData {
                 v.setInt(7, starbool);
                 v.setString(8, dateadded);
                 v.setString(9, adc);
+                v.setString(10, rop);
+                v.setString(11, rod);
 
             v.executeUpdate();
 

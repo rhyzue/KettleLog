@@ -503,19 +503,7 @@ public class AddStage extends Stage{
                     double health = (((double) intQuan / total)) * 100;
 
                     //DETERMINING THE STATUS OF THE ITEM 
-                    if (intQuan == 0) {
-                        itemStatus = "Empty";
-                    } else if (health < 25) {
-                        itemStatus = "Very Poor";
-                    } else if (health < 40) {
-                        itemStatus = "Poor";
-                    } else if (health < 50) {
-                        itemStatus = "Moderate";
-                    } else if (health < 75) {
-                        itemStatus = "Good";
-                    } else {
-                        itemStatus = "Very Good";
-                    }
+                    itemStatus = "More Info Needed";
 
                     //user tries to add a duplicate for the first time, so we should display the message.
                     if (popuptype == 0 && addpresscount == 1) {
@@ -530,7 +518,7 @@ public class AddStage extends Stage{
                     else if (popuptype == 0 & addpresscount == 2) { 
 
                         String id = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
-                        Item newitem = new Item(id, iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate, loglist, "0.0");
+                        Item newitem = new Item(id, iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate, loglist, "0.0", "N/A", "N/A");
 
                         ObservableList<Item> addthisitem = FXCollections.observableArrayList(newitem);
                         kettle.setData(addthisitem, 0);
@@ -635,14 +623,17 @@ public class AddStage extends Stage{
                                 //Changing the item's quantity if necessary.
                                 kettle.updateEverything(rowinfo.getID());
                                 //Even though the yes checkbox is selected, the user can still edit the item, so we need to change our SQL database again.
-                                kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, rowinfo.getQuantity(), minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded(), rowinfo.getADC()); 
+                                kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, rowinfo.getQuantity(), minQuan, delTime, 
+                                    itemDesc, 0, rowinfo.getDateAdded(), rowinfo.getADC(), rowinfo.getROP(), rowinfo.getROD()); 
+
                                 logdateunique = 0;
                             
                             }
 
                             //If the no box is selected, we don't need to add a log to the item's database. 
                             //However, we need to edit the InfoTable in its database. 
-                            kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, rowinfo.getQuantity(), minQuan, delTime, itemDesc, 0, rowinfo.getDateAdded(), rowinfo.getADC()); 
+                            kettle.editInfoTable(rowinfo.getID(), iName, itemStatus, rowinfo.getQuantity(), minQuan, delTime, 
+                                itemDesc, 0, rowinfo.getDateAdded(), rowinfo.getADC(), rowinfo.getROP(), rowinfo.getROD()); 
 
                             rowinfo.setName(iName);
                             rowinfo.setStatus(itemStatus);
