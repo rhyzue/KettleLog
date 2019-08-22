@@ -280,7 +280,6 @@ public class InfoStage extends Stage{
 
         //Initialization of our arraylist which will eventually turn into the labels of our x-axis.
         ArrayList<String> datearraylist = new ArrayList<String>(7); 
-
         //Appending 7 dates to the arraylist (today + the 6 prior days).
         for (int i = 0; i > -7; i--) {
             Calendar cal = Calendar.getInstance();
@@ -552,26 +551,7 @@ public class InfoStage extends Stage{
             infodesc.setText("Item Description: " + rowinfo.getDesc());
         }
 
-        
-        //Synchronizing the chart to the log table. 
-        XYChart.Series series = new XYChart.Series();
-        linechart.getData().clear();
-        ObservableList<Log> chartinfo = kettle.getConsumption(rowinfo.getLogData());
-        int length = chartinfo.size();
-        
-        for (int i = 0; i < length; i++) {
-            String datewithyear = (chartinfo.get(i)).getDateLogged();
-            //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
-            String date = (datewithyear.substring(5)).replace("-", "/");
-            //However, we want to check the year to make sure it is the current year.
-            //System.out.println(date);
-            String quanstring = (chartinfo.get(i)).getQuanLogged();
-            //System.out.println(quanstring);
-            int quantity = Integer.parseInt(quanstring);
-            series.getData().add(new XYChart.Data(date, quantity));
-        }
-
-        linechart.getData().add(series);
+        //Setting the graph up
         updateGraph(rowinfo);
 
         //Setting the data for the log table. 
@@ -649,19 +629,47 @@ public class InfoStage extends Stage{
 
     public void updateGraph(Item rowinfo) {
 
-         //Synchronizing the chart to the log table.
+        //Here we are getting the past 7 days in the format of the date of our logs, so we can make sure only the necessary logs are graphed.
+        ArrayList<String> datelistwithyear = new ArrayList<String>(7); 
+        for (int i = 0; i > -7; i--) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, i);
+            Date date = cal.getTime();
+            String datetick = new SimpleDateFormat("yyyy-MM-dd").format(date);
+            datelistwithyear.add(datetick);
+        }
+
+        System.out.println(datelistwithyear);
+
+        //Synchronizing the chart to the log table. 
         XYChart.Series series = new XYChart.Series();
         linechart.getData().clear();
-        ObservableList<Log> chartinfo = kettle.getConsumption(rowinfo.getLogData());
-        int length = chartinfo.size();
-        
+
+        ObservableList<Log> loginfo = kettle.getConsumption(rowinfo.getLogData());
+        int length = loginfo.size();
+        ObservableList<Log> chartinfo = FXCollections.observableArrayList();
+
         for (int i = 0; i < length; i++) {
+            Log curlog = loginfo.get(i);
+            String logdatewithyear = curlog.getDateLogged();
+            //System.out.println("The log date is " + logdatewithyear);
+            if (datelistwithyear.contains(logdatewithyear)) {
+                //System.out.println("This log's date is in the past 7 days.");
+                chartinfo.add(curlog);
+            }
+        }
+
+        //chartinfo now has the logs that we need to log and nothing else!
+        int chartlength = chartinfo.size();
+
+        for (int i = 0; i < chartlength; i++) {
             String datewithyear = (chartinfo.get(i)).getDateLogged();
+            //System.out.println("Date with year is " + datewithyear);
             //This date is represented in YYYY-MM-DD form. We need to change it to MM/DD. 
             String date = (datewithyear.substring(5)).replace("-", "/");
             //System.out.println(date);
             String quanstring = (chartinfo.get(i)).getQuanLogged();
-            //System.out.println(quanstring);
+            //System.out.println("The quantity is " + quanstring);
             int quantity = Integer.parseInt(quanstring);
             series.getData().add(new XYChart.Data(date, quantity));
         }

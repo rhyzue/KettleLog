@@ -39,6 +39,12 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
         private static ObservableList<Item> rowinfo = FXCollections.observableArrayList();
         private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
         private static Item empty = new Item("emptyid", "", "", "", "", "", "", false, false, "", "", emptylist, "0.0", "N/A", "N/A");
+        private static Tooltip checktip= new Tooltip("Select");
+        private static Tooltip startip = new Tooltip("Star");
+        private static Tooltip infotip = new Tooltip("More Info");
+        private static Tooltip edittip = new Tooltip("Edit Item");
+        private static Tooltip deletetip = new Tooltip("Delete Item");
+        private static double tooltipduration = 75.0;
 
         private static Kettlelog kettle = new Kettlelog();
         private static OptionHandler optionHandler = new OptionHandler();
@@ -110,7 +116,8 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
             Button penBtn = new Button(); 
             Button delBtn = new Button();  
 
-            starBtn.setTooltip(new Tooltip("Star"));                                      
+            starBtn.setTooltip(startip);   
+            startip.setShowDelay(new javafx.util.Duration(tooltipduration));                                   
             starBtn.setStyle("-fx-background-color: transparent;");             
             starImg.setFitWidth(20);
             starImg.setPreserveRatio(true);
@@ -149,7 +156,8 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
             });         
 
             checkBtn.setSelected(false);
-            checkBtn.setTooltip(new Tooltip("Select"));
+            checkBtn.setTooltip(checktip);
+            checktip.setShowDelay(new javafx.util.Duration(tooltipduration));
 
             checkBtn.selectedProperty().addListener(new ChangeListener<Boolean>() {
                 @Override
@@ -168,6 +176,8 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
             });      
 
             infoBtn.setId("infoBtn");
+            infoBtn.setTooltip(infotip);
+            infotip.setShowDelay(new javafx.util.Duration(tooltipduration));
             infoBtn.setStyle("-fx-background-color: transparent;");                  
             Image infoBtnImg = new Image("./Misc/info.png");
 
@@ -189,7 +199,8 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
             });
 
             penBtn.setId("penBtn");
-            penBtn.setTooltip(new Tooltip("Edit"));
+            penBtn.setTooltip(edittip);
+            edittip.setShowDelay(new javafx.util.Duration(tooltipduration));
 
             //Icon taken from flaticon.com
             Image penBtnImg = new Image("./Misc/pencil2.png");
@@ -214,7 +225,8 @@ public class AddButtonCell extends TableCell<Item, String> implements Callback<T
             }); 
 
             delBtn.setId("delBtn");
-            delBtn.setTooltip(new Tooltip("Delete"));
+            delBtn.setTooltip(deletetip);
+            deletetip.setShowDelay(new javafx.util.Duration(tooltipduration));
 
             //Icon taken from flaticon.com
             Image delBtnImg = new Image("./Misc/delete2.png");

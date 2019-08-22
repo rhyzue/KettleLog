@@ -415,18 +415,18 @@ public class Algorithm {
             int addedDays = quotientint - shipping;
                 System.out.println("Added Days = " + addedDays);
 
-        if (addedDays < 0) {
+        //Cannot divide by 0, and non-reorder type logs should be 3 or greater.
+        if ((adc == 0) || (numOfCons < 3)) {
+            String notapplicable = "N/A";
+            calcs[2] = notapplicable;
+        }
+
+        else if (addedDays < 0) {
             //if added days is less than 0, the user has already missed their reorder date.
             String rodstring = "OVERDUE";
             calcs[2] = rodstring;
             System.out.println("OVERDUE DATE!");
         } 
-
-        //Cannot divide by 0, and non-reorder type logs should be 3 or greater.
-        else if ((adc == 0) || (numOfCons < 3)) {
-            String notapplicable = "N/A";
-            calcs[2] = notapplicable;
-        }
 
         else {
 
