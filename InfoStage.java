@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javafx.scene.control.ScrollPane.*;
 import java.time.format.DateTimeFormatter;
+import java.lang.NumberFormatException;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -419,13 +420,14 @@ public class InfoStage extends Stage{
                             kettle.updateEverything(id);
                             sortByDateLogged();
                         } else {
+                            //if number after REORDER: is too big, overflow warning
+
                             logtable.getItems().set(row, editedlog);
                             logtable.requestFocus();
                             cannotdelete.setText(" * Reorder quantity must be in form 'REORDER: +integer'");
                             cannotdelete.setVisible(true);
                         }
                     }
-
                     //CONSUMPTION TYPE ~ we only want to commit the edit if the quantity is a number. 
                     else if (newquantity.chars().allMatch( Character::isDigit )) {
                         Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
@@ -439,6 +441,8 @@ public class InfoStage extends Stage{
 
                     //If it's not an integer, don't allow the edit and display an error message.
                     else {
+
+                        //overflow warning goes again here
                         logtable.getItems().set(row, editedlog);
                         logtable.requestFocus();
                         cannotdelete.setText(" * Quantity must only contain numbers and no other characters.");

@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import javafx.scene.image.ImageView;
 import javafx.application.Application;
 import java.time.format.DateTimeFormatter;
+import java.lang.NumberFormatException;
 
 public class AddStage extends Stage{
 
@@ -31,6 +32,7 @@ public class AddStage extends Stage{
     private static int logger = 0;
     private static int changequantity = 0;
     private static int logdateunique = 0; 
+    private static int overflow = 0;
     private static double addwidth = 600;
     private static double addw_to_h = 0.85;
     private static double addheight = addwidth / addw_to_h;
@@ -342,6 +344,7 @@ public class AddStage extends Stage{
                 logger = 0;
                 changequantity = 0;
                 logdateunique = 0;
+                overflow = 0;
                 checkhbox.setVisible(false);
                 logitem.setVisible(false);
                 a5.setVisible(false);
@@ -464,10 +467,13 @@ public class AddStage extends Stage{
 
                 boolean incomplete = false;
                 String itemStatus = "";
+                //Item name
                 String iName = itemtext.getText();
+                //The following three strings need to be checked for integer overflow.
                 String curQuan = qtext.getText();
                 String minQuan = mtext.getText();
                 String delTime = stext.getText();
+                //Description
                 String itemDesc = dtext.getText();
 
                 //we need to get the value that the user sets as the date and convert it to a string
@@ -491,6 +497,7 @@ public class AddStage extends Stage{
                 }
 
                 else {
+
                     missing.setVisible(false);
 
                     //Checking if the item name is already in the list of data.
@@ -499,11 +506,6 @@ public class AddStage extends Stage{
                     } else {
                         addpresscount = 2; 
                     }
-
-                    int intQuan = Integer.parseInt(curQuan);
-                    int intMin = Integer.parseInt(minQuan);
-                    int total = intQuan + intMin;
-                    double health = (((double) intQuan / total)) * 100;
 
                     //DETERMINING THE STATUS OF THE ITEM 
                     itemStatus = "More Info Needed";
@@ -520,25 +522,49 @@ public class AddStage extends Stage{
                     //================================================================================
                     else if (popuptype == 0 & addpresscount == 2) { 
 
-                        String id = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
-                        Item newitem = new Item(id, iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate, loglist, "0.0", "N/A", "N/A");
+                        //Checking for overflow
+                        int intQuan = 0;
+                        int intMin = 0; 
+                        int intDel = 0; 
 
-                        ObservableList<Item> addthisitem = FXCollections.observableArrayList(newitem);
-                        kettle.setData(addthisitem, 0);
-                        kettle.clearSearchBar();
-                        kettle.hideAddStage();
-                        addpresscount = 0;
-                        editpresscount = 0;
-                        logger = 0;
-                        changequantity = 0;
-                        logdateunique = 0;
-                        checkhbox.setVisible(false);
-                        logitem.setVisible(false);
-                        a5.setVisible(false);
-                        reorderbtn.setVisible(false);
-                        if (radioGroup.getSelectedToggle()!=null){
-                            radioGroup.getSelectedToggle().setSelected(false);
+                        try {
+                            intQuan = Integer.parseInt(curQuan);
+                            intMin = Integer.parseInt(minQuan);
+                            intDel = Integer.parseInt(delTime);
+                            overflow = 1;
+
+                        } catch (NumberFormatException e) {
+                            System.out.println("Number is too large.");
+                            overflow--;
                         }
+
+                        if (overflow == 1) {
+                            String id = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
+                            Item newitem = new Item(id, iName, itemStatus, curQuan, minQuan, delTime, itemDesc, false, false, newdate, olddate, loglist, "0.0", "N/A", "N/A");
+
+                            ObservableList<Item> addthisitem = FXCollections.observableArrayList(newitem);
+                            kettle.setData(addthisitem, 0);
+                            kettle.clearSearchBar();
+                            kettle.hideAddStage();
+                            addpresscount = 0;
+                            editpresscount = 0;
+                            logger = 0;
+                            changequantity = 0;
+                            logdateunique = 0;
+                            overflow = 0;
+                            checkhbox.setVisible(false);
+                            logitem.setVisible(false);
+                            a5.setVisible(false);
+                            reorderbtn.setVisible(false);
+                            if (radioGroup.getSelectedToggle()!=null){
+                                radioGroup.getSelectedToggle().setSelected(false);
+                            }
+                        } else {
+                            missing.setText("* One or more numbers is too large.");
+                            missing.setVisible(true);
+                        }
+
+                      
                     }
 
                     //================================================================================
@@ -589,6 +615,24 @@ public class AddStage extends Stage{
                             logdateunique = 1;
                         }
 
+                        //Checking for overflow
+                        int intQuan = 0;
+                        int intMin = 0; 
+                        int intDel = 0; 
+
+                        try {
+                            intQuan = Integer.parseInt(curQuan);
+                            intMin = Integer.parseInt(minQuan);
+                            intDel = Integer.parseInt(delTime);
+                            overflow = 1;
+
+                        } catch (NumberFormatException e) {
+                            System.out.println("Number is too large.");
+                            missing.setText("* One or more numbers is too large.");
+                            missing.setVisible(true);
+                            overflow--;
+                        }
+
                         //We don't want to display the warning if the name is not changed. 
                         String currentname = rowinfo.getName().toLowerCase();
                         String editedname = iName.toLowerCase();
@@ -611,7 +655,7 @@ public class AddStage extends Stage{
                         }
 
                         //THe user has reached this stage by either pressing Edit twice or editing the item name to a non-duplicate.
-                        else if (popuptype == 1 && editpresscount == 2 && logger == 1 && changequantity == 1 && logdateunique == 1) {
+                        else if (popuptype == 1 && editpresscount == 2 && logger == 1 && changequantity == 1 && logdateunique == 1 & overflow == 1) {
 
                             //Only consider it a log if the yes box is selected.
                             if (yesbox.isSelected()){
@@ -661,6 +705,7 @@ public class AddStage extends Stage{
                             addpresscount = 0;
                             editpresscount = 0;
                             logger = 0;
+                            overflow = 0;
                             changequantity = 0;
                             logdateunique = 0;
                             if (radioGroup.getSelectedToggle()!=null){

@@ -26,6 +26,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.application.Application;
 import java.time.format.DateTimeFormatter;
 import javafx.collections.transformation.*;
+import java.lang.NumberFormatException;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TableColumn.CellEditEvent;
 
@@ -40,6 +41,7 @@ public class AlertStage extends Stage{
     private final double alertw_to_h = 1.42857;
     private final double alertheight = alertwidth / alertw_to_h;
 
+    private static int overflow = 0;
     private static Text deltext = new Text();
     private static Image kettleonlyimage = new Image("./Misc/kettle.png");
     private static Image deliveryboxes = new Image("./Misc/delivery.png");
@@ -165,7 +167,6 @@ public class AlertStage extends Stage{
         AnchorPane.setBottomAnchor(instruction2, 20.0);
         AnchorPane.setLeftAnchor(instruction2, 50.0);
 
-        emptywarning.setText("* You must specify an amount received.");
         emptywarning.setFont(new Font(12));
         emptywarning.setFill(Color.BLACK);
         AnchorPane.setBottomAnchor(emptywarning, 20.0);
@@ -254,6 +255,7 @@ public class AlertStage extends Stage{
                     instruction1.setVisible(false);
                     instruction2.setVisible(false); 
                     emptywarning.setVisible(false);
+                    overflow = 0;
                 }
             });
 
@@ -270,49 +272,64 @@ public class AlertStage extends Stage{
                     }
 
                     if (incomplete) {
+                        emptywarning.setText("* You must specify an amount received.");
                         emptywarning.setVisible(true);
                     }
 
                     else {
+                        //Checking for overflow with the amount number.
+                        int amountint = 0;
 
-                        //We want to add the log to the LogList, with a type of "REORDER" and a quantity of "REORDER: + X"
-                        String logtype = "REORDER";
-                        String reorderdate = datepicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                        String reorderquan = "REORDER: +" + amountbox.getText();
+                        try {
+                            amountint = Integer.parseInt(amountnum);
+                            overflow = 1;
 
-                        //Our current list of logs. We need to append the reorder to it!
-                        ObservableList<Log> currentloglist = rowinfo.getLogData();
-                        Log newlog = new Log(logid, logtype, reorderdate, reorderquan);
+                        } catch (NumberFormatException e) {
+                            System.out.println("Number is too large.");
+                            emptywarning.setText("* Your amount received number is too large.");
+                            emptywarning.setVisible(true);
+                            overflow--;
+                        }
 
-                        //Adding the log to our observablelist and then setting our item's log data to be this list.
-                        currentloglist.add(0, newlog);
-                        rowinfo.setLogData(currentloglist);
-                       
-                        //Adding the log to our SQL Database's Log table
-                        kettleclass.addLog(rowinfo.getID(), logid, logtype, reorderdate, reorderquan);
+                        if (overflow == 1) {
+                            //We want to add the log to the LogList, with a type of "REORDER" and a quantity of "REORDER: + X"
+                            String logtype = "REORDER";
+                            String reorderdate = datepicker.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                            String reorderquan = "REORDER: +" + amountbox.getText();
 
-                        //Also, update everything since a new reorder has been added.
-                        kettleclass.updateEverything(rowinfo.getID());
+                            //Our current list of logs. We need to append the reorder to it!
+                            ObservableList<Log> currentloglist = rowinfo.getLogData();
+                            Log newlog = new Log(logid, logtype, reorderdate, reorderquan);
 
-                        //Editing our SQL Database's Info table
-                        kettleclass.editInfoTable(rowinfo.getID(), rowinfo.getName(), 
-                            rowinfo.getStatus(), rowinfo.getQuantity(), rowinfo.getMinimum(), 
-                            rowinfo.getDelivery(), rowinfo.getDesc(), 0, rowinfo.getDateAdded(), 
-                            rowinfo.getADC(), rowinfo.getROP(), rowinfo.getROD()); 
+                            //Adding the log to our observablelist and then setting our item's log data to be this list.
+                            currentloglist.add(0, newlog);
+                            rowinfo.setLogData(currentloglist);
+                           
+                            //Adding the log to our SQL Database's Log table
+                            kettleclass.addLog(rowinfo.getID(), logid, logtype, reorderdate, reorderquan);
 
-                        //Also, update the table from infostage.
-                        InfoStage infoStage = kettleclass.getInfoStage();
-                        
-                        //if the user confirms the reorder log, we want to hide both the addstage and primarystage opaque's layers
-                        kettleclass.hideAlertStage(0);
-                        AddStage addStage = kettleclass.getAddStage();
-                        kettleclass.hideAlertStage(1);
-                        kettleclass.hideAddStage();
-                        emptywarning.setVisible(false);
+                            //Also, update everything since a new reorder has been added.
+                            kettleclass.updateEverything(rowinfo.getID());
 
-                    }
+                            //Editing our SQL Database's Info table
+                            kettleclass.editInfoTable(rowinfo.getID(), rowinfo.getName(), 
+                                rowinfo.getStatus(), rowinfo.getQuantity(), rowinfo.getMinimum(), 
+                                rowinfo.getDelivery(), rowinfo.getDesc(), 0, rowinfo.getDateAdded(), 
+                                rowinfo.getADC(), rowinfo.getROP(), rowinfo.getROD()); 
 
-                    
+                            //Also, update the table from infostage.
+                            InfoStage infoStage = kettleclass.getInfoStage();
+                            
+                            //if the user confirms the reorder log, we want to hide both the addstage and primarystage opaque's layers
+                            kettleclass.hideAlertStage(0);
+                            AddStage addStage = kettleclass.getAddStage();
+                            kettleclass.hideAlertStage(1);
+                            kettleclass.hideAddStage();
+                            emptywarning.setVisible(false);
+                            overflow = 0;
+
+                        }
+                    }  
                 }
             });
 
