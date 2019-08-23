@@ -8,10 +8,23 @@ Kettlelog is an inventory manager designed to help business owners pinpoint exac
 
 ![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/maintable.png) 
 
-* Easy Logging System
+* Multifunctional Editing
+
+| ![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/edit.png) | 
+|:--:| 
+| *Edit or log an item easily through the same popup.* |
 
 * Statistics & Graph 
 
-* Easily Edit/Delete Logs
+Item Statistics            |  Consumption Graph
+:-------------------------:|:-------------------------:
+![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/stats.png)  |  ![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/graph.png)
+
+* Edit/Delete Logs
+
+| ![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/logtable.png) | 
+|:--:| 
+| *Easily edit your past logs using our log table.* |
+
 
 * Notifications
