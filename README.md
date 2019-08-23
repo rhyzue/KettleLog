@@ -1,30 +1,15 @@
 # KettleLog
 
-Welcome to KettleLog, an easy-to-use inventory manager written in Java, using JavaFX. KettleLog is designed to help people pinpoint exactly when they need to order an item so that it arrives on-time and just before the previous stock runs out. 
+Kettlelog is an inventory manager designed to help business owners pinpoint exactly when an item should be reordered to avoid inventory shortages. It's easy-to-use and is always up to date, giving you the most accurate information possible. It is written completely in Java & JavaFX, and saves all user information in SQLite databases.
 
-<b>Table</b>
-<br>• The table includes 5 columns. 
-<br>• Icons for filtering/editing and more information (star, checkbox, right triangle, pencil)
-<br>• Product Name 
-<br>• Status (full, low, etc.)
-<br>• Current Quantity
-<br>• Minimum 
+###Features
 
-<b>Functions</b>
-<br>• Add/Delete items from the table with ease
-<br>• Filtering the table by date added, starred, or checkboxed
-<br>• Search bar
+* Simple & Attractive UI 
 
-<b>Icons</b>
-<br>• The leftmost column will consist for clickable "icons"
-<br>• Star (allowing for filtering and prioritization)
-<br>• Checkbox (for filtering and deleting multiple items)
-<br>• Triangle (when expanded, reveals more information and any personal notes the user made about that item)
-<br>• Pencil (allows the user to edit information about the item)
-<br>• Trash (Remove item)
+* Easy Logging System
 
-https://stackoverflow.com/questions/25651641/javafx-mysql-connection-example-please
-https://bitbucket.org/xerial/sqlite-jdbc/downloads/
-http://www.sqlitetutorial.net/sqlite-java/sqlite-jdbc-driver/
-https://www.quackit.com/sqlite/tutorial/select_data.cfm
-java -cp C:\Users\QA\Desktop\Code\sqlitejar.jar testconnect.java
+* Statistics & Graph 
+
+* Easily Edit/Delete Logs
+
+* Notifications
