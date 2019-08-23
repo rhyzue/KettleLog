@@ -412,16 +412,21 @@ public class InfoStage extends Stage{
 
                     if ((editedlog.getLogType()).equals("REORDER")) {
                         if (validReorderQuan(newquantity)) {
-                            Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
-                            selectedlog.setQuanLogged(newquantity);
-                            kettle.updateLog(id, "logquan", newquantity, selectedlog.getID());
-                            logtable.requestFocus();
-                            cannotdelete.setVisible(false);
-                            kettle.updateEverything(id);
-                            sortByDateLogged();
+                            if (!overflows(newquantity)){
+                                Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
+                                selectedlog.setQuanLogged(newquantity);
+                                kettle.updateLog(id, "logquan", newquantity, selectedlog.getID());
+                                logtable.requestFocus();
+                                cannotdelete.setVisible(false);
+                                kettle.updateEverything(id);
+                                sortByDateLogged();
+                            } else {
+                                logtable.getItems().set(row, editedlog);
+                                logtable.requestFocus();
+                                cannotdelete.setText(" * Edited quantity is too large.");
+                                cannotdelete.setVisible(true);
+                            }
                         } else {
-                            //if number after REORDER: is too big, overflow warning
-
                             logtable.getItems().set(row, editedlog);
                             logtable.requestFocus();
                             cannotdelete.setText(" * Reorder quantity must be in form 'REORDER: +integer'");
@@ -430,19 +435,23 @@ public class InfoStage extends Stage{
                     }
                     //CONSUMPTION TYPE ~ we only want to commit the edit if the quantity is a number. 
                     else if (newquantity.chars().allMatch( Character::isDigit )) {
-                        Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
-                        selectedlog.setQuanLogged(newquantity);
-                        kettle.updateLog(id, "logquan", newquantity, selectedlog.getID());
-                        logtable.requestFocus();
-                        cannotdelete.setVisible(false);
-                        kettle.updateEverything(id);
-                        sortByDateLogged();
+                        if (!overflows(newquantity)){
+                                Log selectedlog =  event.getTableView().getItems().get(event.getTablePosition().getRow());
+                                selectedlog.setQuanLogged(newquantity);
+                                kettle.updateLog(id, "logquan", newquantity, selectedlog.getID());
+                                logtable.requestFocus();
+                                cannotdelete.setVisible(false);
+                                kettle.updateEverything(id);
+                                sortByDateLogged();
+                            } else {
+                                logtable.getItems().set(row, editedlog);
+                                logtable.requestFocus();
+                                cannotdelete.setText(" * Edited quantity is too large.");
+                                cannotdelete.setVisible(true);
+                            }
                     } 
-
                     //If it's not an integer, don't allow the edit and display an error message.
                     else {
-
-                        //overflow warning goes again here
                         logtable.getItems().set(row, editedlog);
                         logtable.requestFocus();
                         cannotdelete.setText(" * Quantity must only contain numbers and no other characters.");
@@ -753,6 +762,20 @@ public class InfoStage extends Stage{
         }
     }
 
+    //This method determines if the reordered quantity of a reorder log is larger than INT_MAX.
+    public boolean overflows(String reorderquan) {
+        String strquantity = reorderquan.substring(reorderquan.lastIndexOf('+') + 1); //everything after the plus sign, so just the number
+        int intquantity = 0;
+
+        try {
+            intquantity = Integer.parseInt(strquantity);
+            return false;
+        } catch (NumberFormatException e) {
+            System.out.println("Edit number is too large.");
+            return true;
+        }
+
+    }
 
     public class InfoHandler implements EventHandler<ActionEvent>{
         @Override
