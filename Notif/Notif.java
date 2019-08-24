@@ -177,6 +177,7 @@ public class Notif {
 
     public String getDateGenerated(){
         return dateGenerated;
+        //return "2019-08-25";
     }
 
     public void setDateGenerated(String dateGenerated){

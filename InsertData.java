@@ -176,7 +176,7 @@ public class InsertData {
     }
 
     public void deleteNotif(String notifId){
-        System.out.println("Deleting notification with id: "+notifId);
+        //System.out.println("Deleting notification with id: "+notifId);
         String command = "DELETE FROM notifData WHERE notifId = '" + notifId +"'";
 
         try {

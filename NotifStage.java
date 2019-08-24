@@ -1,4 +1,6 @@
+import Item.*;
 import Notif.*;
+import java.text.*;
 import java.util.*;
 import javafx.util.*;
 import javafx.stage.*;
@@ -124,10 +126,15 @@ public class NotifStage extends Stage{
     }
 
     public void updateNotifStage(List<Notif> kettleNotifs){
+
+        System.out.println("kettle notif size: "+kettleNotifs.size());
+        int sz = kettleNotifs.size();
+        int numToGen = 20;
         
-        for(int i = 0; i<20; i++){
-            if(i<kettleNotifs.size()){
+        for(int i = 0; i<numToGen; i++){
+            if(i<sz){
                 //SET ALL NOTIF DATA TO KETTLE NOTIF DATA
+                //if the item doesn't have status deleted, add it to stage's notifs
                 notifList.get(i).setMessage(kettleNotifs.get(i).getMessage());
                 notifList.get(i).setItemId(kettleNotifs.get(i).getItemId());
                 notifList.get(i).setReadStatus(kettleNotifs.get(i).getReadStatus());
@@ -135,12 +142,50 @@ public class NotifStage extends Stage{
                 notifList.get(i).setDateGenerated(kettleNotifs.get(i).getDateGenerated());
                 notifList.get(i).setNotifVisible(true);
             }
+            //if less than 20 notifs exist
             else{
                 notifList.get(i).setNotifVisible(false);
             }
         }
-
     }
+
+
+    public void onClose(){
+        List<Notif> notifsToUpdate = new ArrayList<Notif>();
+
+        for(int i = 0; i<20; i++){
+            Notif curNotif = notifList.get(i);
+
+            if(curNotif.getReadStatus()==-1){
+                //if this item has reorder date<=today && dategenerated==today, read status should be -3
+                Item it = kettle.getItemById(curNotif.getItemId());
+
+                //get value of ROD
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                java.util.Date today = new java.util.Date();
+                String todayString = dateFormat.format(today);
+                java.util.Date rod = new java.util.Date();
+                String rodString = it.getROD();
+                try{
+                    rod = dateFormat.parse(rodString);
+                }
+                catch(ParseException ex){
+                    ex.printStackTrace();
+                }
+
+                //set read status to -3 
+                if(todayString.equals(curNotif.getDateGenerated()) && (today.after(rod) || todayString.equals(rodString))){
+                    curNotif.setReadStatus(-3);
+                } 
+                notifsToUpdate.add(curNotif);
+            }
+            else if (curNotif.getReadStatus()==0 || curNotif.getReadStatus()==1){
+                notifsToUpdate.add(curNotif);
+            }
+        } 
+        kettle.updateNotifs(notifsToUpdate);
+    }
+
 
     public class NotifStageHandler implements EventHandler<ActionEvent>{
         @Override
@@ -150,27 +195,7 @@ public class NotifStage extends Stage{
 
             if(itemClicked.equals("closeBtn")){
                 kettle.hideNotifStage();
-                //get list of items to delete
-                List<Notif> notifsToDelete = new ArrayList<Notif>();
-                List<Notif> notifsToUpdate = new ArrayList<Notif>();
-                for(int i = 0; i<notifList.size(); i++){
-                    Notif curNotif = notifList.get(i);
-                    //if item has been deleted, add it to a list
-                    if(curNotif.getReadStatus()==-1){
-                        notifsToDelete.add(curNotif);
-                        curNotif.setReadStatus(-2);
-                    }
-                    //update the read status of the db notifs if read status is valid
-                    else if(curNotif.getReadStatus()==0||curNotif.getReadStatus()==1){
-                        notifsToUpdate.add(curNotif);
-                    }
-                } 
-                if(notifsToUpdate.size()>0){
-                    kettle.updateNotifReadStatus(notifsToUpdate);
-                }
-                if(notifsToDelete.size()>0){
-                    kettle.deleteNotifs(notifsToDelete);
-                }
+                onClose();
                 kettle.primaryStage.updateNotifIcon();
             }
             else if(itemClicked.equals("clearBtn")){

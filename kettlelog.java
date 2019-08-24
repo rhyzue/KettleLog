@@ -39,6 +39,7 @@ public class Kettlelog extends Application {
     private static ObservableList<Item> data = FXCollections.observableArrayList();
     private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
     private static List<Notif> notifList = new ArrayList<Notif>();
+    private static List<Notif> invalidNotifList = new ArrayList<Notif>();
     private static ObservableList<Item> itemsToDelete;
     private static Item empty = new Item("emptyID", "", "", "", "", "", "", false, false, "", "", emptylist, "0.0", "N/A", "N/A");
 
@@ -62,7 +63,7 @@ public class Kettlelog extends Application {
     @Override
     public void start(Stage setup) {
         loadData(); //will load data and notif data if it exists
-        //app.addNotification("Welcome to Kettlelog!", "None", 0, java.util.UUID.randomUUID().toString());
+        deleteInvalidNotifs();
         generateNotifsIfNeeded();
         //sorting by most recent
         notifList.sort(notifComparator.reversed());
@@ -231,6 +232,7 @@ public class Kettlelog extends Application {
     //================================================================================
     public void generateNotifsIfNeeded(){
 
+        //if there are no items, there should be no notifications generated
     	if(data.size()==0 || data.get(0).getID().equals("emptyID")){
     		return;
     	}
@@ -243,36 +245,50 @@ public class Kettlelog extends Application {
 		//loop through all items and check the reorder date
 		for(int i = 0; i<data.size(); i++){
 			Item curItem = data.get(i);
-            //String todayString = "2019-08-0"+i;
 
-            //if the date today is equal to the reorder date
-			if(todayString.equals(curItem.getROD())){
+            java.util.Date rod = new java.util.Date();
+            String rodString = curItem.getROD();
+
+            //there is no reorder date given
+            if(rodString.equals("N/A")){
+                continue; //skip to next iteration
+            }
+
+            //get the ROD as a date object
+            try{
+                rod = dateFormat.parse(rodString);
+            }
+            catch(ParseException ex){
+                ex.printStackTrace();
+            }
+
+            //if the date today is equal to or greater than the reorder date
+			if(today.after(rod) || todayString.equals(rodString)){
 				String message = "Reorder needed for: "+curItem.getName();
                 String randomId = java.util.UUID.randomUUID().toString();
 
+                //create a notif and check for a duplicate
                 Notif nf = new Notif(message, curItem.getID(), 0, randomId, todayString);
 				boolean duplicateNotifFound = duplicateExists(nf);
                 //there is no duplicate
 				if(!duplicateNotifFound){
                     //add it to a list to generate later
-					notifsToAdd.add(new Notif("Reorder needed for: "+curItem.getName(), curItem.getID(), 0, randomId, todayString));
+					notifsToAdd.add(nf);
 				}
 			}
 		}
-        System.out.println("Number of notifs: "+notifsToAdd.size());
 
+        //If >20 notifs need to be generated, only generate 1 notif with the below message
         if(notifsToAdd.size()>20){
-
             String nfId = java.util.UUID.randomUUID().toString();
             Notif n = new Notif("Reorder needed for 20+ items", "N/A", 0, nfId, todayString);
-            //if there is 20+ items that need reordering, generate a new notif
             if(!duplicateExists(n)){
                 app.addNotification(n);
                 notifList.add(n);
             }
         }
+        //else just add it normally
         else{
-            //else just add it normally
             for(int k = 0; k<notifsToAdd.size(); k++){
                 Notif curNf = notifsToAdd.get(k);
                 app.addNotification(curNf);
@@ -287,23 +303,40 @@ public class Kettlelog extends Application {
 
     public void checkNotifOverflow(){
         List<Notif> notifsToDelete = new ArrayList<Notif>();
+
         //if there are more than 20 notifs
         if(notifList.size()>20){
-            int numToDelete = 20-notifList.size();
+            int sz = notifList.size();
+            int numToDelete = 20-sz;
+
+            //delete the last few notifs
             for(int i = 0; i<numToDelete; i++){
-                notifsToDelete.add(notifList.get(notifList.size()-1-i)); //delete last few notifs
+
+                Notif nf = notifList.get(sz-1-i);
+                notifsToDelete.add(nf);
+
             }
             deleteNotifs(notifsToDelete);
         }
     }
 
     public boolean duplicateExists(Notif pdNf){//potenial duplicate notification
+
+        String pdMsg = pdNf.getMessage();
+        String pdItemId = pdNf.getItemId();
+
+        //search the valid notif list
         for(int j = 0; j<notifList.size(); j++){
-            String pdMsg = pdNf.getMessage();
-            String pdItemId = pdNf.getItemId();
-            String pdDA = pdNf.getDateGenerated();
             Notif existNf = notifList.get(j);
-            if(existNf.getMessage().equals(pdMsg) && (existNf.getItemId()).equals(pdItemId) && existNf.getDateGenerated().equals(pdDA)){
+            if(existNf.getMessage().equals(pdMsg) && (existNf.getItemId()).equals(pdItemId)){
+                return true;
+            }
+        }
+
+        //search the invalid notifs
+        for(int k = 0; k<invalidNotifList.size(); k++){
+            Notif existNf = invalidNotifList.get(k);
+            if(existNf.getMessage().equals(pdMsg) && (existNf.getItemId()).equals(pdItemId)){
                 return true;
             }
         }
@@ -311,40 +344,83 @@ public class Kettlelog extends Application {
         return false;
     }
 
+    //removes the given notifs from notifList
     public void deleteNotifs(List<Notif> notifsToDelete){
+
+        //find the given notif in notifList and remove it
     	for(int i = 0; i<notifsToDelete.size(); i++){
     		String notifId = notifsToDelete.get(i).getNotifId();
-	    	app.deleteNotif(notifId);
-	    	//notifList.remove(notifsToDelete.get(i));
+            int readStatus = notifsToDelete.get(i).getReadStatus();
+         
+            //get the notif with the correct ID and remove it
 	    	for(int j = 0; j<notifList.size(); j++){
-	    		if((notifList.get(j).getNotifId()).equals(notifId)){
+                Notif del = notifList.get(j);
+	    		if((del.getNotifId()).equals(notifId)){
 	    			notifList.remove(j);
 	    			break;
 	    		}
 	    	}
-	    }
-    	notifStage.updateNotifStage(notifList);
-    }
-/*
-    public void testGenNotifs(){
-        for(int i = 0; i<21; i++){
-
         }
-    }*/
+    }
 
-    public void updateNotifReadStatus(List<Notif> nfList){
+    public void deleteInvalidNotifs(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date today = new java.util.Date();
+        String todayString = dateFormat.format(today);
+
+        for(int i = 0; i <invalidNotifList.size(); i++){
+            Notif curNf = invalidNotifList.get(i);
+            //if date generated != today, we can delete it from both the notif list and the db
+            if(!(curNf.getDateGenerated()).equals(todayString)){
+                invalidNotifList.remove(i);
+                app.deleteNotif(curNf.getNotifId());
+                i--;
+            }
+        }
+    }
+
+    public void updateNotifs(List<Notif> nfList){
+
+        //for each notif to update
     	for(int x = 0; x<nfList.size(); x++){
     		Notif nf = nfList.get(x);
-	    	app.updateNotifReadStatus(nf.getReadStatus(), nf.getNotifId());
-	    	for(int i = 0; i<notifList.size(); i++){
-	    		Notif curNf = notifList.get(i);
-	    		if((curNf.getNotifId()).equals(nf.getNotifId())){
-	    			curNf.setReadStatus(nf.getReadStatus());
-	    		}
-	    	}
+            int readStatus = nf.getReadStatus();
+            String notifId = nf.getNotifId();
+
+            //also update kettle's list
+            //if read status is -3, remove it from notifList and add it to invalidNotifList
+            if(readStatus==-3){
+                app.updateNotifReadStatus(readStatus, notifId);
+                invalidNotifList.add(nf);
+                for(int i = 0; i<notifList.size(); i++){
+                    if((notifList.get(i).getNotifId()).equals(notifId)){
+                        notifList.remove(i);
+                        break;
+                    }
+                }
+            }
+            //-1 = just delete
+            else if(readStatus==-1){
+                for(int i = 0; i<notifList.size(); i++){
+                    if((notifList.get(i).getNotifId()).equals(notifId)){
+                        notifList.remove(i);
+                        break;
+                    }
+                }
+                app.deleteNotif(notifId);
+            }
+            else if (readStatus==0 || readStatus == 1){
+                app.updateNotifReadStatus(readStatus, notifId);
+    	    	for(int i = 0; i<notifList.size(); i++){
+    	    		Notif curNf = notifList.get(i);
+    	    		if((curNf.getNotifId()).equals(notifId)){
+    	    			curNf.setReadStatus(nf.getReadStatus());
+    	    		}
+    	    	}
+            }
 	    }
-    	notifStage.updateNotifStage(notifList);
     }
+
 
     public boolean hasUnreadNotif(){
         //loop through notif list and check if there is an unread notif
@@ -391,6 +467,16 @@ public class Kettlelog extends Application {
             } 
         }
         return false;
+    }
+
+    public Item getItemById(String id){
+        for(int i = 0; i<data.size(); i++){
+            Item curItem = data.get(i);
+            if(curItem.getID().equals(id)){
+                return curItem;
+            }
+        }
+        return null;
     }
 
     //================================================================================
@@ -632,6 +718,7 @@ public class Kettlelog extends Application {
 
     }
 
+    //Use this method to delete a database file
     public void deleteDB(String id){
         try {
             Files.delete(Paths.get("./db/kettledb/"+id+".db"));
@@ -645,6 +732,7 @@ public class Kettlelog extends Application {
         }
     }
 
+    /* This method will create Notification objects, set their values, and add it to the list */
     public void loadNotifData(){
     	System.out.println("Loading notif data...");
     	try{
@@ -652,19 +740,26 @@ public class Kettlelog extends Application {
             Connection conn = getDataBase("notifications.db");
             Statement stmt = conn.createStatement();
 
-            String command = "SELECT * FROM notifData"; //Call one table "Data", 2nd table "Log"
+            String command = "SELECT * FROM notifData"; 
             ResultSet notifRS = stmt.executeQuery(command);
 
             int index = 0;
 
-            while (notifRS.next()) { //only one row in mainData
+            while (notifRS.next()) { 
             	Notif nt = new Notif();
                 nt.setMessage(notifRS.getString("message"));
                 nt.setItemId(notifRS.getString("itemId"));
                 nt.setReadStatus(notifRS.getInt("readStatus"));
                 nt.setNotifId(notifRS.getString("notifId"));
                 nt.setDateGenerated(notifRS.getString("dateGenerated"));
-                notifList.add(nt);
+
+                if(notifRS.getInt("readStatus")==-3){
+                    System.out.println("Added "+ notifRS.getString("notifId")+ " to invalid list");
+                    invalidNotifList.add(nt);
+                }
+                else{
+                    notifList.add(nt);
+                }
             }
 
             stmt.close();
@@ -676,68 +771,53 @@ public class Kettlelog extends Application {
         }
     }
 
-    //the purpose of this method is to take data from a .db database and load it into our code. 
-    //two observablelists need to be created from the two tables in the database (ObservableList<Item>, ObservableList<Log>)
+    /*This method will load in all item data and call the method createNotifDB() to create a 
+    database file for notifications if it doesn't exist already. */
+    public void loadData(){
 
-    public void loadData(){//ObservableList<Item> loadData(){
         //if .DS_Store exists, we're going to remove it completely. 
         File store = new File("./db/kettledb/.DS_Store");
         if (store.delete()) {
             System.out.println(".DS_Store has been deleted.");
         }
 
+        //store all databases in an array
         File dir = new File("./db/kettledb");
-        File[] dblist = dir.listFiles(); //store all databases in an array
+        File[] dblist = dir.listFiles(); 
 
-        //if no files, exit function
+        //if no files, exit function and add an empty data object.
         if (dblist.length==0){
             System.out.println("no files!");
             createNotifDB();
-            data.add(empty); //if there's no files, add empty
+            data.add(empty); 
             return;
         }
 
         boolean hasNotifDB = false;
-        for (int i = 0; i < dblist.length; i++) { //loop through all dbs
+        //loop through the list of files and retrieve data
+        for (int i = 0; i < dblist.length; i++) {
             String dbName = dblist[i].getName();
             
-
+            //skip gitignore
             if(dbName.equals(".gitignore")){
             	System.out.println("Skipping .gitignore");
-            	i++;
-            	if(i<dblist.length){
-	                dbName = dblist[i].getName();
-	                System.out.println("Next: "+dbName);
-            	}
+            	continue;
             }
+            //if notifications exists, load notification data
             if(dbName.equals("notifications.db")){
             	hasNotifDB = true;
-            	System.out.println("notif db found");
             	loadNotifData();
-            	i++;
-            	if(i<dblist.length){
-	                dbName = dblist[i].getName();
-	                if(dbName.equals(".gitignore")){
-	                	System.out.println("Skipping .gitignore");
-	                	i++;
-	                }
-            	}
+            	continue;
             }
 
-            if(i>=dblist.length && data.size()==0){ //we have reached the end of our files and there is no data
+            //if we have reached the end of our files and there is no data
+            if(i>=dblist.length && data.size()==0){ 
                 data.add(empty);
-                if(!hasNotifDB){ //if there is also no notifications
+                //if there is no notification database, create it
+                if(!hasNotifDB){
                 	createNotifDB();
                 	hasNotifDB = true;
                 }
-                return;
-            }
-
-            if(i<dblist.length){
-                dbName = dblist[i].getName();
-                System.out.println("Next: "+dbName);
-            }
-            else{
                 return;
             }
 
@@ -746,7 +826,7 @@ public class Kettlelog extends Application {
                 Connection conn = getDataBase(dbName);
                 Statement stmt = conn.createStatement();
 
-                String getMainData = "SELECT * FROM info"; //Call one table "Data", 2nd table "Log"
+                String getMainData = "SELECT * FROM info"; 
                 ResultSet mainData = stmt.executeQuery(getMainData);
 
                 Item it = new Item();
@@ -771,6 +851,7 @@ public class Kettlelog extends Application {
                 ResultSet logData = stmt.executeQuery(getLogData);
 
                 ObservableList<Log> logInfo = FXCollections.observableArrayList();
+
                 //get all info from log table, stick it in new Item
                 while (logData.next()) {
                     Log itLog = new Log();
@@ -782,8 +863,6 @@ public class Kettlelog extends Application {
                 }
 
                 //give main item a quantity from the last log
-                /*String lastQuanLogged = logInfo.get(logInfo.size()-1).getQuanLogged();
-                it.setQuantity(lastQuanLogged);*/
                 String lastDateLogged = logInfo.get(logInfo.size()-1).getDateLogged();
                 it.setDate(lastDateLogged);
 
@@ -801,7 +880,8 @@ public class Kettlelog extends Application {
             }
         }
 
-        if(hasNotifDB==false){ //make notification db
+        //make notification db if we have reached the end and it doesn't exist
+        if(hasNotifDB==false){ 
         	createNotifDB();
         }
     }
