@@ -204,6 +204,9 @@ public class Notif {
             		hb.setVisible(false);
                     readStatus = -1;
             		break;
+                case "linkBtn":
+                    break;
+
 	            default:
 	            	System.out.println("other");
 

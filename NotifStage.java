@@ -160,6 +160,13 @@ public class NotifStage extends Stage{
                 //if this item has reorder date<=today && dategenerated==today, read status should be -3
                 Item it = kettle.getItemById(curNotif.getItemId());
 
+                //if the user already deleted the item, we do not need to worry about regenerating
+                //so treat like regular delete
+                if(it==null){
+                    notifsToUpdate.add(curNotif);
+                    continue;
+                }
+
                 //get value of ROD
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 java.util.Date today = new java.util.Date();

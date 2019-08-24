@@ -65,8 +65,11 @@ public class Kettlelog extends Application {
         loadData(); //will load data and notif data if it exists
         deleteInvalidNotifs();
         generateNotifsIfNeeded();
-        //sorting by most recent
-        notifList.sort(notifComparator.reversed());
+
+        if(notifList.size()>1){
+            //sorting by most recent
+            notifList.sort(notifComparator.reversed());
+        }
         primaryStage.updateNotifIcon();
         itemsToDelete = FXCollections.observableArrayList(empty);
         primaryStage.updatePrimaryStage(data);
@@ -364,6 +367,10 @@ public class Kettlelog extends Application {
     }
 
     public void deleteInvalidNotifs(){
+        if(invalidNotifList.size()==0){
+            return;
+        }
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         java.util.Date today = new java.util.Date();
         String todayString = dateFormat.format(today);
@@ -470,6 +477,10 @@ public class Kettlelog extends Application {
     }
 
     public Item getItemById(String id){
+        if(data.size()==0){
+            return null;
+        }
+
         for(int i = 0; i<data.size(); i++){
             Item curItem = data.get(i);
             if(curItem.getID().equals(id)){
@@ -801,12 +812,18 @@ public class Kettlelog extends Application {
             //skip gitignore
             if(dbName.equals(".gitignore")){
             	System.out.println("Skipping .gitignore");
+                if(i==dblist.length-2 && data.size()==0){
+                    data.add(empty);
+                }
             	continue;
             }
             //if notifications exists, load notification data
             if(dbName.equals("notifications.db")){
             	hasNotifDB = true;
             	loadNotifData();
+                if(i==dblist.length-2 && data.size()==0){
+                    data.add(empty);
+                }
             	continue;
             }
 
@@ -884,7 +901,10 @@ public class Kettlelog extends Application {
         if(hasNotifDB==false){ 
         	createNotifDB();
         }
-    }
 
+        if(data.size()==0){
+            data.add(empty);
+        }
+    }
 
 }
