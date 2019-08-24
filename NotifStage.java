@@ -42,7 +42,8 @@ public class NotifStage extends Stage{
     private static BorderPane notifBP = new BorderPane();
     
     //controls
-    private static List<Notif> notifList = new ArrayList<Notif>();
+
+    private static List<NotifContainer> notifBoxList = new ArrayList<NotifContainer>();
     private static Scene notifScene;
     private static Kettlelog kettle = new Kettlelog();
 
@@ -99,9 +100,9 @@ public class NotifStage extends Stage{
 
         for(int i = 0; i<20; i++){
             String notifID = "NOTIF"+String.valueOf(i);
-            Notif notifBox = new Notif();
-            notifList.add(notifBox);
-            notifVB.getChildren().add(notifList.get(i).getNotifBox());
+            NotifContainer notifBox = new NotifContainer();
+            notifBoxList.add(notifBox);
+            notifVB.getChildren().add(notifBox.getNotifBox());
         }
 
         //SETTING CONTENT OF SCROLLPANE
@@ -135,16 +136,12 @@ public class NotifStage extends Stage{
             if(i<sz){
                 //SET ALL NOTIF DATA TO KETTLE NOTIF DATA
                 //if the item doesn't have status deleted, add it to stage's notifs
-                notifList.get(i).setMessage(kettleNotifs.get(i).getMessage());
-                notifList.get(i).setItemId(kettleNotifs.get(i).getItemId());
-                notifList.get(i).setReadStatus(kettleNotifs.get(i).getReadStatus());
-                notifList.get(i).setNotifId(kettleNotifs.get(i).getNotifId());
-                notifList.get(i).setDateGenerated(kettleNotifs.get(i).getDateGenerated());
-                notifList.get(i).setNotifVisible(true);
+                notifBoxList.get(i).updateNotifContainer(kettleNotifs.get(i));
+                notifBoxList.get(i).setNotifVisible(true);
             }
             //if less than 20 notifs exist
             else{
-                notifList.get(i).setNotifVisible(false);
+                notifBoxList.get(i).setNotifVisible(false);
             }
         }
     }
@@ -154,7 +151,7 @@ public class NotifStage extends Stage{
         List<Notif> notifsToUpdate = new ArrayList<Notif>();
 
         for(int i = 0; i<20; i++){
-            Notif curNotif = notifList.get(i);
+            Notif curNotif = notifBoxList.get(i).getNotif();
 
             if(curNotif.getReadStatus()==-1){
                 //if this item has reorder date<=today && dategenerated==today, read status should be -3
@@ -206,10 +203,6 @@ public class NotifStage extends Stage{
                 kettle.primaryStage.updateNotifIcon();
             }
             else if(itemClicked.equals("clearBtn")){
-                for(int i = 0; i<notifList.size(); i++){
-                    notifList.get(i).setNotifVisible(false);
-                    //
-                }
                 //also clear the db
             }
             else if(itemClicked.equals("refreshBtn")){
