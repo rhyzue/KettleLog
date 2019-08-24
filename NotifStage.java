@@ -203,10 +203,22 @@ public class NotifStage extends Stage{
                 kettle.primaryStage.updateNotifIcon();
             }
             else if(itemClicked.equals("clearBtn")){
-                //also clear the db
+                //if notifs are visible, set them to not visible
+                //set read status to -1
+
+                for(int i =0; i<20; i++){
+                    if(notifBoxList.get(i).getNotifVisible()){
+                        notifBoxList.get(i).setNotifReadStatus(-1);
+                        notifBoxList.get(i).setNotifVisible(false);
+                    }
+                }
+                
             }
             else if(itemClicked.equals("refreshBtn")){
-                //reload db info
+                kettle.hideNotifStage();
+                onClose();
+                kettle.primaryStage.updateNotifIcon();
+                kettle.showNotifStage();
             }
 
         }

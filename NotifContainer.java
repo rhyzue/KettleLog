@@ -111,8 +111,16 @@ public class NotifContainer{
     	hb.setVisible(value);
     }
 
+    public boolean getNotifVisible(){
+    	return hb.isVisible();
+    }
+
     public void setMessage(String text){
     	message.setText(text);
+    }
+
+    public void setNotifReadStatus(int rd){
+    	notif.setReadStatus(rd);
     }
 
     public void updateNotifContainer(Notif notif){
