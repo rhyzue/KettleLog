@@ -27,3 +27,7 @@ Item Statistics            |  Consumption Graph
 ![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/stats.png)  |  ![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/graph.png)
 
 * Notifications
+
+| <img src="https://github.com/rhyzue/KettleLog/blob/master/Screenshots/notifs.png" width="50%" height="50%" /> | 
+|:--:| 
+| *Get notified when an item needs re-ordering. Kettlelog will calculate the re-order date for you!* |
