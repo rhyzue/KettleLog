@@ -5,6 +5,7 @@ import java.io.*;
 import java.sql.*;
 import java.text.*;
 import java.util.*;
+import java.util.concurrent.*;
 import javafx.stage.*;
 import java.nio.file.*;
 import java.sql.Statement;
@@ -53,6 +54,8 @@ public class Kettlelog extends Application {
     private static NotifStage notifStage = new NotifStage();
     private static NotifComparator notifComparator = new NotifComparator();
 
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
     //================================================================================
     // METHODS
     //================================================================================
@@ -62,6 +65,15 @@ public class Kettlelog extends Application {
  
     @Override
     public void start(Stage setup) {
+
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            public void run() {
+                deleteInvalidNotifs();
+                generateNotifsIfNeeded();
+                System.out.println("scheduled task has executed");
+            }
+        }, 1, 1, TimeUnit.HOURS);
+
         loadData(); //will load data and notif data if it exists
         deleteInvalidNotifs();
         generateNotifsIfNeeded();
@@ -233,6 +245,7 @@ public class Kettlelog extends Application {
     //================================================================================
     // NOTIFICATION MANAGEMENT
     //================================================================================
+
     public void generateNotifsIfNeeded(){
 
         //if there are no items, there should be no notifications generated
