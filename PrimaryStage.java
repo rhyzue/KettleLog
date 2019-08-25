@@ -85,6 +85,8 @@ public class PrimaryStage extends Stage{
         opaqueLayer.setStyle("-fx-background-color: #001a34;");
         opaqueLayer.setOpacity(0.7);
         opaqueLayer.setVisible(false); 
+        
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
 
         ////////////////////////////////////////////////////////////////Menu Bar
 
@@ -124,7 +126,12 @@ public class PrimaryStage extends Stage{
         //================================================================================
 
         table.setFixedCellSize(40.0);
-        table.setPrefSize(300, 508.0);
+
+        //decide how any rows in table
+        double screenHeight = screenBounds.getHeight();
+        double numRows = Math.floor((screenHeight-100-150-28)/40);
+
+        table.setPrefSize(300, numRows*40+28);
         table.setPlaceholder(new Label("Sorry, your search did not match any item names."));
 
         buttoncolumn.prefWidthProperty().bind(table.widthProperty().multiply(0.1980));
@@ -314,7 +321,6 @@ public class PrimaryStage extends Stage{
 
         this.setScene(new Scene(root, w, h));
 
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         screenX = (screenBounds.getWidth() - w) / 2;
         screenY = (screenBounds.getHeight() - h) / 2;
 
