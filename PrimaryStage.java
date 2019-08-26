@@ -94,30 +94,29 @@ public class PrimaryStage extends Stage{
         Menu file = new Menu("File");
             MenuItem newtable = new Menu("New");
             MenuItem opentable = new Menu("Open");
-            MenuItem printtable = new Menu("Print");
             MenuItem exit = new Menu("Exit");
 
         //EDIT SUBMENU
         Menu edit = new Menu("Edit");
             MenuItem add = new Menu("Add Item");
+            MenuItem emenu = new Menu("Edit Item");
             MenuItem remove = new Menu("Remove Item");
 
         //VIEW SUBMENU
         Menu view = new Menu("View");
-            MenuItem fs = new Menu("Fullscreen");
-            MenuItem mi = new Menu("Minimal Interface");
+            MenuItem notifs = new Menu("Notifications");
 
         //INFO SUBMENU
         Menu info = new Menu("Info");
-            MenuItem about = new Menu("About");
             MenuItem tutorial = new Menu("Tutorial");
+            MenuItem hiw = new Menu("How It Works");
             MenuItem credits = new Menu("Credits");
         
         //ADDING MENUITEMS TO THEIR RESPECTIVE MENUS
-        file.getItems().addAll(newtable, opentable, printtable, exit);
-        edit.getItems().addAll(add, remove);
-        view.getItems().addAll(fs, mi);
-        info.getItems().addAll(about, tutorial, credits);
+        file.getItems().addAll(newtable, opentable, exit);
+        edit.getItems().addAll(add, emenu, remove);
+        view.getItems().addAll(notifs);
+        info.getItems().addAll(tutorial, hiw, credits);
         kettlemenu.getMenus().addAll(file, edit, view, info);
  
 
