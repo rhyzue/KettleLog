@@ -136,17 +136,17 @@ public class PrimaryStage extends Stage{
         table.setFixedCellSize(40.0);
 
         //decide how any rows in table
-        screenHeight = screenBounds.getHeight();
+        screenHeight = screenBounds.getHeight() - 40;
 
         if (screenHeight > 800) {
             screenHeight = 750;
         }
 
         double numRows = Math.floor((screenHeight-70-150-28)/40);
-        //100 = minimum space from bottom (blue)
+        //70 = minimum space from bottom (blue)
         //150 = height of topbar + kettlemenu
         //28 = height of table header
-        //Each row is 40 
+        //Each row is 40 tall
 
         table.setPrefSize(300, numRows*40+28);
         table.setPlaceholder(new Label("Sorry, your search did not match any item names."));
@@ -324,7 +324,7 @@ public class PrimaryStage extends Stage{
 
         BorderPane main = new BorderPane();
         main.setStyle("-fx-background-color: #004080;");
-        BorderPane.setMargin(tableBox, new Insets(10, 50, 0, 50));
+        BorderPane.setMargin(tableBox, new Insets(10, 50, 0, 50)); //top right bottom left
         main.setCenter(tableBox);
         main.setTop(topBar);
 

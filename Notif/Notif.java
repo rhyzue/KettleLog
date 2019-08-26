@@ -73,8 +73,8 @@ public class Notif {
     }
 
     public String getDateGenerated(){
-        //return dateGenerated;
-        return "2019-08-23";
+        return dateGenerated;
+        //return "2019-08-23";
     }
 
     public void setDateGenerated(String dateGenerated){
