@@ -36,9 +36,8 @@ public class PrimaryStage extends Stage{
     private static double screenX = 0.0;
     private static double screenY = 0.0;
 
-    private static double w_to_h = 1.4;
-    private static double w = 1024;
-    private static double h = w / w_to_h;
+    private static double screenWidth = 1024;
+    private static double screenHeight;
     private static double spacefromtable = 7.5;
     private static double tooltipduration = 75.0;
 
@@ -127,7 +126,7 @@ public class PrimaryStage extends Stage{
         table.setFixedCellSize(40.0);
 
         //decide how any rows in table
-        double screenHeight = screenBounds.getHeight();
+        screenHeight = screenBounds.getHeight();
         double numRows = Math.floor((screenHeight-100-150-28)/40);
 
         table.setPrefSize(300, numRows*40+28);
@@ -231,7 +230,7 @@ public class PrimaryStage extends Stage{
         AnchorPane.setBottomAnchor(notifBtn, spacefromtable-5);
        
         //SEARCH BAR
-        searchbar.setPrefWidth(w / 2.56);
+        searchbar.setPrefWidth(screenWidth / 2.56);
         searchbar.setPromptText("Search");
         AnchorPane.setLeftAnchor(searchbar, 305.0); 
         AnchorPane.setBottomAnchor(searchbar, spacefromtable);
@@ -318,10 +317,10 @@ public class PrimaryStage extends Stage{
 
         //SHOW SCENE (13 inch laptops are 1280 by 800)
 
-        this.setScene(new Scene(root, w, h));
+        this.setScene(new Scene(root, screenWidth, screenHeight));
 
-        screenX = (screenBounds.getWidth() - w) / 2;
-        screenY = (screenBounds.getHeight() - h) / 2;
+        screenX = (screenBounds.getWidth() - screenWidth) / 2;
+        screenY = (screenBounds.getHeight() - screenHeight) / 2;
 
         this.setX(screenX); 
         this.setY(screenY);
