@@ -200,6 +200,20 @@ public class Kettlelog extends Application {
         return itemsToDelete;
     }
 
+    //This method will the checked items in the table without the empty row.
+    public ObservableList<Item> getCheckedNoEmpty() {
+        ObservableList<Item> checkedlist = FXCollections.observableArrayList();
+        ObservableList<Item> data = getData();
+        int length = data.size();
+        for (int i = 0; i < length; i++) {
+            Item curItem = data.get(i);
+            if(curItem.getChecked()==true){
+                System.out.println("This item is checked.");
+                checkedlist.add(curItem);
+            }
+        }
+        return checkedlist;
+    }
     //================================================================================
     // ALGORITHM HELPERS
     //================================================================================

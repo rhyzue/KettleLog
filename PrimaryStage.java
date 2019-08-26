@@ -68,6 +68,10 @@ public class PrimaryStage extends Stage{
     private static ObservableList<Item> itemsToDelete;
     private static String nosupport = "Kettlelog currently does not support creating and opening multiple tables. This feature may become available in a future release.";
     private static Alert a1 = new Alert(AlertType.NONE, nosupport, ButtonType.OK); 
+    private static String atleastone = "Please have at least one item checked for this action.";
+    private static Alert a2 = new Alert(AlertType.NONE, atleastone, ButtonType.OK); 
+    private static String onlyone = "Please have exactly one item checked for this action.";
+    private static Alert a3 = new Alert(AlertType.NONE, onlyone, ButtonType.OK); 
 
     private static TableColumn<Item, String>[] itemArray = (TableColumn<Item, String>[]) new TableColumn[titles.length];
     private static BorderPane base = new BorderPane();
@@ -96,24 +100,26 @@ public class PrimaryStage extends Stage{
         Menu file = new Menu("File");
             //At the moment, New and Open are not supported so we'll just show a dialog box instead.
             MenuItem newtable = new Menu("New");
-            newtable.setId("nosupport");
+                newtable.setId("nosupport");
             MenuItem opentable = new Menu("Open");
-            opentable.setId("nosupport");
+                opentable.setId("nosupport");
             //Exit Tab.
             MenuItem exit = new Menu("Exit");
-            exit.setId("exit");
+                exit.setId("exit");
 
         //EDIT SUBMENU
         Menu edit = new Menu("Edit");
             MenuItem add = new Menu("Add Item");
                 add.setId("additem");
             MenuItem emenu = new Menu("Edit Item");
+                emenu.setId("edititem");
             MenuItem remove = new Menu("Remove Item");
 
         //VIEW SUBMENU
         Menu view = new Menu("View");
             MenuItem notifs = new Menu("Notifications");
             MenuItem iteminfo = new Menu("Item Info");
+                iteminfo.setId("showinfo");
 
         //INFO SUBMENU
         Menu info = new Menu("Info");
@@ -134,6 +140,13 @@ public class PrimaryStage extends Stage{
             newtable.setOnAction(menuHandler);
             opentable.setOnAction(menuHandler);
             add.setOnAction(menuHandler);
+            emenu.setOnAction(menuHandler);
+            remove.setOnAction(menuHandler);
+            notifs.setOnAction(menuHandler);
+            iteminfo.setOnAction(menuHandler);
+            tutorial.setOnAction(menuHandler);
+            hiw.setOnAction(menuHandler);
+            credits.setOnAction(menuHandler);
 
         //================================================================================
         // TABLE
@@ -349,6 +362,8 @@ public class PrimaryStage extends Stage{
 
         this.setScene(new Scene(root, screenWidth, screenHeight));
         a1.initOwner(this);
+        a2.initOwner(this);
+        a3.initOwner(this);
 
         screenX = (screenBounds.getWidth() - screenWidth) / 2;
         screenY = (screenBounds.getHeight() - screenHeight) / 2;
@@ -480,10 +495,35 @@ public class PrimaryStage extends Stage{
                     System.out.println("Exiting...");
                     Platform.exit();
                     System.exit(0);
+                    break;
                 case "nosupport":
                     a1.show(); 
+                    break;
                 case "additem":
                     kettle.showAddStage(0, emptyinfo, empty);
+                    break;
+                case "edititem":
+                    ObservableList<Item> checked = kettle.getCheckedNoEmpty();
+                    int length = checked.size();
+                    System.out.println("The number of checked items is " + length);
+                    //The user can only edit one item at a time, so we need to make sure there's only one item checked.
+                    if (length == 1) {
+                        Item test = checked.get(0);
+                        String[] editinfo = {test.getName(), test.getQuantity(), test.getMinimum(), test.getDelivery(), test.getDesc(), test.getDate()};        
+                        kettle.showAddStage(1, editinfo, test);     
+                    } else {
+                        a3.show();
+                    }
+                    break;
+                case "showinfo":
+                    ObservableList<Item> checked2 = kettle.getCheckedNoEmpty();
+                    int length2 = checked2.size();
+                    if (length2 == 1) {
+                        Item rowinfo = checked2.get(0);      
+                        kettle.showInfoStage(rowinfo);   
+                    } else {
+                        a3.show();
+                    }
                     break;
                 default:
                     System.out.println("Default.");
