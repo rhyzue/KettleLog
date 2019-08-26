@@ -6,6 +6,7 @@ import javafx.util.*;
 import javafx.stage.*;
 import javafx.event.*;
 import javafx.geometry.*;
+import javafx.animation.*;
 import java.time.chrono.*; 
 import javafx.scene.Scene;
 import javafx.scene.text.*;
@@ -17,6 +18,7 @@ import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.chart.XYChart;
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.chart.LineChart;
 import javafx.scene.image.ImageView;
@@ -24,7 +26,6 @@ import javafx.scene.control.Alert.*;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.input.MouseEvent;
 import javafx.application.Application;
-import javafx.animation.*;
 import java.time.format.DateTimeFormatter;
 import javafx.collections.transformation.*;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -91,9 +92,18 @@ public class PrimaryStage extends Stage{
 
         //FILE SUBMENU
         Menu file = new Menu("File");
+            //At the moment, New and Open are not supported so we'll just show a dialog box instead.
             MenuItem newtable = new Menu("New");
             MenuItem opentable = new Menu("Open");
+
+            //Exit Tab.
             MenuItem exit = new Menu("Exit");
+            exit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+                public void handle(ActionEvent event) {
+                    Platform.exit();
+                }
+            });
 
         //EDIT SUBMENU
         Menu edit = new Menu("Edit");
@@ -127,7 +137,16 @@ public class PrimaryStage extends Stage{
 
         //decide how any rows in table
         screenHeight = screenBounds.getHeight();
-        double numRows = Math.floor((screenHeight-100-150-28)/40);
+
+        if (screenHeight > 800) {
+            screenHeight = 750;
+        }
+
+        double numRows = Math.floor((screenHeight-70-150-28)/40);
+        //100 = minimum space from bottom (blue)
+        //150 = height of topbar + kettlemenu
+        //28 = height of table header
+        //Each row is 40 
 
         table.setPrefSize(300, numRows*40+28);
         table.setPlaceholder(new Label("Sorry, your search did not match any item names."));
