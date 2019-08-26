@@ -39,7 +39,7 @@ public class AlertStage extends Stage{
     private final String reordermidhex = "ffe5b7;";
     private final double alertwidth = 500.0;
     private final double alertw_to_h = 1.42857;
-    private final double alertheight = alertwidth / alertw_to_h;
+    private final double alertheight = alertwidth / alertw_to_h; //(350 tall)
 
     private static int overflow = 0;
     private static Text deltext = new Text();

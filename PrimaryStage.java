@@ -66,6 +66,8 @@ public class PrimaryStage extends Stage{
     private static ObservableList<String> optionList = FXCollections.observableArrayList("Sort by: Starred", "Sort by: Most Recent", "Sort by: Oldest Added", "Select All", "None");
     private static String[] emptyinfo = {"", "", "", "", "", ""};
     private static ObservableList<Item> itemsToDelete;
+    private static String nosupport = "Kettlelog currently does not support creating and opening multiple tables. This feature may become available in a future release.";
+    private static Alert a1 = new Alert(AlertType.NONE, nosupport, ButtonType.OK); 
 
     private static TableColumn<Item, String>[] itemArray = (TableColumn<Item, String>[]) new TableColumn[titles.length];
     private static BorderPane base = new BorderPane();
@@ -94,40 +96,44 @@ public class PrimaryStage extends Stage{
         Menu file = new Menu("File");
             //At the moment, New and Open are not supported so we'll just show a dialog box instead.
             MenuItem newtable = new Menu("New");
+            newtable.setId("nosupport");
             MenuItem opentable = new Menu("Open");
-
+            opentable.setId("nosupport");
             //Exit Tab.
             MenuItem exit = new Menu("Exit");
-            exit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-                public void handle(ActionEvent event) {
-                    Platform.exit();
-                }
-            });
+            exit.setId("exit");
 
         //EDIT SUBMENU
         Menu edit = new Menu("Edit");
             MenuItem add = new Menu("Add Item");
+                add.setId("additem");
             MenuItem emenu = new Menu("Edit Item");
             MenuItem remove = new Menu("Remove Item");
 
         //VIEW SUBMENU
         Menu view = new Menu("View");
             MenuItem notifs = new Menu("Notifications");
+            MenuItem iteminfo = new Menu("Item Info");
 
         //INFO SUBMENU
         Menu info = new Menu("Info");
             MenuItem tutorial = new Menu("Tutorial");
-            MenuItem hiw = new Menu("How It Works");
+            MenuItem hiw = new Menu("About Kettlelog");
             MenuItem credits = new Menu("Credits");
         
         //ADDING MENUITEMS TO THEIR RESPECTIVE MENUS
         file.getItems().addAll(newtable, opentable, exit);
         edit.getItems().addAll(add, emenu, remove);
-        view.getItems().addAll(notifs);
+        view.getItems().addAll(notifs, iteminfo);
         info.getItems().addAll(tutorial, hiw, credits);
         kettlemenu.getMenus().addAll(file, edit, view, info);
- 
+
+        //Setting Handlers for the Menu items
+        MenuHandler menuHandler = new MenuHandler();  
+            exit.setOnAction(menuHandler);
+            newtable.setOnAction(menuHandler);
+            opentable.setOnAction(menuHandler);
+            add.setOnAction(menuHandler);
 
         //================================================================================
         // TABLE
@@ -233,9 +239,7 @@ public class PrimaryStage extends Stage{
         //================================================================================
         // ADD AND REMOVE BUTTON FUNCTIONALITY
         //================================================================================
-        
-
-        Handler eventHandler = new Handler();  
+        ButtonHandler eventHandler = new ButtonHandler();  
         addBtn.setOnAction(eventHandler);
         removeBtn.setOnAction(eventHandler);
         notifBtn.setOnAction(eventHandler);
@@ -336,7 +340,15 @@ public class PrimaryStage extends Stage{
 
         //SHOW SCENE (13 inch laptops are 1280 by 800)
 
+        this.setOnCloseRequest(event -> {
+            // do some stuff...
+            Platform.exit();
+            System.exit(0);
+            event.consume();
+        });
+
         this.setScene(new Scene(root, screenWidth, screenHeight));
+        a1.initOwner(this);
 
         screenX = (screenBounds.getWidth() - screenWidth) / 2;
         screenY = (screenBounds.getHeight() - screenHeight) / 2;
@@ -429,7 +441,7 @@ public class PrimaryStage extends Stage{
             }
     }
 
-    public class Handler implements EventHandler<ActionEvent>{
+    public class ButtonHandler implements EventHandler<ActionEvent>{
         @Override
         public void handle(ActionEvent e) {
 
@@ -437,7 +449,6 @@ public class PrimaryStage extends Stage{
 
             switch(itemClicked){
                 case "addBtn":
-                    //presscount = 1;
                     kettle.showAddStage(0, emptyinfo, empty);
                     break;
                 case "removeBtn":
@@ -451,6 +462,29 @@ public class PrimaryStage extends Stage{
                 case "notifBtn":
                     kettle.showNotifStage();
                     break;  
+                default:
+                    System.out.println("Default.");
+            }
+        }
+    }
+
+    public class MenuHandler implements EventHandler<ActionEvent>{
+        @Override
+        public void handle(ActionEvent event) {
+
+            MenuItem mItem = (MenuItem) event.getSource();
+            String itemClicked = mItem.getId();
+
+            switch(itemClicked){
+                case "exit":
+                    System.out.println("Exiting...");
+                    Platform.exit();
+                    System.exit(0);
+                case "nosupport":
+                    a1.show(); 
+                case "additem":
+                    kettle.showAddStage(0, emptyinfo, empty);
+                    break;
                 default:
                     System.out.println("Default.");
             }
