@@ -126,6 +126,7 @@ public class PrimaryStage extends Stage{
             MenuItem tutorial = new Menu("Tutorial");
             MenuItem hiw = new Menu("About Kettlelog");
             MenuItem credits = new Menu("Credits");
+                credits.setId("credits");
         
         //ADDING MENUITEMS TO THEIR RESPECTIVE MENUS
         file.getItems().addAll(newtable, opentable, exit);
@@ -155,10 +156,10 @@ public class PrimaryStage extends Stage{
         table.setFixedCellSize(40.0);
 
         //decide how any rows in table
-        screenHeight = screenBounds.getHeight() - 40;
+        screenHeight = screenBounds.getHeight() - 50;
 
         if (screenHeight > 800) {
-            screenHeight = 750;
+            screenHeight = 740;
         }
 
         double numRows = Math.floor((screenHeight-70-150-28)/40);
@@ -524,6 +525,9 @@ public class PrimaryStage extends Stage{
                     } else {
                         a3.show();
                     }
+                    break;
+                case "credits":
+                    kettle.showCreditStage();
                     break;
                 default:
                     System.out.println("Default.");

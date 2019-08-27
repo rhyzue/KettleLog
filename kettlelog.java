@@ -48,6 +48,7 @@ public class Kettlelog extends Application {
     private static InfoStage infoStage = new InfoStage();
     private static AddStage addStage = new AddStage();
     private static AlertStage alertStage = new AlertStage();
+    private static CreditStage creditStage = new CreditStage();
     private static InsertData app = new InsertData();
     private static Algorithm alg = new Algorithm();
     private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
@@ -151,6 +152,17 @@ public class Kettlelog extends Application {
         notifStage.show();
     }
 
+    public void showCreditStage() {
+        primaryStage.showOpaqueLayer();
+        creditStage.showCreditStage();
+
+        creditStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 310); 
+        creditStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 210) + extraheight); 
+
+        creditStage.show();
+
+    }
+
     //================================================================================
     // STAGE HIDERS
     //================================================================================
@@ -176,6 +188,11 @@ public class Kettlelog extends Application {
     public void hideNotifStage() {
         primaryStage.hideOpaqueLayer();
         notifStage.hide();
+    }
+
+    public void hideCreditStage() {
+        primaryStage.hideOpaqueLayer();
+        creditStage.hide();
     }
 
     //================================================================================
