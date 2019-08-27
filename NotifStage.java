@@ -170,6 +170,9 @@ public class NotifStage extends Stage{
                 String todayString = dateFormat.format(today);
                 java.util.Date rod = new java.util.Date();
                 String rodString = it.getROD();
+                if(rodString.equals("OVERDUE")){
+                    rodString = todayString;
+                }
                 try{
                     rod = dateFormat.parse(rodString);
                 }

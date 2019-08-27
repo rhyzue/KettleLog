@@ -788,6 +788,9 @@ public class InfoStage extends Stage{
                     cannotdelete.setVisible(false);
                     presscount = 0;
                     kettle.hideInfoStage();
+                    if(kettle.isNotifStageShowing()){
+                        kettle.primaryStage.showOpaqueLayer();
+                    }
                     break;    
                 default:
                     System.out.println("Otherstuff");

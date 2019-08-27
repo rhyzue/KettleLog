@@ -354,9 +354,23 @@ public class AlertStage extends Stage{
             deltext.setFill(Color.WHITE);
 
             itemsToDelete.addAll(items);
+
+            boolean hasEmpty = false;
+
+            for(int i =0; i<itemsToDelete.size(); i++){
+                if(itemsToDelete.get(i).getID().equals("emptyID")){
+                    hasEmpty = true;
+                }
+            }
         
-            if(itemsToDelete.size()==1){
-                itemlabel.setText(itemsToDelete.get(0).getName() + "?");
+            if(itemsToDelete.size()==1 || (itemsToDelete.size()==2 && hasEmpty==true)){
+                String itemName = itemsToDelete.get(0).getName();
+
+                if(itemName.equals("") && itemsToDelete.size()==2){
+                    itemName = itemsToDelete.get(1).getName();
+                }
+                
+                itemlabel.setText(itemName+ "?");
                 delperm.setText("This item will be deleted permanently.");
             }
             else{

@@ -166,6 +166,10 @@ public class Kettlelog extends Application {
 
     }
 
+    public boolean isNotifStageShowing(){
+        return notifStage.isShowing();
+    }
+
     //================================================================================
     // STAGE HIDERS
     //================================================================================
@@ -287,6 +291,10 @@ public class Kettlelog extends Application {
         alg.setCalculations(id);
         alg.setUpdatedStatus(id);
 
+        deleteInvalidNotifs();
+        generateNotifsIfNeeded();
+        primaryStage.updateNotifIcon();
+
     }
 
     //================================================================================
@@ -315,6 +323,9 @@ public class Kettlelog extends Application {
             //there is no reorder date given
             if(rodString.equals("N/A")){
                 continue; //skip to next iteration
+            }
+            if(rodString.equals("OVERDUE")){
+                rodString = todayString;
             }
 
             //get the ROD as a date object
@@ -362,6 +373,7 @@ public class Kettlelog extends Application {
         //Account for already existing notifs
         checkNotifOverflow();
 		notifStage.updateNotifStage(notifList);
+        primaryStage.updateNotifIcon();
     }
 
     public void checkNotifOverflow(){

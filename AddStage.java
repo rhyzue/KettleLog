@@ -701,6 +701,8 @@ public class AddStage extends Stage{
 
                             //JUST PUTTING IN AN EMPTY OBSERVABLELIST FOR THE SETDATA FUNCTION
                             kettle.setData(placeholder, 1);
+
+
                             kettle.hideAddStage();
                             addpresscount = 0;
                             editpresscount = 0;

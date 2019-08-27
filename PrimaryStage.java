@@ -114,11 +114,12 @@ public class PrimaryStage extends Stage{
             MenuItem emenu = new Menu("Edit Item");
                 emenu.setId("edititem");
             MenuItem remove = new Menu("Remove Item");
+                remove.setId("removeMenu");
 
         //VIEW SUBMENU
         Menu view = new Menu("View");
             MenuItem notifs = new Menu("Notifications");
-                notifs.setId("notifs");
+                notifs.setId("notifMenu");
             MenuItem iteminfo = new Menu("Item Info");
                 iteminfo.setId("showinfo");
 
@@ -525,11 +526,21 @@ public class PrimaryStage extends Stage{
                         a3.show();
                     }
                     break;
-                case "notifs":
-                    kettle.showNotifStage();
-                    break;
                 case "credits":
                     kettle.showCreditStage();
+                    break;
+                case "removeMenu":
+                    itemsToDelete=kettle.getCheckedItems();
+                    if(itemsToDelete.size()==0){
+                        a3.show();
+                    }
+                    else{
+                        kettle.showAlertStage(1, itemsToDelete, empty);
+                        itemsToDelete.clear();
+                    }
+                    break;
+                case "notifMenu":
+                    kettle.showNotifStage();
                     break;
                 default:
                     System.out.println("Default.");
