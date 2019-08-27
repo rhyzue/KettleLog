@@ -24,6 +24,7 @@ import javafx.scene.control.Alert.*;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.input.MouseEvent;
 import javafx.application.Application;
+import javafx.application.HostServices;
 import java.time.format.DateTimeFormatter;
 import javafx.collections.transformation.*;
 import java.lang.NumberFormatException;
@@ -43,9 +44,12 @@ public class CreditStage extends Stage{
 							 	"He enjoys programming and hopes to make a few video games in the future.";
 	private final String rbio = "I like to steal gum from Frank. It took me about one month to get my own gum. " + 
 								"By then I probably already stole about $20 worth of gum.";
+
 	private static AnchorPane credtstrip = new AnchorPane();
 	private static AnchorPane centerstrip = new AnchorPane();
 	private static AnchorPane credbstrip = new AnchorPane();
+	private static Image franklogo = new Image("./Misc/frank.jpg");
+	private static ImageView frankview = new ImageView();
 	private static Image rennielogo = new Image("./Misc/rennie.jpg");
 	private static ImageView rennieview = new ImageView();
 	private static Button frankgit = new Button();
@@ -101,6 +105,12 @@ public class CreditStage extends Stage{
 	       	frankbio.setStyle("-fx-opacity: 1;");
 	        frankbio.setWrapText(true);
 	        frankbio.setText(fbio);
+
+       	AnchorPane.setLeftAnchor(frankview, 20.0);
+        AnchorPane.setTopAnchor(frankview, 20.0);
+	     	frankview.setFitHeight(140);
+	        frankview.setFitWidth(140);
+	        frankview.setImage(franklogo);
 
         AnchorPane.setRightAnchor(frankgit, 20.0);
         AnchorPane.setTopAnchor(frankgit, 75.0); 
@@ -158,7 +168,7 @@ public class CreditStage extends Stage{
             renniegitView.setCache(true); 
             renniegit.setGraphic(renniegitView);
  
-	    centerstrip.getChildren().addAll(frankname, frankbio, renniename, renniebio, rennieview, frankgit, renniegit);
+	    centerstrip.getChildren().addAll(frankname, frankbio, renniename, renniebio, frankview, rennieview, frankgit, renniegit);
         centerstrip.setStyle(midcolour);
 	    //================================================================================
 	    // BOTTOM
@@ -189,20 +199,8 @@ public class CreditStage extends Stage{
 
 	public void showCreditStage(){
 
-
-		frankgit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-                public void handle(ActionEvent event) {
-                    System.out.println("Taking you to Frank's Github profile...");
-                }
-            });
-
-		renniegit.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-                public void handle(ActionEvent event) {
-                    System.out.println("Taking you to Rennie's Github profile...");
-                }
-            });
+		frankgit.setOnAction(ev -> kettle.openURL(0));
+		renniegit.setOnAction(ev -> kettle.openURL(1));
 
 		close.setOnAction(new EventHandler<ActionEvent>() {
             @Override

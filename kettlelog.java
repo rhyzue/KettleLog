@@ -5,7 +5,6 @@ import java.io.*;
 import java.sql.*;
 import java.text.*;
 import java.util.*;
-import java.util.concurrent.*;
 import javafx.stage.*;
 import java.nio.file.*;
 import java.sql.Statement;
@@ -14,9 +13,11 @@ import javafx.scene.Scene;
 import java.sql.Connection;
 import javafx.collections.*;
 import java.sql.SQLException;
+import java.util.concurrent.*;
 import java.sql.DriverManager;
 import java.time.temporal.ChronoUnit;
 import javafx.application.Application;
+import javafx.application.HostServices;
 
 public class Kettlelog extends Application {
     @SuppressWarnings("unchecked")
@@ -36,6 +37,8 @@ public class Kettlelog extends Application {
     private static double extraheight = 5.0;
     public static boolean starred = false;
     public static boolean duplicatefound = false;
+    private final String fprofile = "https://github.com/Fraisin";
+    private final String rprofile = "https://github.com/rhyzue";
 
     private static ObservableList<Item> data = FXCollections.observableArrayList();
     private static ObservableList<Log> emptylist = FXCollections.observableArrayList();
@@ -193,6 +196,19 @@ public class Kettlelog extends Application {
     public void hideCreditStage() {
         primaryStage.hideOpaqueLayer();
         creditStage.hide();
+    }
+
+    //================================================================================
+    // URL OPENERS
+    //================================================================================
+    public void openURL(int person) {
+        //0 = Frank's profile
+        //1 = Rennie's profile
+        if (person == 0) {
+            getHostServices().showDocument(fprofile);
+        } else {
+            getHostServices().showDocument(rprofile);
+        }
     }
 
     //================================================================================
