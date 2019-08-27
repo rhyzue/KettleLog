@@ -157,7 +157,7 @@ public class Kettlelog extends Application {
         creditStage.showCreditStage();
 
         creditStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 310); 
-        creditStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 210) + extraheight); 
+        creditStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 220) + extraheight); 
 
         creditStage.show();
 
