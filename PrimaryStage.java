@@ -118,21 +118,21 @@ public class PrimaryStage extends Stage{
         //VIEW SUBMENU
         Menu view = new Menu("View");
             MenuItem notifs = new Menu("Notifications");
+                notifs.setId("notifs");
             MenuItem iteminfo = new Menu("Item Info");
                 iteminfo.setId("showinfo");
 
         //INFO SUBMENU
         Menu info = new Menu("Info");
             MenuItem tutorial = new Menu("Tutorial");
-            MenuItem hiw = new Menu("About Kettlelog");
-            MenuItem credits = new Menu("Credits");
+            MenuItem credits = new Menu("Contributors");
                 credits.setId("credits");
         
         //ADDING MENUITEMS TO THEIR RESPECTIVE MENUS
         file.getItems().addAll(newtable, opentable, exit);
         edit.getItems().addAll(add, emenu, remove);
         view.getItems().addAll(notifs, iteminfo);
-        info.getItems().addAll(tutorial, hiw, credits);
+        info.getItems().addAll(tutorial, credits);
         kettlemenu.getMenus().addAll(file, edit, view, info);
 
         //Setting Handlers for the Menu items
@@ -146,7 +146,6 @@ public class PrimaryStage extends Stage{
             notifs.setOnAction(menuHandler);
             iteminfo.setOnAction(menuHandler);
             tutorial.setOnAction(menuHandler);
-            hiw.setOnAction(menuHandler);
             credits.setOnAction(menuHandler);
 
         //================================================================================
@@ -525,6 +524,9 @@ public class PrimaryStage extends Stage{
                     } else {
                         a3.show();
                     }
+                    break;
+                case "notifs":
+                    kettle.showNotifStage();
                     break;
                 case "credits":
                     kettle.showCreditStage();
