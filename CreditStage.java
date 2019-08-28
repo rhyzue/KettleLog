@@ -174,6 +174,7 @@ public class CreditStage extends Stage{
 	    // BOTTOM
 	    //================================================================================
         close.setText("Close");
+        close.setStyle("-fx-background-color: #d4c7d9;");
         close.setPrefHeight(30);
         	AnchorPane.setRightAnchor(close, 5.0);
         	AnchorPane.setBottomAnchor(close, 5.0);

@@ -529,6 +529,7 @@ public class InfoStage extends Stage{
         infocancel.setId("infocancel");
         InfoHandler infoHandler = new InfoHandler();
         infocancel.setOnAction(infoHandler); 
+        infocancel.setStyle("-fx-background-color: #b8d6d6;");
         
         AnchorPane.setRightAnchor(infocancel, 5.0);
         AnchorPane.setTopAnchor(infocancel, 5.0);

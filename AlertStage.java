@@ -36,7 +36,7 @@ public class AlertStage extends Stage{
     private final String striphexdelete = "#610031;";
     private final String deletemidhex = "#dfccd5;";
     private final String striphexreorder = "#ffb300;";
-    private final String reordermidhex = "ffe5b7;";
+    private final String reordermidhex = "#ffe5b7;";
     private final double alertwidth = 500.0;
     private final double alertw_to_h = 1.42857;
     private final double alertheight = alertwidth / alertw_to_h; //(350 tall)
@@ -223,6 +223,10 @@ public class AlertStage extends Stage{
         //================================================================================
         if (popuptype == 0) {
 
+            alertcancel.setStyle("-fx-background-color: #f7f0e4;");
+            alertdelete.setStyle("-fx-background-color: #ffe5b7;");
+            alertdelete.setTextFill(Color.BLACK);
+
             String stripcolour = String.format("-fx-background-color: %s", striphexreorder);
             String alertmidcolour = String.format("-fx-background-color: %s", reordermidhex);
             alerttstrip.setStyle(stripcolour);
@@ -235,7 +239,7 @@ public class AlertStage extends Stage{
             delivery.setVisible(true);
             instruction1.setVisible(true);
             instruction2.setVisible(true);
-            alertdelete.setText("Confirm Log"); 
+            alertdelete.setText("Confirm"); 
             deltext.setText("Log Reorder"); 
             deltext.setFill(Color.BLACK); 
 
@@ -340,6 +344,9 @@ public class AlertStage extends Stage{
         // DELETING AN ITEM
         //================================================================================
         else {
+            alertcancel.setStyle("-fx-background-color: #dfccd5;");
+            alertdelete.setStyle("-fx-background-color: #cbadc3;");
+            alertdelete.setTextFill(Color.BLACK);
 
             String stripcolour = String.format("-fx-background-color: %s", striphexdelete);
             String alertmidcolour = String.format("-fx-background-color: %s", deletemidhex);
