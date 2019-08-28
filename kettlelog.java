@@ -237,6 +237,11 @@ public class Kettlelog extends Application {
         return itemsToDelete;
     }
 
+    public int getNumCheckedItems(){
+        ObservableList<Item> checkedlist = getCheckedNoEmpty();
+        return checkedlist.size();
+    }
+
     //This method will the checked items in the table without the empty row.
     public ObservableList<Item> getCheckedNoEmpty() {
         ObservableList<Item> checkedlist = FXCollections.observableArrayList();
@@ -884,7 +889,7 @@ public class Kettlelog extends Application {
             //skip gitignore
             if(dbName.equals(".gitignore")){
             	System.out.println("Skipping .gitignore");
-                if(i==dblist.length-2 && data.size()==0){
+                if(i==dblist.length-1 && data.size()==0){
                     data.add(empty);
                 }
             	continue;
@@ -893,7 +898,7 @@ public class Kettlelog extends Application {
             if(dbName.equals("notifications.db")){
             	hasNotifDB = true;
             	loadNotifData();
-                if(i==dblist.length-2 && data.size()==0){
+                if(i==dblist.length-1 && data.size()==0){
                     data.add(empty);
                 }
             	continue;
