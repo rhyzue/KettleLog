@@ -20,9 +20,14 @@ public class TutorialStage extends Stage{
     private static Button closeBtn = new Button("Close");
     private static Button nextBtn = new Button("Prev");
     private static Button prevBtn = new Button("Next");
-
+    private static Label prevLabel = new Label("Previous");
+    private static Label nextLabel = new Label("Next");
+    private static Label titleLabel = new Label("Welcome to Kettlelog!");
+    private static Font font = new Font(25);
+    private static Font titleFont = new Font(35);
     //panes
-    private static HBox hcontainer= new HBox();
+    private static AnchorPane topAnchor= new HBox(20);
+    private static BorderPane mainBP = new BorderPane();
     private static AnchorPane leftAnchor = new AnchorPane();
     private static AnchorPane rightAnchor = new AnchorPane();
 
@@ -34,11 +39,41 @@ public class TutorialStage extends Stage{
     TutorialStage(){
         TutorialStageHandler handler = new TutorialStageHandler();
 
+        prevLabel.setFont(font);
+        nextLabel.setFont(font);
+        titleLabel.setFont(titleFont);
+
+        AnchorPane.setLeftAnchor(prevLabel, 10);
+        AnchorPane.setBottomAnchor(prevLabel, 10);
+
+        AnchorPane.setRightAnchor(nextLabel, 10);
+        AnchorPane.setBottomAnchor(nextLabel, 10);
+
+
+        nextBtn.setId("nextBtn");
+        nextBtn.setStyle("-fx-background-color: #ffe1bb;");
+        nextBtn.setSkin(new FadeButtonSkin(nextBtn));
+        nextBtn.setOnAction(handler);
+        AnchorPane.setRightAnchor(nextBtn, 10);
+        AnchorPane.setBottomAnchor(nextBtn, 10);
+
+        prevBtn.setId("prevBtn");
+        prevBtn.setStyle("-fx-background-color: #ffe1bb;");
+        prevBtn.setSkin(new FadeButtonSkin(prevBtn));
+        prevBtn.setOnAction(handler);
+        AnchorPane.setLeftAnchor(prevBtn, 10);
+        AnchorPane.setBottomAnchor(prevBtn, 10);
+
+        topAnchor.getChildren().addAll(prevBtn, prevLabel, titleLabel, nextLabel, nextBtn);
+
+        topAnchor.setStyle("-fx-background-color: #3246a8;");
+        topAnchor.setPrefHeight(75);
 
         //ADDING NODES TO MAIN BORDER PANE
-        hcontainer.setStyle("-fx-background-color: #ffe1bb;");
+        mainBP.setStyle("-fx-background-color: #d8ecf0;");
+        mainBP.setTop(topAnchor);
 
-        scene = new Scene(hcontainer, 800, 500);
+        scene = new Scene(mainBP, 800, 500);
 
         this.setResizable(false);
         this.setScene(scene);
