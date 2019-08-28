@@ -531,13 +531,26 @@ public class PrimaryStage extends Stage{
                     break;
                 case "removeMenu":
                     itemsToDelete=kettle.getCheckedItems();
-                    if(itemsToDelete.size()==0){
-                        a3.show();
+
+                    //if the only checked item is empty
+                    if(itemsToDelete.size()==1){
+                        if(itemsToDelete.get(0).getID().equals("emptyID")){
+                            a2.show();
+                        }
+                        else{
+                            kettle.showAlertStage(1, itemsToDelete, empty);
+                            itemsToDelete.clear();
+                        }
+                    }
+                    //if there are no items
+                    else if(itemsToDelete.size()==0){
+                        a2.show();
                     }
                     else{
                         kettle.showAlertStage(1, itemsToDelete, empty);
                         itemsToDelete.clear();
                     }
+
                     break;
                 case "notifMenu":
                     kettle.showNotifStage();

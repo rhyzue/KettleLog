@@ -369,6 +369,8 @@ public class AlertStage extends Stage{
                 if(itemName.equals("") && itemsToDelete.size()==2){
                     itemName = itemsToDelete.get(1).getName();
                 }
+
+                System.out.println("Deleting: "+itemName);
                 
                 itemlabel.setText(itemName+ "?");
                 delperm.setText("This item will be deleted permanently.");
