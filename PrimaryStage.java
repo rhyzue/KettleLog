@@ -79,6 +79,7 @@ public class PrimaryStage extends Stage{
 
     //Handler eventHandler = new Handler();
     Kettlelog kettle = new Kettlelog();
+    private static TutorialStage tutorialStage = new TutorialStage();
     private static OptionHandler optionListener = new OptionHandler();
 
 
@@ -126,6 +127,7 @@ public class PrimaryStage extends Stage{
         //INFO SUBMENU
         Menu info = new Menu("Info");
             MenuItem tutorial = new Menu("Tutorial");
+            tutorial.setId("tutorial");
             MenuItem credits = new Menu("Contributors");
                 credits.setId("credits");
         
@@ -542,6 +544,9 @@ public class PrimaryStage extends Stage{
                     break;
                 case "notifMenu":
                     kettle.showNotifStage();
+                    break;
+                case "tutorial":
+                    tutorialStage.show();
                     break;
                 default:
                     System.out.println("Default.");
