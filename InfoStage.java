@@ -530,6 +530,7 @@ public class InfoStage extends Stage{
         InfoHandler infoHandler = new InfoHandler();
         infocancel.setOnAction(infoHandler); 
         infocancel.setStyle("-fx-background-color: #b8d6d6;");
+        infocancel.setSkin(new FadeButtonSkin(infocancel));
         
         AnchorPane.setRightAnchor(infocancel, 5.0);
         AnchorPane.setTopAnchor(infocancel, 5.0);

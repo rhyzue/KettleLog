@@ -138,9 +138,12 @@ public class AddStage extends Stage{
         createbtn.setId("createbtn");  
         createbtn.setStyle("-fx-background-color: #093d23;");
         createbtn.setTextFill(Color.WHITE);
+        createbtn.setSkin(new FadeButtonSkin(createbtn));
         cancelbtn.setText("Cancel");
         cancelbtn.setId("cancelBtn");
         cancelbtn.setStyle("-fx-background-color: #d5f0e2;");
+        cancelbtn.setSkin(new FadeButtonSkin(cancelbtn));
+
         AnchorPane.setRightAnchor(bottomBox, 6.25);
         AnchorPane.setTopAnchor(bottomBox, 6.25);
         addbottom.getChildren().addAll(bottomBox);

@@ -53,6 +53,7 @@ public class NotifStage extends Stage{
         //TOP (LABEL, CLEAR BTN)
         clearBtn.setId("clearBtn");
         clearBtn.setStyle("-fx-background-color: #ffe1bb;");
+        clearBtn.setSkin(new FadeButtonSkin(clearBtn));
         clearBtn.setOnAction(notifStageHandler);
         AnchorPane.setRightAnchor(clearBtn, 10.0);
         AnchorPane.setTopAnchor(clearBtn, 20.0);
@@ -68,6 +69,7 @@ public class NotifStage extends Stage{
         //BOTTOM (CLOSE BTN)
         closeBtn.setId("closeBtn");
         closeBtn.setStyle("-fx-background-color: #ffe1bb;");
+        closeBtn.setSkin(new FadeButtonSkin(closeBtn));
         closeBtn.setOnAction(notifStageHandler);
 
         Image refreshImg = new Image("./Misc/refreshBlack.png");

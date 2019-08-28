@@ -175,6 +175,7 @@ public class CreditStage extends Stage{
 	    //================================================================================
         close.setText("Close");
         close.setStyle("-fx-background-color: #d4c7d9;");
+       	close.setSkin(new FadeButtonSkin(close));
         close.setPrefHeight(30);
         	AnchorPane.setRightAnchor(close, 5.0);
         	AnchorPane.setBottomAnchor(close, 5.0);

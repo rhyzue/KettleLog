@@ -184,6 +184,9 @@ public class AlertStage extends Stage{
         alertdelete.setId("confirmation");
         alertbbx.getChildren().addAll(alertcancel, alertdelete);
 
+        alertcancel.setSkin(new FadeButtonSkin(alertcancel));
+        alertdelete.setSkin(new FadeButtonSkin(alertdelete));
+
         AnchorPane.setRightAnchor(alertbbx, 7.5);
         AnchorPane.setTopAnchor(alertbbx, 7.5);
         
@@ -215,6 +218,8 @@ public class AlertStage extends Stage{
         instruction1.setVisible(false);
         instruction2.setVisible(false);
         emptywarning.setVisible(false);
+        alertcancel.setTextFill(Color.BLACK);
+        alertdelete.setTextFill(Color.BLACK);
 
         datepicker.setValue(LocalDate.now());
 
@@ -223,9 +228,8 @@ public class AlertStage extends Stage{
         //================================================================================
         if (popuptype == 0) {
 
-            alertcancel.setStyle("-fx-background-color: #f7f0e4;");
+            alertcancel.setStyle("-fx-background-color: #f7f0e4;");  
             alertdelete.setStyle("-fx-background-color: #ffe5b7;");
-            alertdelete.setTextFill(Color.BLACK);
 
             String stripcolour = String.format("-fx-background-color: %s", striphexreorder);
             String alertmidcolour = String.format("-fx-background-color: %s", reordermidhex);
@@ -344,9 +348,9 @@ public class AlertStage extends Stage{
         // DELETING AN ITEM
         //================================================================================
         else {
+
             alertcancel.setStyle("-fx-background-color: #dfccd5;");
             alertdelete.setStyle("-fx-background-color: #cbadc3;");
-            alertdelete.setTextFill(Color.BLACK);
 
             String stripcolour = String.format("-fx-background-color: %s", striphexdelete);
             String alertmidcolour = String.format("-fx-background-color: %s", deletemidhex);
