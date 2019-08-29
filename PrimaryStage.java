@@ -38,7 +38,7 @@ public class PrimaryStage extends Stage{
     private static double screenY = 0.0;
 
     private static double screenWidth = 1024;
-    private static double screenHeight;
+    private static double screenHeight =0;
     private static double spacefromtable = 7.5;
     private static double tooltipduration = 75.0;
 
@@ -79,7 +79,6 @@ public class PrimaryStage extends Stage{
 
     //Handler eventHandler = new Handler();
     Kettlelog kettle = new Kettlelog();
-    private static TutorialStage tutorialStage = new TutorialStage();
     private static OptionHandler optionListener = new OptionHandler();
 
 
@@ -383,6 +382,10 @@ public class PrimaryStage extends Stage{
         opaqueLayer.setVisible(false);
     }
 
+    public double getScreenHeight(){
+        return screenHeight;
+    }
+
     public void updatePrimaryStage(ObservableList<Item> data){
 
         if(!data.get(0).getName().equals("")){ //if empty
@@ -546,7 +549,7 @@ public class PrimaryStage extends Stage{
                     kettle.showNotifStage();
                     break;
                 case "tutorial":
-                    tutorialStage.show();
+                    kettle.showTutorialStage();
                     break;
                 default:
                     System.out.println("Default.");

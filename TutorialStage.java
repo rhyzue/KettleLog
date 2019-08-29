@@ -18,15 +18,27 @@ public class TutorialStage extends Stage{
 
     //components
     private static Button closeBtn = new Button("Close");
-    private static Button nextBtn = new Button("Prev");
-    private static Button prevBtn = new Button("Next");
-    private static Label prevLabel = new Label("Previous");
-    private static Label nextLabel = new Label("Next");
+    private static Button nextBtn = new Button();
+    private static Button prevBtn = new Button();
     private static Label titleLabel = new Label("Welcome to Kettlelog!");
-    private static Font font = new Font(25);
-    private static Font titleFont = new Font(35);
+    private static Font font = new Font(15);
+    private static Font titleFont = new Font(25);
+    private static Tooltip nextTP = new Tooltip("Next");
+    private static Tooltip prevTP = new Tooltip("Previous");
+    private static Label tutLabel = new Label();
+
+    private Image nextImg = new Image("./Misc/right.png");
+    private ImageView nextImgView = new ImageView();
+    private Image prevImg = new Image("./Misc/left.png");
+    private ImageView prevImgView = new ImageView();
+    private Image pg1Img = new Image("./Misc/tutp1.png");
+    private ImageView pg1ImgView = new ImageView();
+    private Image pg2Img = new Image("./Misc/tutp2.png");
+    private ImageView pg2ImgView = new ImageView();
+
     //panes
-    private static AnchorPane topAnchor= new HBox(20);
+    private static AnchorPane topAnchor= new AnchorPane();
+    private static AnchorPane bottomAnchor = new AnchorPane();
     private static BorderPane mainBP = new BorderPane();
     private static AnchorPane leftAnchor = new AnchorPane();
     private static AnchorPane rightAnchor = new AnchorPane();
@@ -39,41 +51,82 @@ public class TutorialStage extends Stage{
     TutorialStage(){
         TutorialStageHandler handler = new TutorialStageHandler();
 
-        prevLabel.setFont(font);
-        nextLabel.setFont(font);
         titleLabel.setFont(titleFont);
+        titleLabel.setTextFill(Color.WHITE);
 
-        AnchorPane.setLeftAnchor(prevLabel, 10);
-        AnchorPane.setBottomAnchor(prevLabel, 10);
-
-        AnchorPane.setRightAnchor(nextLabel, 10);
-        AnchorPane.setBottomAnchor(nextLabel, 10);
-
+        AnchorPane.setTopAnchor(titleLabel, 10.0);
+        AnchorPane.setLeftAnchor(titleLabel, 125.0);
 
         nextBtn.setId("nextBtn");
-        nextBtn.setStyle("-fx-background-color: #ffe1bb;");
-        nextBtn.setSkin(new FadeButtonSkin(nextBtn));
         nextBtn.setOnAction(handler);
-        AnchorPane.setRightAnchor(nextBtn, 10);
-        AnchorPane.setBottomAnchor(nextBtn, 10);
+        nextTP.setShowDelay(new javafx.util.Duration(100.0));
+        nextBtn.setTooltip(nextTP); 
+
+            nextBtn.setStyle("-fx-background-color: transparent;");             
+            nextImgView.setImage(nextImg);
+            nextImgView.setFitWidth(40);
+            nextImgView.setPreserveRatio(true);
+            nextImgView.setSmooth(true);
+            nextImgView.setCache(true); 
+            nextBtn.setGraphic(nextImgView);
+
+        AnchorPane.setRightAnchor(nextBtn, 10.0);
+        AnchorPane.setBottomAnchor(nextBtn, 0.0);
 
         prevBtn.setId("prevBtn");
-        prevBtn.setStyle("-fx-background-color: #ffe1bb;");
-        prevBtn.setSkin(new FadeButtonSkin(prevBtn));
         prevBtn.setOnAction(handler);
-        AnchorPane.setLeftAnchor(prevBtn, 10);
-        AnchorPane.setBottomAnchor(prevBtn, 10);
+        prevTP.setShowDelay(new javafx.util.Duration(100.0));
+        prevBtn.setTooltip(prevTP); 
+        prevBtn.setDisable(true);
 
-        topAnchor.getChildren().addAll(prevBtn, prevLabel, titleLabel, nextLabel, nextBtn);
+            prevBtn.setStyle("-fx-background-color: transparent;");             
+            prevImgView.setImage(prevImg);
+            prevImgView.setFitWidth(40);
+            prevImgView.setPreserveRatio(true);
+            prevImgView.setSmooth(true);
+            prevImgView.setCache(true); 
+            prevBtn.setGraphic(prevImgView);
 
+        AnchorPane.setLeftAnchor(prevBtn, 10.0);
+        AnchorPane.setBottomAnchor(prevBtn, 0.0);
+
+        closeBtn.setId("closeBtn");
+        closeBtn.setStyle("-fx-background-color: #d8ecf0;");
+        closeBtn.setSkin(new FadeButtonSkin(closeBtn));
+        closeBtn.setOnAction(handler);
+
+        AnchorPane.setRightAnchor(closeBtn, 10.0);
+        AnchorPane.setBottomAnchor(closeBtn, 10.0);
+
+        bottomAnchor.setStyle("-fx-background-color: #3246a8;");
+        bottomAnchor.setPrefHeight(45);
+        bottomAnchor.getChildren().addAll(closeBtn);
+
+        topAnchor.getChildren().addAll(prevBtn, titleLabel, nextBtn);
         topAnchor.setStyle("-fx-background-color: #3246a8;");
-        topAnchor.setPrefHeight(75);
+        topAnchor.setPrefHeight(60);
+
+        pg1ImgView.setImage(pg1Img);
+            pg1ImgView.setFitWidth(400);
+            pg1ImgView.setPreserveRatio(true);
+            pg1ImgView.setSmooth(true);
+            pg1ImgView.setCache(true);
+
+        pg2ImgView.setImage(pg2Img);
+            pg2ImgView.setFitWidth(400);
+            pg2ImgView.setPreserveRatio(true);
+            pg2ImgView.setSmooth(true);
+            pg2ImgView.setCache(true);
+
+        tutLabel.setGraphic(pg1ImgView);
 
         //ADDING NODES TO MAIN BORDER PANE
-        mainBP.setStyle("-fx-background-color: #d8ecf0;");
+        mainBP.setStyle("-fx-background-color: #d4e1f5;");
         mainBP.setTop(topAnchor);
+        mainBP.setCenter(tutLabel);
+        mainBP.setBottom(bottomAnchor);
 
-        scene = new Scene(mainBP, 800, 500);
+        scene = new Scene(mainBP, 500, kettle.getScreenHeight());
 
         this.setResizable(false);
         this.setScene(scene);
@@ -92,10 +145,17 @@ public class TutorialStage extends Stage{
 
             switch(itemClicked){
                 case "nextBtn":
-                break;
+                    tutLabel.setGraphic(pg2ImgView);
+                    nextBtn.setDisable(true);
+                    prevBtn.setDisable(false);
+                    break;
                 case "prevBtn":
-                break;
+                    tutLabel.setGraphic(pg1ImgView);
+                    nextBtn.setDisable(false);
+                    prevBtn.setDisable(true);
+                    break;
                 case "closeBtn":
+                    kettle.hideTutorialStage();
                 break;
 
             }

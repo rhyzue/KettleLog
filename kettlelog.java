@@ -57,6 +57,7 @@ public class Kettlelog extends Application {
     private static ObservableList<Item> placeholder = FXCollections.observableArrayList();
     private static NotifStage notifStage = new NotifStage();
     private static NotifComparator notifComparator = new NotifComparator();
+    private static TutorialStage tutorialStage = new TutorialStage();
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -170,6 +171,11 @@ public class Kettlelog extends Application {
         return notifStage.isShowing();
     }
 
+    public void showTutorialStage(){
+        primaryStage.showOpaqueLayer();
+        tutorialStage.show();
+    }
+
     //================================================================================
     // STAGE HIDERS
     //================================================================================
@@ -177,6 +183,11 @@ public class Kettlelog extends Application {
         primaryStage.hideOpaqueLayer();
         addStage.hideOpaqueLayer();
         addStage.hide();
+    }
+
+    public void hideTutorialStage(){
+        primaryStage.hideOpaqueLayer();
+        tutorialStage.hide();
     }
 
     public void hideInfoStage(){
@@ -538,6 +549,10 @@ public class Kettlelog extends Application {
 
     public void clearSearchBar(){
         primaryStage.clearSearchBar();
+    }
+
+    public double getScreenHeight(){
+        return primaryStage.getScreenHeight();
     }
 
     //This is a method that takes in an item name and checks if there is a duplicate in the existing data.

@@ -99,6 +99,8 @@ public class InfoStage extends Stage{
     //Constructor
     InfoStage(){
 
+        infoheight = kettle.getScreenHeight();
+
         //Strip colours
         infostripcolour = String.format("-fx-background-color: %s", infostriphex);
         infomidcolour = String.format("-fx-background-color: %s", infomidhex);
@@ -543,11 +545,11 @@ public class InfoStage extends Stage{
         infoborderpane.setCenter(scrollpane);
         infoborderpane.setBottom(infobstrip);
 
+        this.setScene(new Scene(infoborderpane, infowidth, infoheight));
         this.setResizable(false);
         this.initOwner(kettle.getPrimaryStage());
         this.initStyle(StageStyle.UNDECORATED);
         this.initModality(Modality.WINDOW_MODAL);
-        this.setScene(new Scene(infoborderpane, infowidth, infoheight));
     }
 
     public void updateInfoStage(Item rowinfo){

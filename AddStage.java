@@ -34,8 +34,8 @@ public class AddStage extends Stage{
     private static int logdateunique = 0; 
     private static int overflow = 0;
     private static double addwidth = 600;
-    private static double addw_to_h = 0.85;
-    private static double addheight = addwidth / addw_to_h;
+
+    private static double addheight = 0;
     private static double numbertextwidth = 100.0;; 
     private static double tooltipduration = 75.0;
     private static String tbcolour = "#006733;";
@@ -97,6 +97,7 @@ public class AddStage extends Stage{
     private static Button reorderbtn = new Button();
     private static Region opaqueLayer = new Region();
     private static String logtype = "CONSUMPTION";
+    private static Scene sc;
 
     //objects from kettlelog app
     private static Kettlelog kettle = new Kettlelog();
@@ -113,6 +114,7 @@ public class AddStage extends Stage{
     private static String id;
 
     AddStage(){
+        addheight = kettle.getScreenHeight();
 
         //0 --> ADD WINDOW
         //1 --> EDIT WINDOW
@@ -406,11 +408,13 @@ public class AddStage extends Stage{
         StackPane root = new StackPane();
         root.getChildren().addAll(abase, opaqueLayer);
 
-        this.setScene(new Scene(root, addwidth, addheight));
-        this.initStyle(StageStyle.UNDECORATED);
-        this.initOwner(kettle.getPrimaryStage());
-        this.initModality(Modality.WINDOW_MODAL);
+        sc = new Scene(root, addwidth, kettle.getScreenHeight());
+
         this.setResizable(false);
+        this.setScene(sc);
+        this.initOwner(kettle.getPrimaryStage());
+        this.initStyle(StageStyle.UNDECORATED);
+        this.initModality(Modality.WINDOW_MODAL);
         this.setTitle("Add New Item");
     }
 
