@@ -38,7 +38,7 @@ public class InfoStage extends Stage{
     private String infomidcolour;
     private static int presscount = 0;
     private static double infowidth = 500;
-    private static double infoheight = 700;
+    private static double infoheight = 0;
     private static double scrollheight = 2000;
     private static double distancedown = 40.0;
     private static double tooltipduration = 75.0;
@@ -542,6 +542,12 @@ public class InfoStage extends Stage{
         infoborderpane.setTop(infotstrip);
         infoborderpane.setCenter(scrollpane);
         infoborderpane.setBottom(infobstrip);
+
+        if (kettle.isLargeScreen()) {
+            infoheight = 700.00;
+        } else {
+            infoheight = kettle.getScreenHeight();
+        }
 
         this.setScene(new Scene(infoborderpane, infowidth, infoheight));
         this.setResizable(false);

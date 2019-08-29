@@ -145,7 +145,7 @@ public class Kettlelog extends Application {
             extraheight = 5.0;
         } else {
             minusheight = getScreenHeight() / 2.0;
-            extraheight = -5.0;
+            extraheight = 0.0;
         }
 
         infoStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250);
@@ -159,7 +159,7 @@ public class Kettlelog extends Application {
         alertStage.updateAlertStage(popuptype, itemsToDelete, rowinfo);
 
         alertStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250); //250 is width divided by 2
-        alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 -  175)+ extraheight); 
+        alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 175) + extraheight); 
 
         alertStage.show();
     }
