@@ -120,7 +120,7 @@ public class Kettlelog extends Application {
         addStage.updateAddStage(popuptype, textarray, rowinfo);
 
         addStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 300);
-        addStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 352.94) + extraheight);
+        addStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 352.94));
 
         addStage.show();
     }
@@ -130,7 +130,7 @@ public class Kettlelog extends Application {
         infoStage.updateInfoStage(rowinfo);
 
         infoStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250);
-        infoStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 350) + extraheight);
+        infoStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 350));
 
         infoStage.show();
     }
@@ -140,7 +140,7 @@ public class Kettlelog extends Application {
         alertStage.updateAlertStage(popuptype, itemsToDelete, rowinfo);
 
         alertStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250); //250 is width divided by 2
-        alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 175) + extraheight); 
+        alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 -  175)+ extraheight); 
 
         alertStage.show();
     }
@@ -173,6 +173,10 @@ public class Kettlelog extends Application {
 
     public void showTutorialStage(){
         primaryStage.showOpaqueLayer();
+
+        tutorialStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250);
+        tutorialStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 350) + 15);
+
         tutorialStage.show();
     }
 
