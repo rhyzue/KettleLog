@@ -34,8 +34,7 @@ public class AddStage extends Stage{
     private static int logdateunique = 0; 
     private static int overflow = 0;
     private static double addwidth = 600;
-    private static double addw_to_h = 0.85;
-    private static double addheight = addwidth / addw_to_h;
+    private static double addheight = 0.0;
 
     private static double numbertextwidth = 100.0;; 
     private static double tooltipduration = 75.0;
@@ -406,6 +405,12 @@ public class AddStage extends Stage{
 
         StackPane root = new StackPane();
         root.getChildren().addAll(abase, opaqueLayer);
+
+        if (kettle.isLargeScreen()) {
+            addheight = 705.88;
+        } else {
+            addheight = kettle.getScreenHeight();
+        }
 
         this.setScene(new Scene(root, addwidth, addheight));
         this.setResizable(false);

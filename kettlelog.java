@@ -34,7 +34,8 @@ public class Kettlelog extends Application {
     private static double spacefromtable = 7.5;
     private static double xBounds = 0.0;
     private static double yBounds = 0.0;
-    private static double extraheight = 5.0;
+    private static double minusheight = 0.0;
+    private static double extraheight = 0.0;
     public static boolean starred = false;
     public static boolean duplicatefound = false;
     private final String fprofile = "https://github.com/Fraisin";
@@ -58,6 +59,7 @@ public class Kettlelog extends Application {
     private static NotifStage notifStage = new NotifStage();
     private static NotifComparator notifComparator = new NotifComparator();
     private static TutorialStage tutorialStage = new TutorialStage();
+    private static boolean largescreen = false;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -118,9 +120,18 @@ public class Kettlelog extends Application {
     public void showAddStage(int popuptype, String[] textarray, Item rowinfo){
         primaryStage.showOpaqueLayer();
         addStage.updateAddStage(popuptype, textarray, rowinfo);
+        
+        if (isLargeScreen()) {
+            minusheight = 352.94;
+            extraheight = 5.0;
+        } else {
+            System.out.println("YOU HAVE A SMALL SCREEN.");
+            minusheight = getScreenHeight() / 2.0;
+            extraheight = 0.0;
+        }
 
         addStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 300);
-        addStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 352.94)+ extraheight);
+        addStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - minusheight) + extraheight); 
 
         addStage.show();
     }
@@ -129,8 +140,16 @@ public class Kettlelog extends Application {
         primaryStage.showOpaqueLayer();
         infoStage.updateInfoStage(rowinfo);
 
+        if (isLargeScreen()) {
+            minusheight = 350.0;
+            extraheight = 5.0;
+        } else {
+            minusheight = getScreenHeight() / 2.0;
+            extraheight = -5.0;
+        }
+
         infoStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250);
-        infoStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 350)+ extraheight);
+        infoStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - minusheight) + extraheight);
 
         infoStage.show();
     }
@@ -584,6 +603,18 @@ public class Kettlelog extends Application {
             }
         }
         return null;
+    }
+
+    public void setLargeScreenTrue(){
+        largescreen = true;
+    }
+
+    public void setLargeScreenFalse(){
+        largescreen = false;
+    }
+
+    public boolean isLargeScreen(){
+        return largescreen;
     }
 
     //================================================================================
