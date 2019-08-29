@@ -34,8 +34,9 @@ public class AddStage extends Stage{
     private static int logdateunique = 0; 
     private static int overflow = 0;
     private static double addwidth = 600;
+    private static double addw_to_h = 0.85;
+    private static double addheight = addwidth / addw_to_h;
 
-    private static double addheight = 0;
     private static double numbertextwidth = 100.0;; 
     private static double tooltipduration = 75.0;
     private static String tbcolour = "#006733;";
@@ -114,7 +115,6 @@ public class AddStage extends Stage{
     private static String id;
 
     AddStage(){
-        addheight = kettle.getScreenHeight();
 
         //0 --> ADD WINDOW
         //1 --> EDIT WINDOW

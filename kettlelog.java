@@ -120,7 +120,7 @@ public class Kettlelog extends Application {
         addStage.updateAddStage(popuptype, textarray, rowinfo);
 
         addStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 300);
-        addStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 352.94));
+        addStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 352.94)+ extraheight);
 
         addStage.show();
     }
@@ -130,7 +130,7 @@ public class Kettlelog extends Application {
         infoStage.updateInfoStage(rowinfo);
 
         infoStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250);
-        infoStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 350));
+        infoStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 350)+ extraheight);
 
         infoStage.show();
     }

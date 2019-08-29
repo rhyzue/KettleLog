@@ -99,8 +99,6 @@ public class InfoStage extends Stage{
     //Constructor
     InfoStage(){
 
-        infoheight = kettle.getScreenHeight();
-
         //Strip colours
         infostripcolour = String.format("-fx-background-color: %s", infostriphex);
         infomidcolour = String.format("-fx-background-color: %s", infomidhex);
