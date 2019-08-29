@@ -98,7 +98,6 @@ public class AddStage extends Stage{
     private static Button reorderbtn = new Button();
     private static Region opaqueLayer = new Region();
     private static String logtype = "CONSUMPTION";
-    private static Scene sc;
 
     //objects from kettlelog app
     private static Kettlelog kettle = new Kettlelog();
@@ -408,10 +407,8 @@ public class AddStage extends Stage{
         StackPane root = new StackPane();
         root.getChildren().addAll(abase, opaqueLayer);
 
-        sc = new Scene(root, addwidth, kettle.getScreenHeight());
-
+        this.setScene(new Scene(root, addwidth, addheight));
         this.setResizable(false);
-        this.setScene(sc);
         this.initOwner(kettle.getPrimaryStage());
         this.initStyle(StageStyle.UNDECORATED);
         this.initModality(Modality.WINDOW_MODAL);
