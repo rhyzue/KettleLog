@@ -335,6 +335,7 @@ public class AddStage extends Stage{
         HBox dBox = new HBox(danchor);
         
         wcenter.getChildren().addAll(iBox, qBox, mBox, sBox, dBox);
+        wcenter.setStyle(middle);
         abase.setCenter(wcenter);
 
         cancelbtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -407,6 +408,7 @@ public class AddStage extends Stage{
         root.getChildren().addAll(abase, opaqueLayer);
 
         if (kettle.isLargeScreen()) {
+            System.out.println("Add height will be 705.88.");
             addheight = 705.88;
         } else {
             addheight = kettle.getScreenHeight();

@@ -157,14 +157,14 @@ public class PrimaryStage extends Stage{
         table.setFixedCellSize(40.0);
 
         //decide how any rows in table
-        System.out.println(screenBounds.getHeight());
-        screenHeight = screenBounds.getHeight() - 50;
-
-        if (screenHeight > 800) {
+        System.out.println("Your computer's screen height is " + screenBounds.getHeight());
+        
+        if (screenBounds.getHeight() > 800) {
             kettle.setLargeScreenTrue();
             screenHeight = 740;
         } else {
             kettle.setLargeScreenFalse();
+            screenHeight = screenBounds.getHeight() - 50;
         }
 
         double numRows = Math.floor((screenHeight-70-150-28)/40);

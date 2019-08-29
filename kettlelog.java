@@ -59,7 +59,7 @@ public class Kettlelog extends Application {
     private static NotifStage notifStage = new NotifStage();
     private static NotifComparator notifComparator = new NotifComparator();
     private static TutorialStage tutorialStage = new TutorialStage();
-    private static boolean largescreen = false;
+    private static boolean largescreen;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -122,6 +122,7 @@ public class Kettlelog extends Application {
         addStage.updateAddStage(popuptype, textarray, rowinfo);
         
         if (isLargeScreen()) {
+            System.out.println("YOU HAVE A LARGE SCREEN.");
             minusheight = 352.94;
             extraheight = 5.0;
         } else {
@@ -159,7 +160,7 @@ public class Kettlelog extends Application {
         alertStage.updateAlertStage(popuptype, itemsToDelete, rowinfo);
 
         alertStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250); //250 is width divided by 2
-        alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 175) + extraheight); 
+        alertStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 175) + 5.0); 
 
         alertStage.show();
     }
@@ -170,7 +171,7 @@ public class Kettlelog extends Application {
         notifStage.updateNotifStage(notifList);
 
         notifStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250); //250 is width divided by 2
-        notifStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 250) + extraheight); 
+        notifStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 250) + 5.0); 
 
         notifStage.show();
     }
@@ -180,7 +181,7 @@ public class Kettlelog extends Application {
         creditStage.showCreditStage();
 
         creditStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 310); 
-        creditStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 220) + extraheight); 
+        creditStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 220) + 5.0); 
 
         creditStage.show();
 
@@ -194,7 +195,7 @@ public class Kettlelog extends Application {
         primaryStage.showOpaqueLayer();
 
         tutorialStage.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - 250);
-        tutorialStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - 350) + 15);
+        tutorialStage.setY((primaryStage.getY() + primaryStage.getHeight() / 2 - getScreenHeight() / 2) + extraheight);
 
         tutorialStage.show();
     }
@@ -606,10 +607,12 @@ public class Kettlelog extends Application {
     }
 
     public void setLargeScreenTrue(){
+        System.out.println("Large screen set to true.");
         largescreen = true;
     }
 
     public void setLargeScreenFalse(){
+        System.out.println("Large screen set to false.");
         largescreen = false;
     }
 
