@@ -605,7 +605,13 @@ public class InfoStage extends Stage{
 
             //Cannot delete your only consumption-type log in the list!
             initiallog = logtable.getSelectionModel().getSelectedItem();
-            if (((initiallog.getLogType()).equals("CONSUMPTION")) && (numofcons == 1)) {
+
+            if (initiallog==null) {
+                cannotdelete.setText(" * No log selected.");
+                cannotdelete.setVisible(true);
+            }
+
+            else if (((initiallog.getLogType()).equals("CONSUMPTION")) && (numofcons == 1)) {
                 cannotdelete.setText(" * You cannot delete your only non-reorder log.");
                 cannotdelete.setVisible(true);
             }
