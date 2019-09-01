@@ -1,7 +1,9 @@
 #! /bin/bash
 
-echo 'Deleting Class files'
 cd ..
+echo 'Deleting class files...'
 find . -type f -iname \*.class -delete
-javac --module-path ./jfx/lib --add-modules javafx.controls Kettlelog.java
-java --module-path ./jfx/lib --add-modules javafx.controls Kettlelog
+echo 'Compiling...'
+javac --module-path ./jfxmac/lib --add-modules javafx.controls Kettlelog.java
+echo 'Opening application....'
+java --module-path ./jfxmac/lib --add-modules javafx.controls Kettlelog
