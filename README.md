@@ -42,6 +42,10 @@ For the time being, KettleLog can be run by completing the following steps:
 
 ![](https://github.com/Fraisin/KettleLog/blob/master/Screenshots/clone.png) 
 
+2. Navigate to the project folder with a simple cd command. 
+```
+cd path-to-project
+```
 **Windows**
 1. Run the following three commands in order to open KettleLog. 
 We are considering writing a quick shell script to help make this process easier!
