@@ -31,3 +31,7 @@ Item Statistics            |  Consumption Graph
 | <img src="https://github.com/rhyzue/KettleLog/blob/master/Screenshots/notifs.png"/> | 
 |:--:| 
 | *Get notified when an item needs re-ordering. Kettlelog will calculate the re-order date for you!* |
+
+**Installation Instructions**
+
+The KettleLog team is currently still finding a way to deploy our application!
