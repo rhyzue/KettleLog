@@ -6,17 +6,17 @@ Kettlelog is an inventory manager designed to help business owners pinpoint exac
 
 * Simple & Attractive UI 
 
-![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/maintable.png) 
+![](https://github.com/Fraisin/KettleLog/blob/master/Screenshots/maintable.png) 
 
 * Multifunctional Editing
 
-| ![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/edit.png) | 
+| ![](https://github.com/Fraisin/KettleLog/blob/master/Screenshots/edit.png) | 
 |:--:| 
 | *Edit or log an item easily through the same popup.* |
 
 * Edit/Delete Logs
 
-| ![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/logtable.png) | 
+| ![](https://github.com/Fraisin/KettleLog/blob/master/Screenshots/logtable.png) | 
 |:--:| 
 | *Easily edit your past logs using our log table.* |
 
@@ -24,11 +24,11 @@ Kettlelog is an inventory manager designed to help business owners pinpoint exac
 
 Item Statistics            |  Consumption Graph
 :-------------------------:|:-------------------------:
-![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/stats.png)  |  ![](https://github.com/rhyzue/KettleLog/blob/master/Screenshots/graph.png)
+![](https://github.com/Fraisin/KettleLog/blob/master/Screenshots/stats.png)  |  ![](https://github.com/Fraisin/KettleLog/blob/master/Screenshots/graph.png)
 
 * Notifications
 
-| <img src="https://github.com/rhyzue/KettleLog/blob/master/Screenshots/notifs.png"/> | 
+| <img src="https://github.com/Fraisin/KettleLog/blob/master/Screenshots/notifs.png"/> | 
 |:--:| 
 | *Get notified when an item needs re-ordering. Kettlelog will calculate the re-order date for you!* |
 
@@ -40,8 +40,7 @@ For the time being, KettleLog can be run by completing the following steps:
 
 1. Click on the green "Clone or Download" button, and select "Download ZIP."
 
-**insert image here**
-
+![](https://github.com/Fraisin/KettleLog/blob/master/Screenshots/clone.png) 
 
 **Windows**
 1. Run the following three commands in order to open KettleLog. 
