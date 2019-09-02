@@ -2,7 +2,7 @@
 
 Kettlelog is an inventory manager designed to help business owners pinpoint exactly when an item should be reordered to avoid inventory shortages. It's easy-to-use and is always up to date, giving you the most accurate information possible. It is written completely in Java & JavaFX, and saves all user information in SQLite databases.
 
-**Features**
+### Features
 
 * Simple & Attractive UI 
 
@@ -32,6 +32,35 @@ Item Statistics            |  Consumption Graph
 |:--:| 
 | *Get notified when an item needs re-ordering. Kettlelog will calculate the re-order date for you!* |
 
-**Installation Instructions**
+### Installation Instructions
 
-The KettleLog team is currently still finding a way to deploy our application!
+The KettleLog team is currently still trying to find an efficient way to deploy our application as an .exe and .dmg file. 
+
+For the time being, KettleLog can be run by completing the following steps: 
+
+1. Click on the green "Clone or Download" button, and select "Download ZIP."
+
+**insert image here**
+
+
+**Windows**
+1. Run the following three commands in order to open KettleLog. 
+We are considering writing a quick shell script to help make this process easier!
+
+```
+del *.class
+javac --module-path /path-to-project/Kettlelog/jfxwin/lib --add-modules javafx.controls Kettlelog.java
+java --module-path /path-to-project/Kettlelog/jfxwin/lib --add-modules javafx.controls Kettlelog
+```
+**MacOS**
+
+1. Navigate to the project's 'bin' folder by using the following command: 
+
+```
+cd path-to-project/Kettlelog/bin
+```
+2. Run our bash script and KettleLog should open immediately!
+
+```
+sh boil.sh
+```
